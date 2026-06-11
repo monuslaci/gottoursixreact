@@ -1,39 +1,78 @@
 "use client";
 
-import { useEffect, useState, type ButtonHTMLAttributes } from "react";
+import { VisuallyHidden } from "@react-aria/visually-hidden";
+import { useIsSSR } from "@react-aria/ssr";
+import { SwitchProps, useSwitch } from "@heroui/react";
+import clsx from "clsx";
+import { FC } from "react";
 import { useTheme } from "next-themes";
 
 import { MoonFilledIcon, SunFilledIcon } from "@/components/icons";
-import { cn } from "@/lib/client-utils";
 
-export interface ThemeSwitchProps
-  extends ButtonHTMLAttributes<HTMLButtonElement> {
+export interface ThemeSwitchProps {
   className?: string;
+  classNames?: SwitchProps["classNames"];
 }
 
-export function ThemeSwitch({ className, ...props }: ThemeSwitchProps) {
+export const ThemeSwitch: FC<ThemeSwitchProps> = ({
+  className,
+  classNames,
+}) => {
   const { resolvedTheme, setTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
+  const isSSR = useIsSSR();
 
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  const isDark = !isSSR && resolvedTheme === "dark";
 
-  const isDark = mounted ? resolvedTheme === "dark" : false;
+  const onChange = () => {
+    setTheme(isDark ? "light" : "dark");
+  };
+
+  const {
+    Component,
+    slots,
+    isSelected,
+    getBaseProps,
+    getInputProps,
+    getWrapperProps,
+  } = useSwitch({
+    isSelected: isDark,
+    "aria-label": `Switch to ${isDark ? "light" : "dark"} mode`,
+    onChange,
+  });
 
   return (
-    <button
-      type="button"
-      aria-label={`Switch to ${isDark ? "light" : "dark"} mode`}
-      onClick={() => setTheme(isDark ? "light" : "dark")}
-      className={cn(
-        "inline-flex h-10 w-10 items-center justify-center rounded-xl border border-divider bg-background text-default-700 transition hover:bg-default-100 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40",
-        className
-      )}
-      {...props}
+    <Component
+      {...getBaseProps({
+        className: clsx(
+          "cursor-pointer rounded-xl bg-secondary/10 p-2 text-primary transition-colors hover:bg-secondary/16",
+          className,
+          classNames?.base
+        ),
+      })}
     >
-      {isDark ? <SunFilledIcon size={20} /> : <MoonFilledIcon size={20} />}
-      <span className="sr-only">Toggle color theme</span>
-    </button>
+      <VisuallyHidden>
+        <input {...getInputProps()} />
+      </VisuallyHidden>
+      <div
+        {...getWrapperProps()}
+        className={slots.wrapper({
+          class: clsx(
+            [
+              "flex h-auto w-auto items-center justify-center",
+              "bg-transparent",
+              "rounded-lg",
+              "px-0",
+              "pt-px",
+              "mx-0",
+              "!text-primary",
+              "group-data-[selected=true]:bg-transparent",
+            ],
+            classNames?.wrapper
+          ),
+        })}
+      >
+        {!isSelected || isSSR ? <SunFilledIcon size={22} /> : <MoonFilledIcon size={22} />}
+      </div>
+    </Component>
   );
-}
+};

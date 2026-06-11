@@ -31,7 +31,7 @@ export function InteractiveHoverButton({
     <button
       type={type}
       className={cn(
-        "group relative inline-flex min-h-11 min-w-44 items-center justify-center overflow-hidden rounded-xl border border-divider bg-content1 px-5 py-3 text-sm font-semibold text-foreground transition-colors hover:bg-default-100 active:scale-[0.99]",
+        "group relative inline-flex min-h-11 min-w-44 items-center justify-center overflow-hidden rounded-xl border border-primary/20 bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground shadow-sm transition-colors hover:border-brotherhood-bronze/50 active:scale-[0.99]",
         className
       )}
       {...props}
@@ -43,6 +43,7 @@ export function InteractiveHoverButton({
       <span
         className={cn(
           "absolute inset-0 z-0 scale-x-0 rounded-xl bg-primary/10 transition-transform duration-300 ease-out group-hover:scale-x-100",
+          "bg-brotherhood-bronze",
           getOriginClass()
         )}
       />

@@ -1,3 +1,6 @@
+"use client";
+
+import { Button, Card, CardBody, Chip, Progress } from "@heroui/react";
 import { ArrowRight, MessageSquare, Sparkles } from "lucide-react";
 import Link from "next/link";
 
@@ -14,88 +17,126 @@ export default function DemoPage() {
   return (
     <div className="space-y-6">
       <section className="grid gap-4 lg:grid-cols-[1fr_320px]">
-        <div className="rounded-2xl border border-divider bg-content1 p-5 sm:p-6">
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
-              Demo workspace
-            </span>
-            <span className="rounded-full bg-default-100 px-3 py-1 text-xs font-medium text-foreground">
-              Base UI only
-            </span>
-          </div>
-
-          <div className="mt-4 space-y-3">
-            <h1 className="text-2xl font-semibold sm:text-3xl">
-              A place to test the future community flow.
-            </h1>
-            <p className="max-w-2xl text-sm text-default-600 sm:text-base">
-              This screen shows the shell we will build on: topic browsing,
-              lightweight status, and a clear path for support-oriented
-              features.
-            </p>
-          </div>
-
-          <div className="mt-5 flex flex-col gap-3 sm:flex-row">
-            <InteractiveHoverButton className="w-full sm:w-auto" type="button">
-              Start a topic
-            </InteractiveHoverButton>
-            <Link
-              href="/"
-              className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-divider px-4 text-sm font-medium text-foreground transition-colors hover:bg-default-100"
-            >
-              Back home
-              <ArrowRight className="h-4 w-4" />
-            </Link>
-          </div>
-        </div>
-
-        <div className="rounded-2xl border border-divider bg-content1 p-5">
-          <div className="flex items-center gap-3">
-            <div className="rounded-xl bg-primary/10 p-3 text-primary">
-              <Sparkles className="h-5 w-5" />
+        <Card className="border border-primary/12 bg-content1 shadow-[0_18px_48px_rgb(var(--heroui-colors-primary-500)/0.1)]">
+          <CardBody className="gap-5 p-5 sm:p-6">
+            <div className="flex flex-wrap items-center gap-2">
+              <Chip color="primary" variant="flat">
+                Demo workspace
+              </Chip>
+              <Chip color="secondary" variant="flat">
+                Coaching flow
+              </Chip>
+              <Chip className="bg-brotherhood-bronze/16 text-brotherhood-bronze" variant="flat">
+                Operational
+              </Chip>
             </div>
-            <div>
-              <p className="text-sm font-medium">Readiness</p>
-              <p className="text-xs text-default-500">Base implementation</p>
+
+            <div className="space-y-3">
+              <h1 className="text-2xl font-semibold sm:text-3xl">
+                A working surface for future community operations.
+              </h1>
+              <p className="max-w-2xl text-sm leading-6 text-default-600 sm:text-base">
+                Use this page to test topic discovery, member signals, and
+                support workflows with the same calm, premium system used
+                across the app.
+              </p>
             </div>
-          </div>
-          <div className="flex items-center justify-center py-5">
-            <AnimatedCircularProgressBar
+
+            <div className="grid gap-3 sm:grid-cols-3">
+              {[
+                ["Readiness", "72%", "bg-brotherhood-navy"],
+                ["Trust", "High", "bg-brotherhood-forest"],
+                ["Cadence", "Weekly", "bg-brotherhood-bronze"],
+              ].map(([label, value, color]) => (
+                <div key={label} className="rounded-xl border border-divider bg-background/80 p-4">
+                  <div className={`mb-3 h-1.5 w-10 rounded-full ${color}`} />
+                  <p className="text-xs font-medium uppercase tracking-[0.14em] text-secondary">
+                    {label}
+                  </p>
+                  <p className="mt-1 text-lg font-semibold text-foreground">{value}</p>
+                </div>
+              ))}
+            </div>
+
+            <div className="flex flex-col gap-3 sm:flex-row">
+              <InteractiveHoverButton className="w-full sm:w-auto" type="button">
+                Start a topic
+              </InteractiveHoverButton>
+              <Button
+                as={Link}
+                href="/"
+                className="border-brotherhood-bronze/50 text-brotherhood-bronze"
+                variant="bordered"
+                endContent={<ArrowRight className="h-4 w-4" />}
+              >
+                Back home
+              </Button>
+            </div>
+          </CardBody>
+        </Card>
+
+        <Card className="border border-primary/12 bg-brotherhood-navy text-white shadow-[0_18px_48px_rgb(var(--heroui-colors-primary-500)/0.12)]">
+          <CardBody className="gap-4 p-5">
+            <div className="flex items-center gap-3">
+              <div className="rounded-xl bg-white/10 p-3 text-brotherhood-bronze">
+                <Sparkles className="h-5 w-5" />
+              </div>
+              <div>
+                <p className="text-sm font-medium text-white">Readiness</p>
+                <p className="text-xs text-white/65">Base implementation</p>
+              </div>
+            </div>
+            <div className="flex items-center justify-center py-5">
+              <AnimatedCircularProgressBar
+                value={72}
+                gaugePrimaryColor="rgb(var(--heroui-colors-warning))"
+                gaugeSecondaryColor="rgb(255 255 255 / 0.16)"
+                className="size-36 sm:size-40"
+              />
+            </div>
+            <Progress
+              aria-label="Demo progress"
+              classNames={{
+                indicator: "bg-brotherhood-bronze",
+                track: "bg-white/14",
+              }}
               value={72}
-              gaugePrimaryColor="var(--heroui-colors-primary-500)"
-              gaugeSecondaryColor="var(--heroui-colors-default-200)"
-              className="size-36 sm:size-40"
             />
-          </div>
-          <div className="h-2 w-full overflow-hidden rounded-full bg-default-100">
-            <div className="h-full w-[72%] rounded-full bg-primary" />
-          </div>
-        </div>
+          </CardBody>
+        </Card>
       </section>
 
       <section className="grid gap-4 md:grid-cols-3">
         {demoTopics.map((topic) => (
-          <article key={topic.name} className="rounded-2xl border border-divider bg-content1 p-5">
-            <p className="text-sm font-medium">{topic.name}</p>
-            <p className="text-xs text-default-500">{topic.status}</p>
-            <p className="mt-2 text-sm text-default-600">
-              Placeholder space for posts, subscriptions, and community cues.
-            </p>
-          </article>
+          <Card key={topic.name} className="border border-primary/12 bg-content1 shadow-sm">
+            <CardBody className="gap-2 p-5">
+              <div className="flex items-center justify-between gap-3">
+                <p className="text-sm font-medium">{topic.name}</p>
+                <span className="h-2 w-2 rounded-full bg-brotherhood-forest" />
+              </div>
+              <p className="text-xs font-medium uppercase tracking-[0.14em] text-secondary">
+                {topic.status}
+              </p>
+              <p className="text-sm text-default-600">
+                Placeholder space for posts, subscriptions, and community cues.
+              </p>
+            </CardBody>
+          </Card>
         ))}
       </section>
 
-      <div className="rounded-2xl border border-divider bg-content1 p-5">
-        <div className="flex items-center gap-2">
-          <MessageSquare className="h-5 w-5 text-primary" />
-          <h2 className="text-base font-semibold">Next steps</h2>
-        </div>
-        <p className="mt-3 text-sm text-default-600">
-          Authentication, role handling, topic CRUD, and private messaging can
-          now be layered in without changing the shell.
-        </p>
-      </div>
+      <Card className="border border-primary/12 bg-content1 shadow-sm">
+        <CardBody className="gap-3 p-5">
+          <div className="flex items-center gap-2">
+            <MessageSquare className="h-5 w-5 text-brotherhood-bronze" />
+            <h2 className="text-base font-semibold">Next steps</h2>
+          </div>
+          <p className="text-sm leading-6 text-default-600">
+            Authentication, role handling, topic CRUD, and private messaging can
+            now be layered in without changing the shell.
+          </p>
+        </CardBody>
+      </Card>
     </div>
   );
 }
-

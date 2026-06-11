@@ -1,11 +1,121 @@
 @import "tailwindcss";
 
-:root {
+@theme inline {
+  --color-background: rgb(var(--background));
+  --color-foreground: rgb(var(--foreground));
+  --color-content1: rgb(var(--content1));
+  --color-content2: rgb(var(--content2));
+  --color-divider: rgb(var(--divider));
+  --color-default-100: rgb(var(--default-100));
+  --color-default-200: rgb(var(--default-200));
+  --color-default-300: rgb(var(--default-300));
+  --color-default-400: rgb(var(--default-400));
+  --color-default-500: rgb(var(--default-500));
+  --color-default-600: rgb(var(--default-600));
+  --color-default-700: rgb(var(--default-700));
+  --color-default-800: rgb(var(--default-800));
+  --color-default-900: rgb(var(--default-900));
+  --color-primary: rgb(var(--heroui-colors-primary-500));
+  --color-primary-foreground: rgb(255 255 255);
+  --color-secondary: rgb(var(--heroui-colors-secondary-500));
+  --color-secondary-foreground: rgb(255 255 255);
+  --color-success: rgb(var(--heroui-colors-success));
+  --color-warning: rgb(var(--heroui-colors-warning));
+  --color-danger: rgb(194 64 64);
+  --color-brotherhood-navy: #1e3a5f;
+  --color-brotherhood-steel: #4f6d8a;
+  --color-brotherhood-bronze: #c28b40;
+  --color-brotherhood-forest: #3d7a57;
+  --color-brotherhood-charcoal: rgb(var(--foreground));
+  --color-brotherhood-light: #f5f7fa;
+  --color-brotherhood-white: #ffffff;
+}
+
+:root,
+.light {
   color-scheme: light;
+  --background: 245 247 250;
+  --foreground: 30 41 59;
+  --content1: 255 255 255;
+  --content2: 239 243 248;
+  --divider: 215 224 232;
+  --default-100: 237 242 247;
+  --default-200: 224 232 240;
+  --default-300: 203 213 225;
+  --default-400: 148 163 184;
+  --default-500: 100 116 139;
+  --default-600: 71 85 105;
+  --default-700: 51 65 85;
+  --default-800: 30 41 59;
+  --default-900: 15 23 42;
+
+  --heroui-colors-primary-50: 236 241 248;
+  --heroui-colors-primary-100: 216 227 239;
+  --heroui-colors-primary-200: 179 199 223;
+  --heroui-colors-primary-300: 142 170 207;
+  --heroui-colors-primary-400: 105 142 191;
+  --heroui-colors-primary-500: 30 58 95;
+  --heroui-colors-primary-600: 25 49 79;
+  --heroui-colors-primary-700: 20 40 63;
+  --heroui-colors-primary-800: 15 31 47;
+  --heroui-colors-primary-900: 10 22 31;
+
+  --heroui-colors-secondary-50: 241 245 248;
+  --heroui-colors-secondary-100: 226 232 239;
+  --heroui-colors-secondary-200: 197 209 223;
+  --heroui-colors-secondary-300: 168 186 207;
+  --heroui-colors-secondary-400: 139 163 191;
+  --heroui-colors-secondary-500: 79 109 138;
+  --heroui-colors-secondary-600: 66 92 116;
+  --heroui-colors-secondary-700: 53 75 94;
+  --heroui-colors-secondary-800: 40 58 72;
+  --heroui-colors-secondary-900: 27 41 50;
+
+  --heroui-colors-success: 61 122 87;
+  --heroui-colors-warning: 194 139 64;
 }
 
 .dark {
   color-scheme: dark;
+  --background: 17 24 39;
+  --foreground: 245 247 250;
+  --content1: 25 33 50;
+  --content2: 30 41 59;
+  --divider: 51 65 85;
+  --default-100: 25 33 50;
+  --default-200: 35 46 68;
+  --default-300: 51 65 85;
+  --default-400: 77 93 119;
+  --default-500: 148 163 184;
+  --default-600: 203 213 225;
+  --default-700: 226 232 240;
+  --default-800: 241 245 249;
+  --default-900: 248 250 252;
+
+  --heroui-colors-primary-50: 236 241 248;
+  --heroui-colors-primary-100: 216 227 239;
+  --heroui-colors-primary-200: 179 199 223;
+  --heroui-colors-primary-300: 142 170 207;
+  --heroui-colors-primary-400: 105 142 191;
+  --heroui-colors-primary-500: 30 58 95;
+  --heroui-colors-primary-600: 25 49 79;
+  --heroui-colors-primary-700: 20 40 63;
+  --heroui-colors-primary-800: 15 31 47;
+  --heroui-colors-primary-900: 10 22 31;
+
+  --heroui-colors-secondary-50: 241 245 248;
+  --heroui-colors-secondary-100: 226 232 239;
+  --heroui-colors-secondary-200: 197 209 223;
+  --heroui-colors-secondary-300: 168 186 207;
+  --heroui-colors-secondary-400: 139 163 191;
+  --heroui-colors-secondary-500: 79 109 138;
+  --heroui-colors-secondary-600: 66 92 116;
+  --heroui-colors-secondary-700: 53 75 94;
+  --heroui-colors-secondary-800: 40 58 72;
+  --heroui-colors-secondary-900: 27 41 50;
+
+  --heroui-colors-success: 61 122 87;
+  --heroui-colors-warning: 194 139 64;
 }
 
 html,
@@ -16,8 +126,11 @@ body {
 body {
   margin: 0;
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.02), transparent 32%),
-    hsl(var(--heroui-background));
+    radial-gradient(circle at top left, rgb(var(--heroui-colors-primary-500) / 0.16), transparent 34rem),
+    radial-gradient(circle at top right, rgb(var(--heroui-colors-secondary-500) / 0.14), transparent 32rem),
+    linear-gradient(180deg, rgb(var(--content2) / 0.45), transparent 30%),
+    rgb(var(--background));
+  color: rgb(var(--foreground));
 }
 
 a {

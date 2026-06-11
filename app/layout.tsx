@@ -1,10 +1,15 @@
 import type { Metadata } from "next";
+import dynamic from "next/dynamic";
 import { Inter } from "next/font/google";
 import type { ReactNode } from "react";
 
-import { AppNavbar } from "@/components/navbar";
-import { Providers } from "./providers";
 import "./globals.css";
+import { Providers } from "./providers";
+
+const AppNavbar = dynamic(
+  () => import("@/components/navbar").then((mod) => mod.AppNavbar),
+  { ssr: false }
+);
 
 const inter = Inter({
   subsets: ["latin"],
@@ -14,6 +19,9 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: "Six",
   description: "A mobile-first community base for topics and private support.",
+  icons: {
+    icon: "/favicon.png",
+  },
 };
 
 export default function RootLayout({
@@ -23,7 +31,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${inter.variable} bg-background text-foreground`}>
+      <body className={`${inter.variable} bg-background text-foreground antialiased`}>
         <Providers>
           <div className="min-h-screen">
             <AppNavbar />
