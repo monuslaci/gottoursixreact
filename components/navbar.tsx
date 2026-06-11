@@ -1,52 +1,35 @@
 "use client";
 
-import {
-  Navbar as HeroUINavbar,
-  NavbarBrand,
-  NavbarContent,
-  NavbarMenu,
-  NavbarMenuItem,
-  NavbarMenuToggle,
-} from "@heroui/react";
-import { motion } from "framer-motion";
+import { Menu, X } from "lucide-react";
 import NextLink from "next/link";
 import { usePathname } from "next/navigation";
+import { useState } from "react";
 
 import { siteConfig } from "@/config/site";
 import { cn } from "@/lib/client-utils";
 
-import { LoginButton } from "./auth/login-button";
-import { ThemeSwitch } from "./theme-switch";
-
-export function Navbar() {
+export function AppNavbar() {
   const pathname = usePathname();
+  const [menuOpen, setMenuOpen] = useState(false);
 
   const isActive = (href: string) => pathname === href;
 
   return (
-    <HeroUINavbar
-      maxWidth="xl"
-      position="sticky"
-      className="border-b border-divider bg-background/80 backdrop-blur-xl"
-    >
-      <NavbarContent justify="start" className="gap-3">
-        <NavbarBrand>
-          <NextLink href="/" className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-sm font-semibold text-primary-foreground">
-              S
-            </div>
-            <div className="hidden flex-col sm:flex">
-              <span className="text-sm font-semibold leading-none">
-                {siteConfig.name}
-              </span>
-              <span className="text-xs text-default-500">
-                Base community shell
-              </span>
-            </div>
-          </NextLink>
-        </NavbarBrand>
+    <div className="sticky top-0 z-50 border-b border-divider bg-background/80 backdrop-blur-xl">
+      <div className="mx-auto flex h-16 w-full max-w-7xl items-center justify-between gap-3 px-4 sm:px-6 lg:px-8">
+        <NextLink href="/" className="flex items-center gap-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-sm font-semibold text-primary-foreground">
+            S
+          </div>
+          <div className="hidden flex-col sm:flex">
+            <span className="text-sm font-semibold leading-none">
+              {siteConfig.name}
+            </span>
+            <span className="text-xs text-default-500">Base community shell</span>
+          </div>
+        </NextLink>
 
-        <div className="hidden md:flex items-center gap-1">
+        <nav className="hidden items-center gap-1 md:flex">
           {siteConfig.navItems.map((item) => {
             const active = isActive(item.href);
 
@@ -65,43 +48,31 @@ export function Navbar() {
               </NextLink>
             );
           })}
-        </div>
-      </NavbarContent>
+        </nav>
 
-      <NavbarContent justify="end" className="gap-2">
-        <div className="hidden sm:flex">
-          <ThemeSwitch />
-        </div>
-        <div className="hidden md:flex">
-          <LoginButton />
-        </div>
-        <NavbarMenuToggle className="md:hidden" />
-      </NavbarContent>
-
-      <NavbarMenu className="gap-2 border-t border-divider bg-background/95 pt-4">
-        <motion.div
-          initial={{ opacity: 0, y: -6 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="px-2 sm:hidden"
+        <button
+          type="button"
+          className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-divider bg-background text-foreground transition hover:bg-default-100 md:hidden"
+          aria-label={menuOpen ? "Close menu" : "Open menu"}
+          onClick={() => setMenuOpen((value) => !value)}
         >
-          <ThemeSwitch />
-        </motion.div>
+          {menuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+        </button>
+      </div>
 
-        {siteConfig.navMenuItems.map((item, index) => {
-          const active = isActive(item.href);
+      {menuOpen ? (
+        <div className="border-t border-divider bg-background px-4 py-4 sm:px-6 md:hidden lg:px-8">
+          <nav className="flex flex-col gap-2">
+            {siteConfig.navMenuItems.map((item) => {
+              const active = isActive(item.href);
 
-          return (
-            <motion.div
-              key={item.href}
-              initial={{ opacity: 0, x: -10 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: index * 0.05 }}
-            >
-              <NavbarMenuItem>
+              return (
                 <NextLink
+                  key={item.href}
                   href={item.href}
+                  onClick={() => setMenuOpen(false)}
                   className={cn(
-                    "flex w-full items-center justify-between rounded-xl px-3 py-3 text-sm font-medium transition-colors",
+                    "rounded-xl px-3 py-3 text-sm font-medium transition-colors",
                     active
                       ? "bg-primary/10 text-primary"
                       : "text-foreground hover:bg-default-100"
@@ -109,21 +80,12 @@ export function Navbar() {
                 >
                   {item.label}
                 </NextLink>
-              </NavbarMenuItem>
-            </motion.div>
-          );
-        })}
-
-        <div className="px-2 pt-2">
-          <NextLink
-            href="/demo"
-            className="inline-flex w-full items-center justify-center rounded-xl bg-primary px-4 py-3 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
-          >
-            Open demo
-          </NextLink>
+              );
+            })}
+          </nav>
         </div>
-      </NavbarMenu>
-    </HeroUINavbar>
+      ) : null}
+    </div>
   );
 }
 

@@ -135,12 +135,12 @@ const DockIcon = ({
     <motion.div
       ref={ref}
       style={{ width: scaleSize, height: scaleSize, padding }}
+      {...(props as Record<string, unknown>)}
       className={cn(
         "flex aspect-square cursor-pointer items-center justify-center rounded-full",
         disableMagnification && "transition-colors hover:bg-muted-foreground",
         className
       )}
-      {...props}
     >
       <div>{children}</div>
     </motion.div>
@@ -150,4 +150,3 @@ const DockIcon = ({
 DockIcon.displayName = "DockIcon";
 
 export { Dock, DockIcon, dockVariants };
-

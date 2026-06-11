@@ -1,4 +1,3 @@
-import { Card, CardBody, Chip } from "@heroui/react";
 import { ArrowRight, MessageSquare, Shield, Users } from "lucide-react";
 import Link from "next/link";
 
@@ -8,13 +7,15 @@ export default function HomePage() {
       <section className="grid gap-6 rounded-2xl border border-divider bg-content1 p-5 sm:p-8 lg:grid-cols-[1.2fr_0.8fr]">
         <div className="space-y-5">
           <div className="flex flex-wrap gap-2">
-            <Chip color="primary" variant="flat">
+            <span className="rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
               Mobile first
-            </Chip>
-            <Chip color="secondary" variant="flat">
+            </span>
+            <span className="rounded-full bg-secondary/10 px-3 py-1 text-xs font-medium text-secondary">
               Light and dark
-            </Chip>
-            <Chip variant="flat">Base ready</Chip>
+            </span>
+            <span className="rounded-full bg-default-100 px-3 py-1 text-xs font-medium text-foreground">
+              Base ready
+            </span>
           </div>
           <div className="space-y-3">
             <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">
@@ -43,35 +44,36 @@ export default function HomePage() {
           </div>
         </div>
 
-        <Card id="base" className="border border-divider bg-background/80">
-          <CardBody className="gap-4 p-5">
-            <div className="flex items-center gap-3">
-              <div className="rounded-xl bg-primary/10 p-3 text-primary">
-                <Users className="h-5 w-5" />
-              </div>
-              <div>
-                <p className="text-sm font-medium">Community base</p>
-                <p className="text-xs text-default-500">
-                  Ready for future auth and moderation flows
-                </p>
-              </div>
+        <div
+          id="base"
+          className="rounded-2xl border border-divider bg-background/80 p-5"
+        >
+          <div className="flex items-center gap-3">
+            <div className="rounded-xl bg-primary/10 p-3 text-primary">
+              <Users className="h-5 w-5" />
             </div>
-            <div className="grid gap-3 text-sm sm:grid-cols-3">
-              <div className="rounded-xl border border-divider p-3">
-                <p className="text-default-500">Topics</p>
-                <p className="mt-1 font-semibold">Discussion spaces</p>
-              </div>
-              <div className="rounded-xl border border-divider p-3">
-                <p className="text-default-500">Messages</p>
-                <p className="mt-1 font-semibold">Private support</p>
-              </div>
-              <div className="rounded-xl border border-divider p-3">
-                <p className="text-default-500">Safety</p>
-                <p className="mt-1 font-semibold">Admin visibility</p>
-              </div>
+            <div>
+              <p className="text-sm font-medium">Community base</p>
+              <p className="text-xs text-default-500">
+                Ready for future auth and moderation flows
+              </p>
             </div>
-          </CardBody>
-        </Card>
+          </div>
+          <div className="mt-4 grid gap-3 text-sm sm:grid-cols-3">
+            <div className="rounded-xl border border-divider p-3">
+              <p className="text-default-500">Topics</p>
+              <p className="mt-1 font-semibold">Discussion spaces</p>
+            </div>
+            <div className="rounded-xl border border-divider p-3">
+              <p className="text-default-500">Messages</p>
+              <p className="mt-1 font-semibold">Private support</p>
+            </div>
+            <div className="rounded-xl border border-divider p-3">
+              <p className="text-default-500">Safety</p>
+              <p className="mt-1 font-semibold">Admin visibility</p>
+            </div>
+          </div>
+        </div>
       </section>
 
       <section className="grid gap-4 md:grid-cols-3">
@@ -92,17 +94,15 @@ export default function HomePage() {
             text: "Layouts stack cleanly and stay readable on smaller screens.",
           },
         ].map((item) => (
-          <Card key={item.title} className="border border-divider bg-content1">
-            <CardBody className="gap-3 p-5">
-              <div className="w-fit rounded-xl bg-default-100 p-3 text-foreground">
-                {item.icon}
-              </div>
-              <div className="space-y-1">
-                <h2 className="text-base font-semibold">{item.title}</h2>
-                <p className="text-sm text-default-600">{item.text}</p>
-              </div>
-            </CardBody>
-          </Card>
+          <article key={item.title} className="rounded-2xl border border-divider bg-content1 p-5">
+            <div className="w-fit rounded-xl bg-default-100 p-3 text-foreground">
+              {item.icon}
+            </div>
+            <div className="mt-3 space-y-1">
+              <h2 className="text-base font-semibold">{item.title}</h2>
+              <p className="text-sm text-default-600">{item.text}</p>
+            </div>
+          </article>
         ))}
       </section>
     </div>
