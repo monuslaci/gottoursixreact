@@ -60,6 +60,14 @@ model User {
 
   accounts          Account[]
   sessions          Session[]
+  createdTopics     Topic[]
+  createdSubtopics  Subtopic[]
+  topicSubscriptions TopicSubscription[]
+  subtopicSubscriptions SubtopicSubscription[]
+  discussionPosts   DiscussionPost[]
+  createdConversations Conversation[] @relation("ConversationCreatedBy")
+  conversationMemberships ConversationMember[]
+  sentMessages      Message[]
 
   @@map("users")
 }
@@ -73,3 +81,142 @@ model VerificationToken {
   @@map("verification_tokens")
 }
 
+model Topic {
+  id          String    @id @default(cuid())
+  title       String
+  slug        String    @unique
+  description String?   @db.Text
+  tags        String[]   @default([])
+  createdById String?
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  createdBy   User?     @relation(fields: [createdById], references: [id], onDelete: SetNull)
+  subtopics   Subtopic[]
+  subscriptions TopicSubscription[]
+  posts       DiscussionPost[]
+
+  @@index([createdById])
+  @@map("topics")
+}
+
+model Subtopic {
+  id          String   @id @default(cuid())
+  topicId     String
+  title       String
+  slug        String
+  description String?  @db.Text
+  sortOrder   Int      @default(0)
+  createdById String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  topic       Topic    @relation(fields: [topicId], references: [id], onDelete: Cascade)
+  createdBy   User?    @relation(fields: [createdById], references: [id], onDelete: SetNull)
+  subscriptions SubtopicSubscription[]
+  posts       DiscussionPost[]
+
+  @@unique([topicId, slug])
+  @@index([topicId])
+  @@index([createdById])
+  @@map("subtopics")
+}
+
+model TopicSubscription {
+  id        String   @id @default(cuid())
+  userId    String
+  topicId   String
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  topic     Topic    @relation(fields: [topicId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, topicId])
+  @@index([topicId])
+  @@map("topic_subscriptions")
+}
+
+model SubtopicSubscription {
+  id         String   @id @default(cuid())
+  userId     String
+  subtopicId String
+  createdAt  DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  subtopic  Subtopic @relation(fields: [subtopicId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, subtopicId])
+  @@index([subtopicId])
+  @@map("subtopic_subscriptions")
+}
+
+model DiscussionPost {
+  id           String    @id @default(cuid())
+  authorId      String?
+  topicId      String?
+  subtopicId   String?
+  parentPostId String?
+  body         String    @db.Text
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  author      User?           @relation(fields: [authorId], references: [id], onDelete: SetNull)
+  topic       Topic?          @relation(fields: [topicId], references: [id], onDelete: Cascade)
+  subtopic    Subtopic?       @relation(fields: [subtopicId], references: [id], onDelete: Cascade)
+  parentPost  DiscussionPost? @relation("PostReplies", fields: [parentPostId], references: [id], onDelete: Cascade)
+  replies     DiscussionPost[] @relation("PostReplies")
+
+  @@index([authorId])
+  @@index([topicId])
+  @@index([subtopicId])
+  @@index([parentPostId])
+  @@map("posts")
+}
+
+model Conversation {
+  id            String   @id @default(cuid())
+  createdById   String?
+  isGroup       Boolean  @default(false)
+  lastMessageAt DateTime?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  createdBy    User?               @relation("ConversationCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  members      ConversationMember[]
+  messages     Message[]
+
+  @@index([createdById])
+  @@index([lastMessageAt])
+  @@map("conversations")
+}
+
+model ConversationMember {
+  id             String   @id @default(cuid())
+  conversationId String
+  userId         String
+  joinedAt       DateTime @default(now())
+  lastReadAt     DateTime?
+
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([conversationId, userId])
+  @@index([userId])
+  @@map("conversation_members")
+}
+
+model Message {
+  id             String   @id @default(cuid())
+  conversationId String
+  senderId       String?
+  body           String   @db.Text
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  sender         User?        @relation(fields: [senderId], references: [id], onDelete: SetNull)
+
+  @@index([conversationId, createdAt])
+  @@index([senderId])
+  @@map("messages")
+}

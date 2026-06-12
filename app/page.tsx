@@ -94,11 +94,11 @@ export default function HomePage() {
             <div className="flex flex-col gap-3 sm:flex-row">
               <Button
                 as={Link}
-                href="/demo"
+                href="/topics"
                 color="primary"
                 endContent={<ArrowRight size={16} />}
               >
-                Open demo
+                Browse topics
               </Button>
               <Button
                 as={Link}
@@ -187,10 +187,10 @@ export default function HomePage() {
         </div>
         <div className="grid gap-3 sm:grid-cols-3">
           {[
-            ["Topics", "Discussion spaces"],
-            ["Messages", "Private support"],
-            ["Safety", "Admin visibility"],
-          ].map(([label, text]) => (
+              ["Topics", "Discussion spaces"],
+              ["Messages", "Private support"],
+              ["Safety", "Admin visibility"],
+            ].map(([label, text]) => (
             <div
               key={label}
               className="rounded-xl border border-divider bg-background/80 p-4"
