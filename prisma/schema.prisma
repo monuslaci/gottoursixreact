@@ -110,6 +110,7 @@ model Subtopic {
   description String?  @db.Text
   sortOrder   Int      @default(0)
   createdById String?
+  deletedAt   DateTime?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
@@ -121,6 +122,7 @@ model Subtopic {
   @@unique([topicId, slug])
   @@index([topicId])
   @@index([createdById])
+  @@index([deletedAt])
   @@map("subtopics")
 }
 

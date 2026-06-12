@@ -15,6 +15,7 @@ import { useEffect, useState, type FormEvent } from "react";
 import type { TopicListItem } from "@/lib/community";
 import { TopicPaginationBar } from "@/components/topics/topic-pagination-bar";
 import { TopicSummaryCard } from "@/components/topics/topic-summary-card";
+import { SubtopicsManager } from "@/components/topics/subtopics-manager";
 
 type FloatingFieldProps = {
   isRequired?: boolean;
@@ -67,6 +68,7 @@ export function TopicsDashboard() {
   const [topics, setTopics] = useState<TopicListItem[]>([]);
   const [isLoadingTopics, setIsLoadingTopics] = useState(true);
   const [page, setPage] = useState(1);
+  const [activeTab, setActiveTab] = useState<"topics" | "subtopics">("topics");
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [tags, setTags] = useState("");
@@ -269,213 +271,254 @@ export function TopicsDashboard() {
   return (
     <Card className="border border-primary/12 bg-content1 shadow-[0_18px_48px_rgb(var(--heroui-colors-primary-500)/0.08)]">
       <CardBody className="gap-6 p-4 sm:p-5">
-        <div className="flex items-center gap-3">
-          <div className="rounded-xl bg-primary/10 p-3 text-primary">
-            <Plus className="h-5 w-5" />
-          </div>
-          <div className="space-y-1">
-            <Chip color="primary" variant="flat">
-              Create topic
-            </Chip>
-            <p className="text-sm text-default-600">
-              Add a new topic with optional tags.
-            </p>
+        <div className="sticky top-3 z-10 space-y-3 rounded-[28px] border border-divider/70 bg-gradient-to-br from-content1 via-content1 to-background/80 p-4 shadow-[0_18px_48px_rgba(15,23,42,0.08)] backdrop-blur">
+          <div className="grid grid-cols-2 gap-2">
+            <Button
+              className={`h-14 rounded-2xl px-4 text-left transition ${
+                activeTab === "topics"
+                  ? "bg-primary text-primary-foreground shadow-[0_10px_24px_rgba(37,99,235,0.28)]"
+                  : "bg-background/60 text-default-600 hover:bg-default-100"
+              }`}
+              variant="light"
+              onPress={() => setActiveTab("topics")}
+            >
+              <span className="flex w-full flex-col items-start leading-tight">
+                <span className="text-base font-semibold">Topics</span>
+                <span className="text-[11px] font-normal opacity-80">
+                  Create, edit, delete
+                </span>
+              </span>
+            </Button>
+            <Button
+              className={`h-14 rounded-2xl px-4 text-left transition ${
+                activeTab === "subtopics"
+                  ? "bg-primary text-primary-foreground shadow-[0_10px_24px_rgba(37,99,235,0.28)]"
+                  : "bg-background/60 text-default-600 hover:bg-default-100"
+              }`}
+              variant="light"
+              onPress={() => setActiveTab("subtopics")}
+            >
+              <span className="flex w-full flex-col items-start leading-tight">
+                <span className="text-base font-semibold">Subtopics</span>
+                <span className="text-[11px] font-normal opacity-80">
+                  Organize subcategories
+                </span>
+              </span>
+            </Button>
           </div>
         </div>
 
-        <form className="grid gap-3" onSubmit={handleSubmit}>
-          <FloatingInput
-            isRequired
-            label="Title"
-            value={title}
-            onValueChange={setTitle}
-          />
-          <FloatingTextarea
-            label="Description"
-            value={description}
-            onValueChange={setDescription}
-          />
-          <FloatingInput
-            label="Tags"
-            value={tags}
-            onValueChange={setTags}
-          />
-
-          {error ? <p className="text-sm text-danger-500">{error}</p> : null}
-
-          <Button
-            color="primary"
-            isLoading={isSubmitting}
-            startContent={<Sparkles size={16} />}
-            type="submit"
-          >
-            Create topic
-          </Button>
-        </form>
-
-        <div className="h-px bg-divider" />
-
-        <section className="space-y-4">
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <div className="space-y-1">
-              <div className="flex items-center gap-2">
-                <Chip color="secondary" variant="flat">
-                  Existing topics
-                </Chip>
-                <Chip
-                  className="bg-brotherhood-bronze/16 text-brotherhood-bronze"
-                  variant="flat"
-                >
-                  Admin actions
-                </Chip>
+        {activeTab === "topics" ? (
+          <section className="space-y-4">
+            <div className="flex items-center gap-3">
+              <div className="rounded-xl bg-primary/10 p-3 text-primary">
+                <Plus className="h-5 w-5" />
               </div>
-              <p className="text-sm text-default-500">
-                Edit titles, descriptions, and tags, or mark a topic deleted.
-              </p>
+              <div className="space-y-1">
+                <Chip color="primary" variant="flat">
+                  Create topic
+                </Chip>
+                <p className="text-sm text-default-600">
+                  Add a new topic with optional tags.
+                </p>
+              </div>
             </div>
-            <p className="text-sm text-default-500">
-              {topics.length === 0 ? "No active topics" : `${topics.length} active topics`}
-            </p>
-          </div>
 
-          {managementError ? (
-            <p className="text-sm text-danger-500">{managementError}</p>
-          ) : null}
+            <form className="grid gap-3" onSubmit={handleSubmit}>
+              <FloatingInput
+                isRequired
+                label="Title"
+                value={title}
+                onValueChange={setTitle}
+              />
+              <FloatingTextarea
+                label="Description"
+                value={description}
+                onValueChange={setDescription}
+              />
+              <FloatingInput label="Tags" value={tags} onValueChange={setTags} />
 
-          {isLoadingTopics ? (
-            <div className="rounded-xl border border-divider/70 bg-background/70 p-4 text-sm text-default-500">
-              Loading topics...
-            </div>
-          ) : null}
+              {error ? <p className="text-sm text-danger-500">{error}</p> : null}
 
-          {!isLoadingTopics && topics.length === 0 ? (
-            <div className="rounded-xl border border-divider/70 bg-background/70 p-4 text-sm text-default-500">
-              No active topics yet.
-            </div>
-          ) : null}
+              <Button
+                color="primary"
+                isLoading={isSubmitting}
+                startContent={<Sparkles size={16} />}
+                type="submit"
+              >
+                Create topic
+              </Button>
+            </form>
 
-          {!isLoadingTopics ? (
-            <div className="space-y-4">
-              <div className="grid auto-rows-fr gap-6 md:grid-cols-2 xl:grid-cols-3">
-                {pageTopics.map((topic) => {
-                  const isEditing = editingTopicId === topic.id;
-                  const isSaving = isSavingTopicId === topic.id;
-                  const isDeleting = isDeletingTopicId === topic.id;
-                  const isPendingDelete = pendingDeleteTopicId === topic.id;
+            <div className="h-px bg-divider" />
 
-                  return (
-                    isEditing ? (
-                      <Card
-                        key={topic.id}
-                        className="h-full overflow-hidden rounded-[28px] border border-divider/70 bg-background/80 shadow-[0_18px_44px_rgba(15,23,42,0.08)]"
-                      >
-                        <CardBody className="flex h-full flex-col gap-4 p-6">
-                          <FloatingInput
-                            isRequired
-                            label="Title"
-                            value={editingTitle}
-                            onValueChange={setEditingTitle}
-                          />
-                          <FloatingTextarea
-                            label="Description"
-                            value={editingDescription}
-                            onValueChange={setEditingDescription}
-                          />
-                          <FloatingInput
-                            label="Tags"
-                            value={editingTags}
-                            onValueChange={setEditingTags}
-                          />
+            <section className="space-y-4">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2">
+                    <Chip color="secondary" variant="flat">
+                      Existing topics
+                    </Chip>
+                    <Chip
+                      className="bg-brotherhood-bronze/16 text-brotherhood-bronze"
+                      variant="flat"
+                    >
+                      Admin actions
+                    </Chip>
+                  </div>
+                  <p className="text-sm text-default-500">
+                    Edit titles, descriptions, and tags, or mark a topic deleted.
+                  </p>
+                </div>
+                <p className="text-sm text-default-500">
+                  {topics.length === 0
+                    ? "No active topics"
+                    : `${topics.length} active topics`}
+                </p>
+              </div>
 
-                          <div className="mt-auto flex flex-wrap gap-2 border-t border-divider/70 pt-4">
-                            <Button
-                              color="primary"
-                              isLoading={isSaving}
-                              startContent={<Save className="h-4 w-4" />}
-                              onPress={() => void handleSaveTopic(topic.id)}
-                            >
-                              Save changes
-                            </Button>
-                            <Button
-                              variant="flat"
-                              startContent={<X className="h-4 w-4" />}
-                              onPress={stopEditingTopic}
-                            >
-                              Cancel
-                            </Button>
-                          </div>
-                        </CardBody>
-                      </Card>
-                    ) : (
-                      <TopicSummaryCard
-                        key={topic.id}
-                        topic={topic}
-                        mode="admin"
-                        footer={
-                          <div className="space-y-3">
-                            <p className="text-xs text-default-500">
-                              Updated {formatDate(topic.updatedAt)}
-                            </p>
+              {managementError ? (
+                <p className="text-sm text-danger-500">{managementError}</p>
+              ) : null}
 
-                            <div className="flex flex-wrap gap-2">
+              {isLoadingTopics ? (
+                <div className="rounded-xl border border-divider/70 bg-background/70 p-4 text-sm text-default-500">
+                  Loading topics...
+                </div>
+              ) : null}
+
+              {!isLoadingTopics && topics.length === 0 ? (
+                <div className="rounded-xl border border-divider/70 bg-background/70 p-4 text-sm text-default-500">
+                  No active topics yet.
+                </div>
+              ) : null}
+
+              {!isLoadingTopics ? (
+                <div className="space-y-4">
+                  <div className="grid auto-rows-fr gap-6 md:grid-cols-2 xl:grid-cols-3">
+                    {pageTopics.map((topic) => {
+                      const isEditing = editingTopicId === topic.id;
+                      const isSaving = isSavingTopicId === topic.id;
+                      const isDeleting = isDeletingTopicId === topic.id;
+                      const isPendingDelete = pendingDeleteTopicId === topic.id;
+
+                      return isEditing ? (
+                        <Card
+                          key={topic.id}
+                          className="h-full overflow-hidden rounded-[28px] border border-divider/70 bg-background/80 shadow-[0_18px_44px_rgba(15,23,42,0.08)]"
+                        >
+                          <CardBody className="flex h-full flex-col gap-4 p-6">
+                            <FloatingInput
+                              isRequired
+                              label="Title"
+                              value={editingTitle}
+                              onValueChange={setEditingTitle}
+                            />
+                            <FloatingTextarea
+                              label="Description"
+                              value={editingDescription}
+                              onValueChange={setEditingDescription}
+                            />
+                            <FloatingInput
+                              label="Tags"
+                              value={editingTags}
+                              onValueChange={setEditingTags}
+                            />
+
+                            <div className="mt-auto flex flex-wrap gap-2 border-t border-divider/70 pt-4">
+                              <Button
+                                color="primary"
+                                isLoading={isSaving}
+                                startContent={<Save className="h-4 w-4" />}
+                                onPress={() => void handleSaveTopic(topic.id)}
+                              >
+                                Save changes
+                              </Button>
                               <Button
                                 variant="flat"
-                                startContent={<PencilLine className="h-4 w-4" />}
-                                onPress={() => startEditingTopic(topic)}
+                                startContent={<X className="h-4 w-4" />}
+                                onPress={stopEditingTopic}
                               >
-                                Edit
-                              </Button>
-                              <Button
-                                color="danger"
-                                variant={isPendingDelete ? "solid" : "flat"}
-                                isLoading={isDeleting}
-                                startContent={
-                                  isDeleting ? (
-                                    <LoaderCircle className="h-4 w-4" />
-                                  ) : (
-                                    <Trash2 className="h-4 w-4" />
-                                  )
-                                }
-                                onPress={() => {
-                                  if (isPendingDelete) {
-                                    void handleDeleteTopic(topic.id);
-                                    return;
-                                  }
-
-                                  setPendingDeleteTopicId(topic.id);
-                                }}
-                              >
-                                {isPendingDelete ? "Confirm delete" : "Mark deleted"}
+                                Cancel
                               </Button>
                             </div>
+                          </CardBody>
+                        </Card>
+                      ) : (
+                        <TopicSummaryCard
+                          key={topic.id}
+                          topic={topic}
+                          mode="admin"
+                          footer={
+                            <div className="space-y-3">
+                              <p className="text-xs text-default-500">
+                                Updated {formatDate(topic.updatedAt)}
+                              </p>
 
-                            {isPendingDelete ? (
-                              <Button
-                                variant="light"
-                                startContent={<X className="h-4 w-4" />}
-                                onPress={() => setPendingDeleteTopicId(null)}
-                              >
-                                Keep topic
-                              </Button>
-                            ) : null}
-                          </div>
-                        }
-                      />
-                    )
-                  );
-                })}
-              </div>
+                              <div className="flex flex-wrap gap-2">
+                                <Button
+                                  variant="flat"
+                                  startContent={<PencilLine className="h-4 w-4" />}
+                                  onPress={() => startEditingTopic(topic)}
+                                >
+                                  Edit
+                                </Button>
+                                <Button
+                                  color="danger"
+                                  variant={isPendingDelete ? "solid" : "flat"}
+                                  isLoading={isDeleting}
+                                  startContent={
+                                    isDeleting ? (
+                                      <LoaderCircle className="h-4 w-4" />
+                                    ) : (
+                                      <Trash2 className="h-4 w-4" />
+                                    )
+                                  }
+                                  onPress={() => {
+                                    if (isPendingDelete) {
+                                      void handleDeleteTopic(topic.id);
+                                      return;
+                                    }
 
-              <TopicPaginationBar
-                page={safePage}
-                pageSize={PAGE_SIZE}
-                totalItems={topics.length}
-                totalPages={totalPages}
-                onPageChange={setPage}
-              />
-            </div>
-          ) : null}
-        </section>
+                                    setPendingDeleteTopicId(topic.id);
+                                  }}
+                                >
+                                  {isPendingDelete ? "Confirm delete" : "Mark deleted"}
+                                </Button>
+                              </div>
+
+                              {isPendingDelete ? (
+                                <Button
+                                  variant="light"
+                                  startContent={<X className="h-4 w-4" />}
+                                  onPress={() => setPendingDeleteTopicId(null)}
+                                >
+                                  Keep topic
+                                </Button>
+                              ) : null}
+                            </div>
+                          }
+                        />
+                      );
+                    })}
+                  </div>
+
+                  <TopicPaginationBar
+                    page={safePage}
+                    pageSize={PAGE_SIZE}
+                    totalItems={topics.length}
+                    totalPages={totalPages}
+                    onPageChange={setPage}
+                  />
+                </div>
+              ) : null}
+            </section>
+          </section>
+        ) : (
+          <section className="space-y-4">
+            <SubtopicsManager topics={topics} />
+          </section>
+        )}
       </CardBody>
     </Card>
   );

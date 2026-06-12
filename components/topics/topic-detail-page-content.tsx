@@ -1,24 +1,290 @@
 "use client";
 
 import { Button, Card, CardBody, Chip } from "@heroui/react";
-import { ArrowLeft, Hash, MessageSquareText, Users } from "lucide-react";
+import { ArrowLeft, ChevronRight, Hash, MessageSquareText, Search, Users } from "lucide-react";
 import Link from "next/link";
+import { useEffect, useMemo, useState } from "react";
 
 import type { TopicDetailItem, TopicPostItem } from "@/lib/community";
+import { useUserProfile } from "@/lib/hooks/useUserProfile";
 
 type TopicDetailPageContentProps = {
   topic: TopicDetailItem;
   posts: TopicPostItem[];
 };
 
+type SubtopicCountMap = Record<string, number>;
+
 export function TopicDetailPageContent({
   topic,
   posts,
 }: TopicDetailPageContentProps) {
+  const { user } = useUserProfile();
+  const [subtopicQuery, setSubtopicQuery] = useState("");
+  const [activeSubtopicId, setActiveSubtopicId] = useState<string>("all");
+  const [topicSubscriptionState, setTopicSubscriptionState] = useState({
+    isSubscribed: false,
+    isLoading: true,
+  });
+  const [subtopicSubscriptionState, setSubtopicSubscriptionState] = useState<
+    Record<string, boolean>
+  >({});
+  const [subtopicSubscriptionLoading, setSubtopicSubscriptionLoading] = useState<
+    Record<string, boolean>
+  >({});
+  const [subscriptionError, setSubscriptionError] = useState<string | null>(
+    null
+  );
+
+  const subtopicCounts = useMemo(() => {
+    return posts.reduce<SubtopicCountMap>((accumulator, post) => {
+      if (post.subtopic) {
+        accumulator[post.subtopic.id] = (accumulator[post.subtopic.id] ?? 0) + 1;
+      }
+
+      return accumulator;
+    }, {});
+  }, [posts]);
+
+  const filteredSubtopics = topic.subtopics.filter((subtopic) => {
+    if (!subtopicQuery.trim()) {
+      return true;
+    }
+
+    const searchable = [
+      subtopic.title,
+      subtopic.slug,
+      subtopic.description ?? "",
+    ]
+      .join(" ")
+      .toLowerCase();
+
+    return searchable.includes(subtopicQuery.trim().toLowerCase());
+  });
+
+  const activeSubtopic =
+    activeSubtopicId === "all"
+      ? null
+      : topic.subtopics.find((subtopic) => subtopic.id === activeSubtopicId) ?? null;
+
+  const visiblePosts =
+    activeSubtopicId === "all"
+      ? posts
+      : posts.filter((post) => post.subtopic?.id === activeSubtopicId);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    async function loadSubscriptionState() {
+      const email = user?.email;
+
+      if (!email) {
+        if (isMounted) {
+          setTopicSubscriptionState({
+            isSubscribed: false,
+            isLoading: false,
+          });
+          setSubtopicSubscriptionState({});
+          setSubtopicSubscriptionLoading({});
+        }
+        return;
+      }
+
+      try {
+        setSubscriptionError(null);
+
+        const [topicResponse, ...subtopicResponses] = await Promise.all([
+          fetch(
+            `/api/topics/${topic.id}/subscribe?userEmail=${encodeURIComponent(
+              email
+            )}`,
+            {
+              cache: "no-store",
+            }
+          ),
+          ...topic.subtopics.map((subtopic) =>
+            fetch(
+              `/api/subtopics/${subtopic.id}/subscribe?userEmail=${encodeURIComponent(
+                email
+              )}`,
+              {
+                cache: "no-store",
+              }
+            )
+          ),
+        ]);
+
+        const topicPayload = (await topicResponse.json()) as {
+          isSubscribed?: boolean;
+          error?: string;
+        };
+
+        if (!topicResponse.ok) {
+          throw new Error(topicPayload.error || "Unable to load topic subscription.");
+        }
+
+        const nextSubtopicState: Record<string, boolean> = {};
+
+        for (let index = 0; index < subtopicResponses.length; index += 1) {
+          const response = subtopicResponses[index];
+          const subtopic = topic.subtopics[index];
+          const payload = (await response.json()) as {
+            isSubscribed?: boolean;
+            error?: string;
+          };
+
+          if (!response.ok) {
+            throw new Error(
+              payload.error || "Unable to load subtopic subscription."
+            );
+          }
+
+          nextSubtopicState[subtopic.id] = Boolean(payload.isSubscribed);
+        }
+
+        if (isMounted) {
+          setTopicSubscriptionState({
+            isSubscribed: Boolean(topicPayload.isSubscribed),
+            isLoading: false,
+          });
+          setSubtopicSubscriptionState(nextSubtopicState);
+        }
+      } catch (error) {
+        if (isMounted) {
+          setSubscriptionError(
+            error instanceof Error
+              ? error.message
+              : "Unable to load subscription state."
+          );
+          setTopicSubscriptionState((current) => ({
+            ...current,
+            isLoading: false,
+          }));
+        }
+      }
+    }
+
+    loadSubscriptionState();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [topic.id, topic.subtopics, user?.email]);
+
+  async function toggleTopicSubscription() {
+    const email = user?.email;
+
+    if (!email) {
+      setSubscriptionError("A member profile is required to subscribe.");
+      return;
+    }
+
+    setSubscriptionError(null);
+
+    try {
+      const method = topicSubscriptionState.isSubscribed ? "DELETE" : "POST";
+      const response = await fetch(`/api/topics/${topic.id}/subscribe`, {
+        method,
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          userEmail: email,
+        }),
+      });
+
+      const payload = (await response.json()) as {
+        isSubscribed?: boolean;
+        error?: string;
+      };
+
+      if (!response.ok) {
+        throw new Error(payload.error || "Unable to update topic subscription.");
+      }
+
+      setTopicSubscriptionState({
+        isSubscribed:
+          typeof payload.isSubscribed === "boolean"
+            ? payload.isSubscribed
+            : !topicSubscriptionState.isSubscribed,
+        isLoading: false,
+      });
+    } catch (error) {
+      setSubscriptionError(
+        error instanceof Error
+          ? error.message
+          : "Unable to update topic subscription."
+      );
+    }
+  }
+
+  async function toggleSubtopicSubscription(subtopicId: string) {
+    const email = user?.email;
+
+    if (!email) {
+      setSubscriptionError("A member profile is required to subscribe.");
+      return;
+    }
+
+    setSubscriptionError(null);
+    setSubtopicSubscriptionLoading((current) => ({
+      ...current,
+      [subtopicId]: true,
+    }));
+
+    try {
+      const method = subtopicSubscriptionState[subtopicId] ? "DELETE" : "POST";
+      const response = await fetch(`/api/subtopics/${subtopicId}/subscribe`, {
+        method,
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          userEmail: email,
+        }),
+      });
+
+      const payload = (await response.json()) as {
+        isSubscribed?: boolean;
+        error?: string;
+      };
+
+      if (!response.ok) {
+        throw new Error(
+          payload.error || "Unable to update subtopic subscription."
+        );
+      }
+
+      setSubtopicSubscriptionState((current) => ({
+        ...current,
+        [subtopicId]:
+          typeof payload.isSubscribed === "boolean"
+            ? payload.isSubscribed
+            : !current[subtopicId],
+      }));
+    } catch (error) {
+      setSubscriptionError(
+        error instanceof Error
+          ? error.message
+          : "Unable to update subtopic subscription."
+      );
+    } finally {
+      setSubtopicSubscriptionLoading((current) => ({
+        ...current,
+        [subtopicId]: false,
+      }));
+    }
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-center gap-3">
-        <Button as={Link} href="/topics" variant="flat" startContent={<ArrowLeft size={16} />}>
+        <Button
+          as={Link}
+          href="/topics"
+          variant="flat"
+          startContent={<ArrowLeft size={16} />}
+        >
           Back to topics
         </Button>
         <Chip color="primary" variant="flat">
@@ -26,9 +292,9 @@ export function TopicDetailPageContent({
         </Chip>
       </div>
 
-      <section className="grid gap-4 lg:grid-cols-[1.1fr_0.9fr]">
+      <section className="grid gap-4 lg:grid-cols-[0.95fr_1.05fr]">
         <Card className="border border-primary/12 bg-content1 shadow-[0_18px_48px_rgb(var(--heroui-colors-primary-500)/0.08)]">
-          <CardBody className="gap-4 p-5 sm:p-6">
+          <CardBody className="gap-3 p-4 sm:p-5">
             <div className="flex items-center gap-3">
               <div className="rounded-xl bg-secondary/12 p-3 text-secondary">
                 <Hash className="h-5 w-5" />
@@ -61,7 +327,7 @@ export function TopicDetailPageContent({
               )}
             </div>
 
-            <div className="grid gap-3 sm:grid-cols-3">
+            <div className="grid gap-2.5 sm:grid-cols-3">
               {[
                 ["Subtopics", `${topic.counts.subtopics}`],
                 ["Posts", `${topic.counts.posts}`],
@@ -69,7 +335,7 @@ export function TopicDetailPageContent({
               ].map(([label, value]) => (
                 <div
                   key={label}
-                  className="rounded-xl border border-divider bg-background/80 p-4"
+                  className="rounded-xl border border-divider bg-background/80 p-3.5"
                 >
                   <p className="text-xs font-medium uppercase tracking-[0.14em] text-secondary">
                     {label}
@@ -78,53 +344,153 @@ export function TopicDetailPageContent({
                 </div>
               ))}
             </div>
+
+            <div className="flex flex-wrap items-center gap-3 border-t border-divider/70 pt-2">
+              <Button
+                color={topicSubscriptionState.isSubscribed ? "secondary" : "primary"}
+                isLoading={topicSubscriptionState.isLoading}
+                onPress={() => void toggleTopicSubscription()}
+              >
+                {topicSubscriptionState.isSubscribed
+                  ? "Subscribed to topic"
+                  : "Subscribe to topic"}
+              </Button>
+              <Chip variant="flat">
+                {topicSubscriptionState.isSubscribed
+                  ? "You will follow topic updates"
+                  : "Follow this topic for updates"}
+              </Chip>
+            </div>
           </CardBody>
         </Card>
 
         <Card className="border border-primary/12 bg-content1 shadow-[0_18px_48px_rgb(var(--heroui-colors-primary-500)/0.08)]">
-          <CardBody className="gap-4 p-5 sm:p-6">
-            <div className="flex items-center gap-2">
-              <Users className="h-5 w-5 text-secondary" />
-              <h2 className="text-lg font-semibold">Subtopics</h2>
+          <CardBody className="gap-3 p-4 sm:p-5">
+            <div className="flex items-center justify-between gap-3">
+              <div className="flex items-center gap-2">
+                <Users className="h-5 w-5 text-secondary" />
+                <h2 className="text-lg font-semibold">Subtopics</h2>
+              </div>
+              <Button
+                size="sm"
+                variant={activeSubtopicId === "all" ? "solid" : "flat"}
+                onPress={() => setActiveSubtopicId("all")}
+              >
+                All
+              </Button>
             </div>
 
+            <label className="group relative block w-full">
+              <Search className="pointer-events-none absolute left-4 top-1/2 z-10 h-4 w-4 -translate-y-1/2 text-default-400" />
+              <input
+                aria-label="Search subtopics"
+                className="h-12 w-full rounded-xl border border-divider/70 bg-content1/90 pl-11 pr-4 text-sm text-foreground shadow-sm outline-none transition-colors placeholder:text-default-400 focus:border-primary/40"
+                placeholder="Search subtopics"
+                value={subtopicQuery}
+                onChange={(event) => setSubtopicQuery(event.target.value)}
+              />
+            </label>
+
             <div className="grid gap-2">
-              {topic.subtopics.length > 0 ? (
-                topic.subtopics.map((subtopic) => (
-                  <div
-                    key={subtopic.id}
-                    className="rounded-xl border border-divider bg-background/80 p-3"
-                  >
-                    <p className="text-sm font-semibold text-foreground">
-                      {subtopic.title}
-                    </p>
-                    <p className="mt-1 text-xs text-default-500">/{subtopic.slug}</p>
-                    <p className="mt-2 text-sm text-default-600">
-                      {subtopic.description || "No description provided."}
-                    </p>
-                  </div>
-                ))
+              {filteredSubtopics.length > 0 ? (
+                filteredSubtopics.map((subtopic) => {
+                  const isActive = activeSubtopicId === subtopic.id;
+                  const postCount = subtopicCounts[subtopic.id] ?? 0;
+                  const isSubscribed = subtopicSubscriptionState[subtopic.id] ?? false;
+                  const isLoadingSubscription =
+                    subtopicSubscriptionLoading[subtopic.id] ?? false;
+
+                  return (
+                    <Card
+                      key={subtopic.id}
+                      className={`border transition ${
+                        isActive
+                          ? "border-primary/30 bg-primary/5"
+                          : "border-divider bg-background/80"
+                      }`}
+                    >
+                      <CardBody className="gap-3 p-3">
+                        <button
+                          className="flex items-start justify-between gap-2 text-left"
+                          type="button"
+                          onClick={() => setActiveSubtopicId(subtopic.id)}
+                        >
+                          <div className="min-w-0 space-y-1">
+                            <div className="flex items-center gap-2">
+                              <p className="text-sm font-semibold text-foreground">
+                                {subtopic.title}
+                              </p>
+                              <Chip size="sm" variant="flat">
+                                {postCount} posts
+                              </Chip>
+                            </div>
+                            <p className="truncate text-xs text-default-500">
+                              /{subtopic.slug}
+                            </p>
+                            <p className="line-clamp-2 text-sm text-default-600">
+                              {subtopic.description || "No description provided."}
+                            </p>
+                          </div>
+                          <ChevronRight
+                            className={`mt-1 h-4 w-4 shrink-0 ${
+                              isActive ? "text-primary" : "text-default-400"
+                            }`}
+                          />
+                        </button>
+
+                        <div className="flex items-center justify-between gap-3 border-t border-divider/60 pt-2">
+                          <Chip size="sm" variant="flat">
+                            {isSubscribed ? "Subscribed" : "Not subscribed"}
+                          </Chip>
+                          <Button
+                            size="sm"
+                            color={isSubscribed ? "secondary" : "primary"}
+                            isLoading={isLoadingSubscription}
+                            onPress={() => void toggleSubtopicSubscription(subtopic.id)}
+                          >
+                            {isSubscribed ? "Subscribed" : "Subscribe"}
+                          </Button>
+                        </div>
+                      </CardBody>
+                    </Card>
+                  );
+                })
               ) : (
-                <p className="text-sm text-default-600">No subtopics yet.</p>
+                <p className="text-sm text-default-600">No subtopics match that search.</p>
               )}
             </div>
           </CardBody>
         </Card>
       </section>
 
+      {subscriptionError ? (
+        <p className="text-sm text-danger-500">{subscriptionError}</p>
+      ) : null}
+
       <section className="space-y-3">
-        <div className="flex items-center justify-between gap-3">
-          <h2 className="text-lg font-semibold">Recent posts</h2>
-          <p className="text-sm text-default-500">{posts.length} posts</p>
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="space-y-1">
+            <h2 className="text-lg font-semibold">
+              {activeSubtopic ? `Posts in ${activeSubtopic.title}` : "Recent posts"}
+            </h2>
+            <p className="text-sm text-default-500">
+              Posts are kept under subtopics, so the thread view stays focused.
+            </p>
+          </div>
+
+          {activeSubtopic ? (
+            <Button variant="flat" onPress={() => setActiveSubtopicId("all")}>
+              Show all posts
+            </Button>
+          ) : (
+            <p className="text-sm text-default-500">{visiblePosts.length} posts</p>
+          )}
         </div>
 
         <div className="grid gap-3">
-          {posts.length > 0 ? (
-            posts.map((post) => (
-              <Card
-                key={post.id}
-                className="border border-divider bg-content1 shadow-sm"
-              >
+          {visiblePosts.length > 0 ? (
+            visiblePosts.map((post) => (
+              <Card key={post.id} className="border border-divider bg-content1 shadow-sm">
                 <CardBody className="gap-3 p-4">
                   <div className="flex flex-wrap items-center gap-2 text-xs text-default-500">
                     <span className="font-medium text-foreground">
@@ -150,7 +516,7 @@ export function TopicDetailPageContent({
           ) : (
             <Card className="border border-divider bg-content1 shadow-sm">
               <CardBody className="p-4">
-                <p className="text-sm text-default-600">No posts yet.</p>
+                <p className="text-sm text-default-600">No posts yet for this subtopic.</p>
               </CardBody>
             </Card>
           )}

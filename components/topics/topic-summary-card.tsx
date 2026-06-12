@@ -21,7 +21,7 @@ export function TopicSummaryCard({
   mode = "public",
 }: TopicSummaryCardProps) {
   const isPublic = mode === "public";
-  const cardHeightClass = isPublic ? "h-[360px]" : "h-[432px]";
+  const cardHeightClass = isPublic ? "h-[284px]" : "h-[408px]";
   const visibleTags = topic.tags.slice(0, 3);
   const content = (
     <Card
@@ -31,18 +31,18 @@ export function TopicSummaryCard({
       <CardBody className="flex h-full flex-col p-0">
         <div className="h-1.5 bg-gradient-to-r from-primary/70 via-secondary/70 to-brotherhood-bronze/70" />
 
-        <div className="flex h-full flex-col gap-5 p-6">
-          <div className="flex min-h-[72px] items-start justify-between gap-3">
-            <div className="min-w-0 space-y-3">
-              <div className="flex items-center gap-3">
-                <div className="rounded-2xl bg-secondary/12 p-3 text-secondary">
+        <div className="flex h-full flex-col gap-3 p-4">
+          <div className="flex min-h-[56px] items-start justify-between gap-3">
+            <div className="min-w-0 space-y-1.5">
+              <div className="flex items-center gap-2.5">
+                <div className="rounded-2xl bg-secondary/12 p-2 text-secondary">
                   <Hash className="h-4 w-4" />
                 </div>
                 <div className="min-w-0">
-                  <h2 className="truncate text-base font-semibold tracking-[0.01em] text-foreground">
+                  <h2 className="truncate text-sm font-semibold tracking-[0.01em] text-foreground">
                     {topic.title}
                   </h2>
-                  <p className="truncate text-xs uppercase tracking-[0.16em] text-default-500">
+                  <p className="truncate text-[11px] uppercase tracking-[0.16em] text-default-500">
                     /{topic.slug}
                   </p>
                 </div>
@@ -50,17 +50,17 @@ export function TopicSummaryCard({
             </div>
 
             {isPublic ? (
-              <ArrowRight className="mt-1 h-4 w-4 shrink-0 text-default-400 transition group-hover:translate-x-0.5 group-hover:text-primary" />
+              <ArrowRight className="mt-1 h-3.5 w-3.5 shrink-0 text-default-400 transition group-hover:translate-x-0.5 group-hover:text-primary" />
             ) : null}
           </div>
 
-          <p className="h-[72px] text-sm leading-6 text-default-600">
-            <span className="line-clamp-3">
+          <p className="h-[44px] text-sm leading-5 text-default-600">
+            <span className="line-clamp-2">
               {topic.description || "A discussion space ready for conversation."}
             </span>
           </p>
 
-          <div className="grid h-[72px] grid-cols-2 gap-2 overflow-hidden">
+          <div className="grid h-[42px] grid-cols-2 gap-1.5 overflow-hidden">
             {topic.tags.length > 0 ? (
               visibleTags.map((tag) => (
                 <Chip
@@ -96,28 +96,28 @@ export function TopicSummaryCard({
             ) : null}
           </div>
 
-          <div className="grid grid-cols-3 gap-2 rounded-2xl bg-background/70 p-3 text-center">
+          <div className="grid grid-cols-3 gap-2 rounded-2xl bg-background/70 p-2.5 text-center">
             <div>
-              <p className="text-lg font-semibold text-foreground">
+              <p className="text-base font-semibold text-foreground">
                 {topic.counts.subtopics}
               </p>
-              <p className="text-[11px] uppercase tracking-[0.16em] text-default-500">
+              <p className="text-[10px] uppercase tracking-[0.16em] text-default-500">
                 Subtopics
               </p>
             </div>
             <div>
-              <p className="text-lg font-semibold text-foreground">
+              <p className="text-base font-semibold text-foreground">
                 {topic.counts.posts}
               </p>
-              <p className="text-[11px] uppercase tracking-[0.16em] text-default-500">
+              <p className="text-[10px] uppercase tracking-[0.16em] text-default-500">
                 Posts
               </p>
             </div>
             <div>
-              <p className="text-lg font-semibold text-foreground">
+              <p className="text-base font-semibold text-foreground">
                 {topic.counts.subscriptions}
               </p>
-              <p className="text-[11px] uppercase tracking-[0.16em] text-default-500">
+              <p className="text-[10px] uppercase tracking-[0.16em] text-default-500">
                 Members
               </p>
             </div>

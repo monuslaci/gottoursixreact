@@ -80,21 +80,6 @@ export function TopicsPageContent({ topics: initialTopics }: TopicsPageContentPr
     <div className="space-y-6">
       <section className="space-y-4">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <div className="flex flex-wrap items-center gap-2">
-            <Chip color="primary" variant="flat">
-              Topics
-            </Chip>
-            <Chip color="secondary" variant="flat">
-              Search
-            </Chip>
-            <Chip
-              className="bg-brotherhood-bronze/16 text-brotherhood-bronze"
-              variant="flat"
-            >
-              Paging
-            </Chip>
-          </div>
-
           <Button
             as={Link}
             href="/admin"

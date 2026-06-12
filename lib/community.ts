@@ -57,6 +57,27 @@ export type TopicDetailItem = {
   }>;
 };
 
+export type SubtopicListItem = {
+  id: string;
+  topicId: string;
+  title: string;
+  slug: string;
+  description: string | null;
+  sortOrder: number;
+  deletedAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+  topic: {
+    id: string;
+    title: string;
+    slug: string;
+  };
+  counts: {
+    posts: number;
+    subscriptions: number;
+  };
+};
+
 export class CommunityError extends Error {
   statusCode: number;
 
@@ -90,21 +111,62 @@ function normalizeTags(tags: string[] | undefined) {
   ).slice(0, 12);
 }
 
-function toTopicListItem(topic: {
+function toSubtopicListItem(subtopic: {
   id: string;
+  topicId: string;
   title: string;
   slug: string;
   description: string | null;
-  tags: string[];
+  sortOrder: number;
   deletedAt: Date | null;
   createdAt: Date;
   updatedAt: Date;
-  _count: {
-    subtopics: number;
-    subscriptions: number;
-    posts: number;
+  topic: {
+    id: string;
+    title: string;
+    slug: string;
   };
-}): TopicListItem {
+  _count: {
+    posts: number;
+    subscriptions: number;
+  };
+}): SubtopicListItem {
+  return {
+    id: subtopic.id,
+    topicId: subtopic.topicId,
+    title: subtopic.title,
+    slug: subtopic.slug,
+    description: subtopic.description,
+    sortOrder: subtopic.sortOrder,
+    deletedAt: subtopic.deletedAt?.toISOString() ?? null,
+    createdAt: subtopic.createdAt.toISOString(),
+    updatedAt: subtopic.updatedAt.toISOString(),
+    topic: subtopic.topic,
+    counts: {
+      posts: subtopic._count.posts,
+      subscriptions: subtopic._count.subscriptions,
+    },
+  };
+}
+
+function buildTopicListItem(
+  topic: {
+    id: string;
+    title: string;
+    slug: string;
+    description: string | null;
+    tags: string[];
+    deletedAt: Date | null;
+    createdAt: Date;
+    updatedAt: Date;
+    _count: {
+      subscriptions: number;
+      posts: number;
+      subtopics?: number;
+    };
+  },
+  subtopicCount?: number
+): TopicListItem {
   return {
     id: topic.id,
     title: topic.title,
@@ -115,11 +177,29 @@ function toTopicListItem(topic: {
     createdAt: topic.createdAt.toISOString(),
     updatedAt: topic.updatedAt.toISOString(),
     counts: {
-      subtopics: topic._count.subtopics,
+      subtopics: subtopicCount ?? topic._count.subtopics ?? 0,
       subscriptions: topic._count.subscriptions,
       posts: topic._count.posts,
     },
   };
+}
+
+function toTopicListItem(topic: {
+  id: string;
+  title: string;
+  slug: string;
+  description: string | null;
+  tags: string[];
+  deletedAt: Date | null;
+    createdAt: Date;
+    updatedAt: Date;
+    _count: {
+      subscriptions: number;
+      posts: number;
+      subtopics?: number;
+    };
+}): TopicListItem {
+  return buildTopicListItem(topic);
 }
 
 function toTopicPostItem(post: {
@@ -189,6 +269,78 @@ async function generateUniqueTopicSlug(title: string, excludeTopicId?: string) {
   return `${baseSlug}-${suffix}`;
 }
 
+async function generateUniqueSubtopicSlug(
+  title: string,
+  topicId: string,
+  excludeSubtopicId?: string
+) {
+  const baseSlug = slugify(title) || "subtopic";
+  const existingSlugs = await prisma.subtopic.findMany({
+    where: {
+      topicId,
+      slug: {
+        startsWith: baseSlug,
+      },
+      ...(excludeSubtopicId
+        ? {
+            NOT: {
+              id: excludeSubtopicId,
+            },
+          }
+        : {}),
+    },
+    select: {
+      slug: true,
+    },
+  });
+
+  const taken = new Set(existingSlugs.map((item) => item.slug));
+
+  if (!taken.has(baseSlug)) {
+    return baseSlug;
+  }
+
+  let suffix = 2;
+  while (taken.has(`${baseSlug}-${suffix}`)) {
+    suffix += 1;
+  }
+
+  return `${baseSlug}-${suffix}`;
+}
+
+async function countActiveSubtopics(topicId: string) {
+  return prisma.subtopic.count({
+    where: {
+      topicId,
+      deletedAt: null,
+    },
+  });
+}
+
+async function mapTopicsToListItems(
+  topics: Array<{
+    id: string;
+    title: string;
+    slug: string;
+    description: string | null;
+    tags: string[];
+    deletedAt: Date | null;
+    createdAt: Date;
+    updatedAt: Date;
+    _count: {
+      subscriptions: number;
+      posts: number;
+      subtopics?: number;
+    };
+  }>
+) {
+  return Promise.all(
+    topics.map(async (topic) =>
+      buildTopicListItem(topic, await countActiveSubtopics(topic.id))
+    )
+  );
+}
+
 export async function listTopics() {
   const topics = await prisma.topic.findMany({
     where: {
@@ -198,7 +350,6 @@ export async function listTopics() {
     include: {
       _count: {
         select: {
-          subtopics: true,
           subscriptions: true,
           posts: true,
         },
@@ -206,7 +357,7 @@ export async function listTopics() {
     },
   });
 
-  return topics.map(toTopicListItem);
+  return mapTopicsToListItems(topics);
 }
 
 export async function listAdminTopics() {
@@ -215,7 +366,6 @@ export async function listAdminTopics() {
     include: {
       _count: {
         select: {
-          subtopics: true,
           subscriptions: true,
           posts: true,
         },
@@ -223,7 +373,7 @@ export async function listAdminTopics() {
     },
   });
 
-  return topics.map(toTopicListItem);
+  return mapTopicsToListItems(topics);
 }
 
 export async function getTopicById(topicId: string) {
@@ -233,6 +383,9 @@ export async function getTopicById(topicId: string) {
     },
     include: {
       subtopics: {
+        where: {
+          deletedAt: null,
+        },
         orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
         select: {
           id: true,
@@ -244,7 +397,6 @@ export async function getTopicById(topicId: string) {
       },
       _count: {
         select: {
-          subtopics: true,
           subscriptions: true,
           posts: true,
         },
@@ -269,7 +421,7 @@ export async function getTopicById(topicId: string) {
     createdAt: topic.createdAt.toISOString(),
     updatedAt: topic.updatedAt.toISOString(),
     counts: {
-      subtopics: topic._count.subtopics,
+      subtopics: topic.subtopics.length,
       subscriptions: topic._count.subscriptions,
       posts: topic._count.posts,
     },
@@ -311,7 +463,6 @@ export async function createTopic(input: {
     include: {
       _count: {
         select: {
-          subtopics: true,
           subscriptions: true,
           posts: true,
         },
@@ -319,7 +470,9 @@ export async function createTopic(input: {
     },
   });
 
-  return toTopicListItem(topic);
+  const activeSubtopicCount = await countActiveSubtopics(topic.id);
+
+  return buildTopicListItem(topic, activeSubtopicCount);
 }
 
 export async function updateTopic(
@@ -377,7 +530,6 @@ export async function updateTopic(
     include: {
       _count: {
         select: {
-          subtopics: true,
           subscriptions: true,
           posts: true,
         },
@@ -385,7 +537,9 @@ export async function updateTopic(
     },
   });
 
-  return toTopicListItem(topic);
+  const activeSubtopicCount = await countActiveSubtopics(topic.id);
+
+  return buildTopicListItem(topic, activeSubtopicCount);
 }
 
 export async function softDeleteTopic(topicId: string) {
@@ -413,7 +567,6 @@ export async function softDeleteTopic(topicId: string) {
     include: {
       _count: {
         select: {
-          subtopics: true,
           subscriptions: true,
           posts: true,
         },
@@ -421,7 +574,9 @@ export async function softDeleteTopic(topicId: string) {
     },
   });
 
-  return toTopicListItem(topic);
+  const activeSubtopicCount = await countActiveSubtopics(topic.id);
+
+  return buildTopicListItem(topic, activeSubtopicCount);
 }
 
 export async function listTopicPosts(topicId: string) {
@@ -497,6 +652,7 @@ export async function createTopicPost(
       select: {
         id: true,
         topicId: true,
+        deletedAt: true,
       },
     });
 
@@ -506,6 +662,10 @@ export async function createTopicPost(
 
     if (subtopic.topicId !== topicId) {
       throw new CommunityError("Subtopic does not belong to the topic.", 400);
+    }
+
+    if (subtopic.deletedAt) {
+      throw new CommunityError("Subtopic not found.", 404);
     }
   }
 
@@ -561,4 +721,420 @@ export async function createTopicPost(
   });
 
   return toTopicPostItem(post);
+}
+
+export async function listAdminSubtopics() {
+  const subtopics = await prisma.subtopic.findMany({
+    orderBy: [
+      {
+        topic: {
+          title: "asc",
+        },
+      },
+      {
+        sortOrder: "asc",
+      },
+      {
+        createdAt: "asc",
+      },
+    ],
+    include: {
+      topic: {
+        select: {
+          id: true,
+          title: true,
+          slug: true,
+        },
+      },
+      _count: {
+        select: {
+          posts: true,
+          subscriptions: true,
+        },
+      },
+    },
+  });
+
+  return subtopics.map(toSubtopicListItem);
+}
+
+export async function createSubtopic(input: {
+  topicId: string;
+  title: string;
+  description?: string | null;
+  sortOrder?: number;
+  createdById?: string | null;
+}) {
+  const title = input.title.trim();
+
+  if (!title) {
+    throw new CommunityError("Subtopic title is required.", 400);
+  }
+
+  const topic = await prisma.topic.findUnique({
+    where: {
+      id: input.topicId,
+    },
+    select: {
+      id: true,
+      deletedAt: true,
+    },
+  });
+
+  if (!topic || topic.deletedAt) {
+    throw new CommunityError("Topic not found.", 404);
+  }
+
+  const slug = await generateUniqueSubtopicSlug(title, input.topicId);
+  const sortOrder =
+    Number.isFinite(input.sortOrder) && input.sortOrder !== undefined
+      ? input.sortOrder
+      : await prisma.subtopic.count({
+          where: {
+            topicId: input.topicId,
+            deletedAt: null,
+          },
+        });
+
+  const subtopic = await prisma.subtopic.create({
+    data: {
+      topicId: input.topicId,
+      title,
+      slug,
+      description: input.description?.trim() || null,
+      sortOrder,
+      createdById: input.createdById ?? null,
+    },
+    include: {
+      topic: {
+        select: {
+          id: true,
+          title: true,
+          slug: true,
+        },
+      },
+      _count: {
+        select: {
+          posts: true,
+          subscriptions: true,
+        },
+      },
+    },
+  });
+
+  return toSubtopicListItem(subtopic);
+}
+
+export async function updateSubtopic(
+  subtopicId: string,
+  input: {
+    title: string;
+    description?: string | null;
+    sortOrder?: number;
+  }
+) {
+  const existingSubtopic = await prisma.subtopic.findUnique({
+    where: {
+      id: subtopicId,
+    },
+    select: {
+      id: true,
+      title: true,
+      topicId: true,
+      deletedAt: true,
+    },
+  });
+
+  if (!existingSubtopic || existingSubtopic.deletedAt) {
+    throw new CommunityError("Subtopic not found.", 404);
+  }
+
+  const title = input.title.trim();
+
+  if (!title) {
+    throw new CommunityError("Subtopic title is required.", 400);
+  }
+
+  const slug =
+    title === existingSubtopic.title
+      ? undefined
+      : await generateUniqueSubtopicSlug(title, existingSubtopic.topicId, subtopicId);
+
+  const subtopic = await prisma.subtopic.update({
+    where: {
+      id: subtopicId,
+    },
+    data: {
+      title,
+      ...(slug ? { slug } : {}),
+      description: input.description?.trim() || null,
+      ...(Number.isFinite(input.sortOrder) && input.sortOrder !== undefined
+        ? { sortOrder: input.sortOrder }
+        : {}),
+    },
+    include: {
+      topic: {
+        select: {
+          id: true,
+          title: true,
+          slug: true,
+        },
+      },
+      _count: {
+        select: {
+          posts: true,
+          subscriptions: true,
+        },
+      },
+    },
+  });
+
+  return toSubtopicListItem(subtopic);
+}
+
+export async function softDeleteSubtopic(subtopicId: string) {
+  const existingSubtopic = await prisma.subtopic.findUnique({
+    where: {
+      id: subtopicId,
+    },
+    select: {
+      id: true,
+      deletedAt: true,
+    },
+  });
+
+  if (!existingSubtopic || existingSubtopic.deletedAt) {
+    throw new CommunityError("Subtopic not found.", 404);
+  }
+
+  const subtopic = await prisma.subtopic.update({
+    where: {
+      id: subtopicId,
+    },
+    data: {
+      deletedAt: new Date(),
+    },
+    include: {
+      topic: {
+        select: {
+          id: true,
+          title: true,
+          slug: true,
+        },
+      },
+      _count: {
+        select: {
+          posts: true,
+          subscriptions: true,
+        },
+      },
+    },
+  });
+
+  return toSubtopicListItem(subtopic);
+}
+
+type SubscriptionUserInput = {
+  userId?: string | null;
+  userEmail?: string | null;
+};
+
+async function resolveSubscriptionUser(input: SubscriptionUserInput) {
+  if (input.userId) {
+    const user = await prisma.user.findUnique({
+      where: {
+        id: input.userId,
+      },
+      select: {
+        id: true,
+      },
+    });
+
+    if (user) {
+      return user;
+    }
+  }
+
+  if (input.userEmail) {
+    const email = input.userEmail.trim().toLowerCase();
+
+    if (email) {
+      const user = await prisma.user.findUnique({
+        where: {
+          email,
+        },
+        select: {
+          id: true,
+        },
+      });
+
+      if (user) {
+        return user;
+      }
+    }
+  }
+
+  throw new CommunityError("User not found.", 404);
+}
+
+async function assertTopicExists(topicId: string) {
+  const topic = await prisma.topic.findUnique({
+    where: {
+      id: topicId,
+    },
+    select: {
+      id: true,
+      deletedAt: true,
+    },
+  });
+
+  if (!topic || topic.deletedAt) {
+    throw new CommunityError("Topic not found.", 404);
+  }
+}
+
+async function assertSubtopicExists(subtopicId: string) {
+  const subtopic = await prisma.subtopic.findUnique({
+    where: {
+      id: subtopicId,
+    },
+    select: {
+      id: true,
+      deletedAt: true,
+    },
+  });
+
+  if (!subtopic || subtopic.deletedAt) {
+    throw new CommunityError("Subtopic not found.", 404);
+  }
+}
+
+export async function getTopicSubscriptionStatus(
+  topicId: string,
+  input: SubscriptionUserInput
+) {
+  if (!input.userId && !input.userEmail) {
+    return false;
+  }
+
+  const user = await resolveSubscriptionUser(input);
+
+  const subscription = await prisma.topicSubscription.findUnique({
+    where: {
+      userId_topicId: {
+        userId: user.id,
+        topicId,
+      },
+    },
+    select: {
+      id: true,
+    },
+  });
+
+  return Boolean(subscription);
+}
+
+export async function getSubtopicSubscriptionStatus(
+  subtopicId: string,
+  input: SubscriptionUserInput
+) {
+  if (!input.userId && !input.userEmail) {
+    return false;
+  }
+
+  const user = await resolveSubscriptionUser(input);
+
+  const subscription = await prisma.subtopicSubscription.findUnique({
+    where: {
+      userId_subtopicId: {
+        userId: user.id,
+        subtopicId,
+      },
+    },
+    select: {
+      id: true,
+    },
+  });
+
+  return Boolean(subscription);
+}
+
+export async function subscribeToTopic(
+  topicId: string,
+  input: SubscriptionUserInput
+) {
+  await assertTopicExists(topicId);
+  const user = await resolveSubscriptionUser(input);
+
+  await prisma.topicSubscription.upsert({
+    where: {
+      userId_topicId: {
+        userId: user.id,
+        topicId,
+      },
+    },
+    create: {
+      userId: user.id,
+      topicId,
+    },
+    update: {},
+  });
+
+  return true;
+}
+
+export async function unsubscribeFromTopic(
+  topicId: string,
+  input: SubscriptionUserInput
+) {
+  const user = await resolveSubscriptionUser(input);
+
+  await prisma.topicSubscription.deleteMany({
+    where: {
+      userId: user.id,
+      topicId,
+    },
+  });
+
+  return true;
+}
+
+export async function subscribeToSubtopic(
+  subtopicId: string,
+  input: SubscriptionUserInput
+) {
+  await assertSubtopicExists(subtopicId);
+  const user = await resolveSubscriptionUser(input);
+
+  await prisma.subtopicSubscription.upsert({
+    where: {
+      userId_subtopicId: {
+        userId: user.id,
+        subtopicId,
+      },
+    },
+    create: {
+      userId: user.id,
+      subtopicId,
+    },
+    update: {},
+  });
+
+  return true;
+}
+
+export async function unsubscribeFromSubtopic(
+  subtopicId: string,
+  input: SubscriptionUserInput
+) {
+  const user = await resolveSubscriptionUser(input);
+
+  await prisma.subtopicSubscription.deleteMany({
+    where: {
+      userId: user.id,
+      subtopicId,
+    },
+  });
+
+  return true;
 }
