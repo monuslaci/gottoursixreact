@@ -85,6 +85,14 @@ export default function HomePage() {
               </Button>
               <Button
                 as={Link}
+                href="/rules"
+                variant="bordered"
+                className="border-brotherhood-steel/40 text-brotherhood-steel"
+              >
+                Community rules
+              </Button>
+              <Button
+                as={Link}
                 href="/messages"
                 className="border-brotherhood-bronze/50 text-brotherhood-bronze"
                 variant="bordered"
@@ -166,6 +174,23 @@ export default function HomePage() {
               <p className="mt-2 text-sm font-semibold text-foreground">{text}</p>
             </div>
           ))}
+        </div>
+      </section>
+
+      <section className="rounded-2xl border border-divider bg-content1 p-5 shadow-[0_14px_38px_rgba(15,23,42,0.08)]">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="space-y-1">
+            <p className="text-sm font-semibold text-secondary">Community rules</p>
+            <h2 className="text-xl font-semibold tracking-tight">
+              Clear standards keep the space safe.
+            </h2>
+            <p className="text-sm text-default-600">
+              Read the rules before posting so support stays direct, respectful, and useful.
+            </p>
+          </div>
+          <Button as={Link} href="/rules" color="primary" variant="flat">
+            Open rules
+          </Button>
         </div>
       </section>
     </div>

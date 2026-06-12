@@ -15,6 +15,7 @@ import { useEffect, useState, type FormEvent } from "react";
 import type { TopicListItem } from "@/lib/community";
 import { TopicPaginationBar } from "@/components/topics/topic-pagination-bar";
 import { TopicSummaryCard } from "@/components/topics/topic-summary-card";
+import { SuggestionsManager } from "@/components/admin/suggestions-manager";
 import { SubtopicsManager } from "@/components/topics/subtopics-manager";
 
 type FloatingFieldProps = {
@@ -68,7 +69,9 @@ export function TopicsDashboard() {
   const [topics, setTopics] = useState<TopicListItem[]>([]);
   const [isLoadingTopics, setIsLoadingTopics] = useState(true);
   const [page, setPage] = useState(1);
-  const [activeTab, setActiveTab] = useState<"topics" | "subtopics">("topics");
+  const [activeTab, setActiveTab] = useState<
+    "topics" | "subtopics" | "suggestions"
+  >("topics");
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [tags, setTags] = useState("");
@@ -272,10 +275,10 @@ export function TopicsDashboard() {
     <Card className="border border-primary/12 bg-content1 shadow-[0_18px_48px_rgb(var(--heroui-colors-primary-500)/0.08)]">
       <CardBody className="gap-6 p-4 sm:p-5">
         <div className="sticky top-3 z-10 space-y-3 rounded-[28px] border border-divider/70 bg-gradient-to-br from-content1 via-content1 to-background/80 p-4 shadow-[0_18px_48px_rgba(15,23,42,0.08)] backdrop-blur">
-          <div className="grid grid-cols-2 gap-2">
-            <Button
-              className={`h-14 rounded-2xl px-4 text-left transition ${
-                activeTab === "topics"
+            <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
+              <Button
+                className={`h-14 rounded-2xl px-4 text-left transition ${
+                  activeTab === "topics"
                   ? "bg-primary text-primary-foreground shadow-[0_10px_24px_rgba(37,99,235,0.28)]"
                   : "bg-background/60 text-default-600 hover:bg-default-100"
               }`}
@@ -287,11 +290,11 @@ export function TopicsDashboard() {
                 <span className="text-[11px] font-normal opacity-80">
                   Create, edit, delete
                 </span>
-              </span>
-            </Button>
-            <Button
-              className={`h-14 rounded-2xl px-4 text-left transition ${
-                activeTab === "subtopics"
+                </span>
+              </Button>
+              <Button
+                className={`h-14 rounded-2xl px-4 text-left transition ${
+                  activeTab === "subtopics"
                   ? "bg-primary text-primary-foreground shadow-[0_10px_24px_rgba(37,99,235,0.28)]"
                   : "bg-background/60 text-default-600 hover:bg-default-100"
               }`}
@@ -303,9 +306,25 @@ export function TopicsDashboard() {
                 <span className="text-[11px] font-normal opacity-80">
                   Organize subcategories
                 </span>
-              </span>
-            </Button>
-          </div>
+                </span>
+              </Button>
+              <Button
+                className={`h-14 rounded-2xl px-4 text-left transition ${
+                  activeTab === "suggestions"
+                    ? "bg-primary text-primary-foreground shadow-[0_10px_24px_rgba(37,99,235,0.28)]"
+                    : "bg-background/60 text-default-600 hover:bg-default-100"
+                }`}
+                variant="light"
+                onPress={() => setActiveTab("suggestions")}
+              >
+                <span className="flex w-full flex-col items-start leading-tight">
+                  <span className="text-base font-semibold">Suggestions</span>
+                  <span className="text-[11px] font-normal opacity-80">
+                    Member ideas for admins
+                  </span>
+                </span>
+              </Button>
+            </div>
         </div>
 
         {activeTab === "topics" ? (
@@ -514,9 +533,13 @@ export function TopicsDashboard() {
               ) : null}
             </section>
           </section>
-        ) : (
+        ) : activeTab === "subtopics" ? (
           <section className="space-y-4">
             <SubtopicsManager topics={topics} />
+          </section>
+        ) : (
+          <section className="space-y-4">
+            <SuggestionsManager />
           </section>
         )}
       </CardBody>

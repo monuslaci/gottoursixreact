@@ -78,6 +78,33 @@ export type SubtopicListItem = {
   };
 };
 
+export type SuggestionListItem = {
+  id: string;
+  kind: "TOPIC" | "SUBTOPIC";
+  topicId: string | null;
+  title: string;
+  description: string | null;
+  status: "PENDING" | "REVIEWED" | "APPROVED" | "REJECTED";
+  reviewedAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+  topic: {
+    id: string;
+    title: string;
+    slug: string;
+  } | null;
+  suggestedBy: {
+    id: string;
+    name: string | null;
+    email: string | null;
+  } | null;
+  reviewedBy: {
+    id: string;
+    name: string | null;
+    email: string | null;
+  } | null;
+};
+
 export class CommunityError extends Error {
   statusCode: number;
 
@@ -146,6 +173,48 @@ function toSubtopicListItem(subtopic: {
       posts: subtopic._count.posts,
       subscriptions: subtopic._count.subscriptions,
     },
+  };
+}
+
+function toSuggestionListItem(suggestion: {
+  id: string;
+  kind: "TOPIC" | "SUBTOPIC";
+  topicId: string | null;
+  title: string;
+  description: string | null;
+  status: "PENDING" | "REVIEWED" | "APPROVED" | "REJECTED";
+  reviewedAt: Date | null;
+  createdAt: Date;
+  updatedAt: Date;
+  topic: {
+    id: string;
+    title: string;
+    slug: string;
+  } | null;
+  suggestedBy: {
+    id: string;
+    name: string | null;
+    email: string | null;
+  } | null;
+  reviewedBy: {
+    id: string;
+    name: string | null;
+    email: string | null;
+  } | null;
+}): SuggestionListItem {
+  return {
+    id: suggestion.id,
+    kind: suggestion.kind,
+    topicId: suggestion.topicId,
+    title: suggestion.title,
+    description: suggestion.description,
+    status: suggestion.status,
+    reviewedAt: suggestion.reviewedAt?.toISOString() ?? null,
+    createdAt: suggestion.createdAt.toISOString(),
+    updatedAt: suggestion.updatedAt.toISOString(),
+    topic: suggestion.topic,
+    suggestedBy: suggestion.suggestedBy,
+    reviewedBy: suggestion.reviewedBy,
   };
 }
 
@@ -934,12 +1003,181 @@ export async function softDeleteSubtopic(subtopicId: string) {
   return toSubtopicListItem(subtopic);
 }
 
-type SubscriptionUserInput = {
+export async function listSuggestions() {
+  const suggestions = await prisma.suggestion.findMany({
+    orderBy: [{ createdAt: "desc" }],
+    include: {
+      topic: {
+        select: {
+          id: true,
+          title: true,
+          slug: true,
+        },
+      },
+      suggestedBy: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+        },
+      },
+      reviewedBy: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+        },
+      },
+    },
+  });
+
+  return suggestions.map(toSuggestionListItem);
+}
+
+export async function createSuggestion(input: {
+  kind: "TOPIC" | "SUBTOPIC";
+  title: string;
+  description?: string | null;
+  topicId?: string | null;
+  suggestedById?: string | null;
+  suggestedByEmail?: string | null;
+}) {
+  const title = input.title.trim();
+
+  if (!title) {
+    throw new CommunityError("Suggestion title is required.", 400);
+  }
+
+  if (input.kind === "SUBTOPIC" && !input.topicId) {
+    throw new CommunityError("A topic is required for subtopic suggestions.", 400);
+  }
+
+  if (input.topicId) {
+    const topic = await prisma.topic.findUnique({
+      where: {
+        id: input.topicId,
+      },
+      select: {
+        id: true,
+        deletedAt: true,
+      },
+    });
+
+    if (!topic || topic.deletedAt) {
+      throw new CommunityError("Topic not found.", 404);
+    }
+  }
+
+  const user = await resolveUserFromIdentity({
+    userId: input.suggestedById ?? null,
+    userEmail: input.suggestedByEmail ?? null,
+  }).catch(() => null);
+
+  const suggestion = await prisma.suggestion.create({
+    data: {
+      kind: input.kind,
+      topicId: input.topicId ?? null,
+      title,
+      description: input.description?.trim() || null,
+      suggestedById: user?.id ?? null,
+    },
+    include: {
+      topic: {
+        select: {
+          id: true,
+          title: true,
+          slug: true,
+        },
+      },
+      suggestedBy: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+        },
+      },
+      reviewedBy: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+        },
+      },
+    },
+  });
+
+  return toSuggestionListItem(suggestion);
+}
+
+export async function updateSuggestionStatus(
+  suggestionId: string,
+  input: {
+    status: "PENDING" | "REVIEWED" | "APPROVED" | "REJECTED";
+    reviewedById?: string | null;
+    reviewedByEmail?: string | null;
+  }
+) {
+  const existingSuggestion = await prisma.suggestion.findUnique({
+    where: {
+      id: suggestionId,
+    },
+    select: {
+      id: true,
+    },
+  });
+
+  if (!existingSuggestion) {
+    throw new CommunityError("Suggestion not found.", 404);
+  }
+
+  const reviewer = await resolveUserFromIdentity({
+    userId: input.reviewedById ?? null,
+    userEmail: input.reviewedByEmail ?? null,
+  }).catch(() => null);
+
+  const suggestion = await prisma.suggestion.update({
+    where: {
+      id: suggestionId,
+    },
+    data: {
+      status: input.status,
+      reviewedAt: input.status === "PENDING" ? null : new Date(),
+      reviewedById: input.status === "PENDING" ? null : reviewer?.id ?? null,
+    },
+    include: {
+      topic: {
+        select: {
+          id: true,
+          title: true,
+          slug: true,
+        },
+      },
+      suggestedBy: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+        },
+      },
+      reviewedBy: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+        },
+      },
+    },
+  });
+
+  return toSuggestionListItem(suggestion);
+}
+
+type UserIdentityInput = {
   userId?: string | null;
   userEmail?: string | null;
 };
 
-async function resolveSubscriptionUser(input: SubscriptionUserInput) {
+async function resolveUserFromIdentity(input: UserIdentityInput) {
   if (input.userId) {
     const user = await prisma.user.findUnique({
       where: {
@@ -975,6 +1213,12 @@ async function resolveSubscriptionUser(input: SubscriptionUserInput) {
   }
 
   throw new CommunityError("User not found.", 404);
+}
+
+type SubscriptionUserInput = UserIdentityInput;
+
+async function resolveSubscriptionUser(input: SubscriptionUserInput) {
+  return resolveUserFromIdentity(input);
 }
 
 async function assertTopicExists(topicId: string) {

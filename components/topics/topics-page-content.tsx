@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useState } from "react";
 
 import type { TopicListItem } from "@/lib/community";
+import { SuggestionModal } from "@/components/topics/suggestion-modal";
 import { TopicPaginationBar } from "@/components/topics/topic-pagination-bar";
 import { TopicSummaryCard } from "@/components/topics/topic-summary-card";
 
@@ -105,6 +106,12 @@ export function TopicsPageContent({ topics: initialTopics }: TopicsPageContentPr
           <FloatingSearchField
             value={query}
             onValueChange={handleSearchChange}
+          />
+          <SuggestionModal
+            kind="TOPIC"
+            buttonLabel="Suggest a topic"
+            title="Suggest a topic"
+            description="Send a topic idea to the admins without taking up space on the page."
           />
         </div>
       </section>

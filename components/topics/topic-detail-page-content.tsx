@@ -7,6 +7,7 @@ import { useEffect, useMemo, useState } from "react";
 
 import type { TopicDetailItem, TopicPostItem } from "@/lib/community";
 import { useUserProfile } from "@/lib/hooks/useUserProfile";
+import { SuggestionModal } from "@/components/topics/suggestion-modal";
 
 type TopicDetailPageContentProps = {
   topic: TopicDetailItem;
@@ -466,6 +467,17 @@ export function TopicDetailPageContent({
       {subscriptionError ? (
         <p className="text-sm text-danger-500">{subscriptionError}</p>
       ) : null}
+
+      <div className="flex flex-wrap justify-end">
+        <SuggestionModal
+          kind="SUBTOPIC"
+          topicId={topic.id}
+          topicTitle={topic.title}
+          buttonLabel="Suggest a subtopic"
+          title="Suggest a subtopic"
+          description="Send a subtopic idea for this topic to the admins."
+        />
+      </div>
 
       <section className="space-y-3">
         <div className="flex flex-wrap items-center justify-between gap-3">

@@ -5,12 +5,14 @@ export const siteConfig = {
   navItems: [
     { label: "Home", href: "/" },
     { label: "Topics", href: "/topics" },
+    { label: "Rules", href: "/rules" },
     { label: "Admin", href: "/admin" },
     { label: "Demo", href: "/demo" },
   ],
   navMenuItems: [
     { label: "Home", href: "/" },
     { label: "Topics", href: "/topics" },
+    { label: "Rules", href: "/rules" },
     { label: "Admin", href: "/admin" },
     { label: "Demo", href: "/demo" },
     { label: "Messages", href: "/messages" },
