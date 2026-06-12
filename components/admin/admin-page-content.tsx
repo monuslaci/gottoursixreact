@@ -27,7 +27,7 @@ export function AdminPageContent() {
         </p>
       </section>
 
-      <section className="grid gap-4 lg:grid-cols-[0.95fr_1.05fr] lg:items-start">
+      <section className="space-y-4">
         <Card className="border border-primary/12 bg-content1 shadow-[0_18px_48px_rgb(var(--heroui-colors-primary-500)/0.08)]">
           <CardBody className="gap-4 p-5 sm:p-6">
             <div className="flex items-center gap-3">

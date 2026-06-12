@@ -34,45 +34,45 @@
 :root,
 .light {
   color-scheme: light;
-  --background: 245 247 250;
-  --foreground: 30 41 59;
-  --content1: 255 255 255;
-  --content2: 239 243 248;
-  --divider: 215 224 232;
-  --default-100: 237 242 247;
-  --default-200: 224 232 240;
-  --default-300: 203 213 225;
-  --default-400: 148 163 184;
-  --default-500: 100 116 139;
-  --default-600: 71 85 105;
-  --default-700: 51 65 85;
-  --default-800: 30 41 59;
-  --default-900: 15 23 42;
+  --background: 231 237 242;
+  --foreground: 24 35 50;
+  --content1: 248 250 250;
+  --content2: 222 231 237;
+  --divider: 189 203 214;
+  --default-100: 226 234 239;
+  --default-200: 211 223 231;
+  --default-300: 186 202 214;
+  --default-400: 123 144 161;
+  --default-500: 82 103 121;
+  --default-600: 57 77 95;
+  --default-700: 39 57 75;
+  --default-800: 24 35 50;
+  --default-900: 12 21 33;
 
-  --heroui-colors-primary-50: 236 241 248;
-  --heroui-colors-primary-100: 216 227 239;
-  --heroui-colors-primary-200: 179 199 223;
-  --heroui-colors-primary-300: 142 170 207;
-  --heroui-colors-primary-400: 105 142 191;
-  --heroui-colors-primary-500: 30 58 95;
-  --heroui-colors-primary-600: 25 49 79;
-  --heroui-colors-primary-700: 20 40 63;
-  --heroui-colors-primary-800: 15 31 47;
-  --heroui-colors-primary-900: 10 22 31;
+  --heroui-colors-primary-50: 231 238 245;
+  --heroui-colors-primary-100: 205 218 231;
+  --heroui-colors-primary-200: 158 181 205;
+  --heroui-colors-primary-300: 111 143 178;
+  --heroui-colors-primary-400: 71 105 141;
+  --heroui-colors-primary-500: 24 50 82;
+  --heroui-colors-primary-600: 20 42 69;
+  --heroui-colors-primary-700: 16 34 56;
+  --heroui-colors-primary-800: 12 27 44;
+  --heroui-colors-primary-900: 8 19 32;
 
-  --heroui-colors-secondary-50: 241 245 248;
-  --heroui-colors-secondary-100: 226 232 239;
-  --heroui-colors-secondary-200: 197 209 223;
-  --heroui-colors-secondary-300: 168 186 207;
-  --heroui-colors-secondary-400: 139 163 191;
-  --heroui-colors-secondary-500: 79 109 138;
-  --heroui-colors-secondary-600: 66 92 116;
-  --heroui-colors-secondary-700: 53 75 94;
-  --heroui-colors-secondary-800: 40 58 72;
-  --heroui-colors-secondary-900: 27 41 50;
+  --heroui-colors-secondary-50: 235 240 242;
+  --heroui-colors-secondary-100: 216 226 231;
+  --heroui-colors-secondary-200: 183 199 208;
+  --heroui-colors-secondary-300: 149 172 185;
+  --heroui-colors-secondary-400: 111 140 157;
+  --heroui-colors-secondary-500: 63 90 108;
+  --heroui-colors-secondary-600: 53 76 91;
+  --heroui-colors-secondary-700: 43 62 75;
+  --heroui-colors-secondary-800: 32 48 58;
+  --heroui-colors-secondary-900: 22 34 42;
 
-  --heroui-colors-success: 61 122 87;
-  --heroui-colors-warning: 194 139 64;
+  --heroui-colors-success: 48 103 78;
+  --heroui-colors-warning: 174 117 48;
 }
 
 .dark {
@@ -126,11 +126,19 @@ body {
 body {
   margin: 0;
   background:
-    radial-gradient(circle at top left, rgb(var(--heroui-colors-primary-500) / 0.16), transparent 34rem),
-    radial-gradient(circle at top right, rgb(var(--heroui-colors-secondary-500) / 0.14), transparent 32rem),
-    linear-gradient(180deg, rgb(var(--content2) / 0.45), transparent 30%),
+    linear-gradient(135deg, rgb(var(--heroui-colors-primary-900) / 0.12), transparent 34%),
+    linear-gradient(215deg, rgb(var(--heroui-colors-warning) / 0.12), transparent 28%),
+    linear-gradient(180deg, rgb(var(--content2) / 0.86), rgb(var(--background)) 42%, rgb(var(--background))),
     rgb(var(--background));
   color: rgb(var(--foreground));
+}
+
+.dark body {
+  background:
+    linear-gradient(135deg, rgb(var(--heroui-colors-primary-500) / 0.16), transparent 34%),
+    linear-gradient(215deg, rgb(var(--heroui-colors-secondary-500) / 0.14), transparent 28%),
+    linear-gradient(180deg, rgb(var(--content2) / 0.45), transparent 30%),
+    rgb(var(--background));
 }
 
 a {

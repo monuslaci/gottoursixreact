@@ -1,0 +1,85 @@
+<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOENT: no such file or directory, lstat 'C:\Users\monus\source\repos\gottoursixreact\.next\server\_rsc_components_navbar_tsx.js'
+<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Resolving './_rsc_components_navbar_tsx' in C:\Users\monus\source\repos\gottoursixreact\.next\server for build dependencies doesn't lead to expected result 'C:\Users\monus\source\repos\gottoursixreact\.next\server\_rsc_components_navbar_tsx.js', but to 'Error: Can't resolve './_rsc_components_navbar_tsx' in 'C:\Users\monus\source\repos\gottoursixreact\.next\server'' instead. Resolving dependencies are ignored for this path.
+<w>  at resolve commonjs file ./_rsc_components_navbar_tsx (expected C:\Users\monus\source\repos\gottoursixreact\.next\server\_rsc_components_navbar_tsx.js)
+<w>  at file dependencies C:\Users\monus\source\repos\gottoursixreact\.next\server\webpack-runtime.js
+<w>  at file C:\Users\monus\source\repos\gottoursixreact\.next\server\webpack-runtime.js
+<w>  at file dependencies C:\Users\monus\source\repos\gottoursixreact\.next\server\pages\_error.js
+<w>  at file C:\Users\monus\source\repos\gottoursixreact\.next\server\pages\_error.js
+<w>  at file dependencies C:\Users\monus\source\repos\gottoursixreact\node_modules\next\dist\server\require.js
+<w>  at file C:\Users\monus\source\repos\gottoursixreact\node_modules\next\dist\server\require.js
+<w>  at file dependencies C:\Users\monus\source\repos\gottoursixreact\node_modules\next\dist\server\load-components.js
+<w>  at file C:\Users\monus\source\repos\gottoursixreact\node_modules\next\dist\server\load-components.js
+<w>  at file dependencies C:\Users\monus\source\repos\gottoursixreact\node_modules\next\dist\build\utils.js
+<w>  at file C:\Users\monus\source\repos\gottoursixreact\node_modules\next\dist\build\utils.js
+<w>  at file dependencies C:\Users\monus\source\repos\gottoursixreact\node_modules\next\dist\build\webpack\loaders\next-route-loader\index.js
+<w>  at file C:\Users\monus\source\repos\gottoursixreact\node_modules\next\dist\build\webpack\loaders\next-route-loader\index.js
+<w>  at resolve commonjs C:\Users\monus\source\repos\gottoursixreact\node_modules\next\dist\build\webpack\loaders\next-route-loader\index.js
+<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Resolving './vendor-chunks/clsx' in C:\Users\monus\source\repos\gottoursixreact\.next\server for build dependencies doesn't lead to expected result 'C:\Users\monus\source\repos\gottoursixreact\.next\server\vendor-chunks\clsx.js', but to 'Error: Can't resolve './vendor-chunks/clsx' in 'C:\Users\monus\source\repos\gottoursixreact\.next\server'' instead. Resolving dependencies are ignored for this path.
+<w>  at resolve commonjs file ./vendor-chunks/clsx (expected C:\Users\monus\source\repos\gottoursixreact\.next\server\vendor-chunks\clsx.js)
+<w>  at file dependencies C:\Users\monus\source\repos\gottoursixreact\.next\server\webpack-runtime.js
+<w>  at file C:\Users\monus\source\repos\gottoursixreact\.next\server\webpack-runtime.js
+<w>  at file dependencies C:\Users\monus\source\repos\gottoursixreact\.next\server\pages\_error.js
+<w>  at file C:\Users\monus\source\repos\gottoursixreact\.next\server\pages\_error.js
+<w>  at file dependencies C:\Users\monus\source\repos\gottoursixreact\node_modules\next\dist\server\require.js
+<w>  at file C:\Users\monus\source\repos\gottoursixreact\node_modules\next\dist\server\require.js
+<w>  at file dependencies C:\Users\monus\source\repos\gottoursixreact\node_modules\next\dist\server\load-components.js
+<w>  at file C:\Users\monus\source\repos\gottoursixreact\node_modules\next\dist\server\load-components.js
+<w>  at file dependencies C:\Users\monus\source\repos\gottoursixreact\node_modules\next\dist\build\utils.js
+<w>  at file C:\Users\monus\source\repos\gottoursixreact\node_modules\next\dist\build\utils.js
+<w>  at file dependencies C:\Users\monus\source\repos\gottoursixreact\node_modules\next\dist\build\webpack\loaders\next-route-loader\index.js
+<w>  at file C:\Users\monus\source\repos\gottoursixreact\node_modules\next\dist\build\webpack\loaders\next-route-loader\index.js
+<w>  at resolve commonjs C:\Users\monus\source\repos\gottoursixreact\node_modules\next\dist\build\webpack\loaders\next-route-loader\index.js
+<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Resolving './vendor-chunks/motion-utils' in C:\Users\monus\source\repos\gottoursixreact\.next\server for build dependencies doesn't lead to expected result 'C:\Users\monus\source\repos\gottoursixreact\.next\server\vendor-chunks\motion-utils.js', but to 'Error: Can't resolve './vendor-chunks/motion-utils' in 'C:\Users\monus\source\repos\gottoursixreact\.next\server'' instead. Resolving dependencies are ignored for this path.
+<w>  at resolve commonjs file ./vendor-chunks/motion-utils (expected C:\Users\monus\source\repos\gottoursixreact\.next\server\vendor-chunks\motion-utils.js)
+<w>  at file dependencies C:\Users\monus\source\repos\gottoursixreact\.next\server\webpack-runtime.js
+<w>  at file C:\Users\monus\source\repos\gottoursixreact\.next\server\webpack-runtime.js
+<w>  at file dependencies C:\Users\monus\source\repos\gottoursixreact\.next\server\pages\_error.js
+<w>  at file C:\Users\monus\source\repos\gottoursixreact\.next\server\pages\_error.js
+<w>  at file dependencies C:\Users\monus\source\repos\gottoursixreact\node_modules\next\dist\server\require.js
+<w>  at file C:\Users\monus\source\repos\gottoursixreact\node_modules\next\dist\server\require.js
+<w>  at file dependencies C:\Users\monus\source\repos\gottoursixreact\node_modules\next\dist\server\load-components.js
+<w>  at file C:\Users\monus\source\repos\gottoursixreact\node_modules\next\dist\server\load-components.js
+<w>  at file dependencies C:\Users\monus\source\repos\gottoursixreact\node_modules\next\dist\build\utils.js
+<w>  at file C:\Users\monus\source\repos\gottoursixreact\node_modules\next\dist\build\utils.js
+<w>  at file dependencies C:\Users\monus\source\repos\gottoursixreact\node_modules\next\dist\build\webpack\loaders\next-route-loader\index.js
+<w>  at file C:\Users\monus\source\repos\gottoursixreact\node_modules\next\dist\build\webpack\loaders\next-route-loader\index.js
+<w>  at resolve commonjs C:\Users\monus\source\repos\gottoursixreact\node_modules\next\dist\build\webpack\loaders\next-route-loader\index.js
+<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Resolving './vendor-chunks/next-themes' in C:\Users\monus\source\repos\gottoursixreact\.next\server for build dependencies doesn't lead to expected result 'C:\Users\monus\source\repos\gottoursixreact\.next\server\vendor-chunks\next-themes.js', but to 'Error: Can't resolve './vendor-chunks/next-themes' in 'C:\Users\monus\source\repos\gottoursixreact\.next\server'' instead. Resolving dependencies are ignored for this path.
+<w>  at resolve commonjs file ./vendor-chunks/next-themes (expected C:\Users\monus\source\repos\gottoursixreact\.next\server\vendor-chunks\next-themes.js)
+<w>  at file dependencies C:\Users\monus\source\repos\gottoursixreact\.next\server\webpack-runtime.js
+<w>  at file C:\Users\monus\source\repos\gottoursixreact\.next\server\webpack-runtime.js
+<w>  at file dependencies C:\Users\monus\source\repos\gottoursixreact\.next\server\pages\_error.js
+<w>  at file C:\Users\monus\source\repos\gottoursixreact\.next\server\pages\_error.js
+<w>  at file dependencies C:\Users\monus\source\repos\gottoursixreact\node_modules\next\dist\server\require.js
+<w>  at file C:\Users\monus\source\repos\gottoursixreact\node_modules\next\dist\server\require.js
+<w>  at file dependencies C:\Users\monus\source\repos\gottoursixreact\node_modules\next\dist\server\load-components.js
+<w>  at file C:\Users\monus\source\repos\gottoursixreact\node_modules\next\dist\server\load-components.js
+<w>  at file dependencies C:\Users\monus\source\repos\gottoursixreact\node_modules\next\dist\build\utils.js
+<w>  at file C:\Users\monus\source\repos\gottoursixreact\node_modules\next\dist\build\utils.js
+<w>  at file dependencies C:\Users\monus\source\repos\gottoursixreact\node_modules\next\dist\build\webpack\loaders\next-route-loader\index.js
+<w>  at file C:\Users\monus\source\repos\gottoursixreact\node_modules\next\dist\build\webpack\loaders\next-route-loader\index.js
+<w>  at resolve commonjs C:\Users\monus\source\repos\gottoursixreact\node_modules\next\dist\build\webpack\loaders\next-route-loader\index.js
+<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOENT: no such file or directory, lstat 'C:\Users\monus\source\repos\gottoursixreact\.next\server\app\_not-found'
+<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Resolving '../../../../.next/server/app/_not-found/page' in C:\Users\monus\source\repos\gottoursixreact\node_modules\next\dist\server for build dependencies doesn't lead to expected result 'C:\Users\monus\source\repos\gottoursixreact\.next\server\app\_not-found\page.js', but to 'Error: Can't resolve '../../../../.next/server/app/_not-found/page' in 'C:\Users\monus\source\repos\gottoursixreact\node_modules\next\dist\server'' instead. Resolving dependencies are ignored for this path.
+<w>  at resolve commonjs file ../../../../.next/server/app/_not-found/page (expected C:\Users\monus\source\repos\gottoursixreact\.next\server\app\_not-found\page.js)
+<w>  at file dependencies C:\Users\monus\source\repos\gottoursixreact\node_modules\next\dist\server\require.js
+<w>  at file C:\Users\monus\source\repos\gottoursixreact\node_modules\next\dist\server\require.js
+<w>  at file dependencies C:\Users\monus\source\repos\gottoursixreact\node_modules\next\dist\server\load-components.js
+<w>  at file C:\Users\monus\source\repos\gottoursixreact\node_modules\next\dist\server\load-components.js
+<w>  at file dependencies C:\Users\monus\source\repos\gottoursixreact\node_modules\next\dist\build\utils.js
+<w>  at file C:\Users\monus\source\repos\gottoursixreact\node_modules\next\dist\build\utils.js
+<w>  at file dependencies C:\Users\monus\source\repos\gottoursixreact\node_modules\next\dist\build\webpack\loaders\next-route-loader\index.js
+<w>  at file C:\Users\monus\source\repos\gottoursixreact\node_modules\next\dist\build\webpack\loaders\next-route-loader\index.js
+<w>  at resolve commonjs C:\Users\monus\source\repos\gottoursixreact\node_modules\next\dist\build\webpack\loaders\next-route-loader\index.js
+<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOENT: no such file or directory, lstat 'C:\Users\monus\source\repos\gottoursixreact\.next\server\app\_not-found'
+<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Resolving '../../../../.next/server/app/_not-found/page' in C:\Users\monus\source\repos\gottoursixreact\node_modules\next\dist\server for build dependencies doesn't lead to expected result 'C:\Users\monus\source\repos\gottoursixreact\.next\server\app\_not-found\page.js', but to 'Error: Can't resolve '../../../../.next/server/app/_not-found/page' in 'C:\Users\monus\source\repos\gottoursixreact\node_modules\next\dist\server'' instead. Resolving dependencies are ignored for this path.
+<w>  at resolve commonjs file ../../../../.next/server/app/_not-found/page (expected C:\Users\monus\source\repos\gottoursixreact\.next\server\app\_not-found\page.js)
+<w>  at file dependencies C:\Users\monus\source\repos\gottoursixreact\node_modules\next\dist\server\require.js
+<w>  at file C:\Users\monus\source\repos\gottoursixreact\node_modules\next\dist\server\require.js
+<w>  at file dependencies C:\Users\monus\source\repos\gottoursixreact\node_modules\next\dist\server\load-components.js
+<w>  at file C:\Users\monus\source\repos\gottoursixreact\node_modules\next\dist\server\load-components.js
+<w>  at file dependencies C:\Users\monus\source\repos\gottoursixreact\node_modules\next\dist\build\utils.js
+<w>  at file C:\Users\monus\source\repos\gottoursixreact\node_modules\next\dist\build\utils.js
+<w>  at file dependencies C:\Users\monus\source\repos\gottoursixreact\node_modules\next\dist\build\webpack\loaders\next-route-loader\index.js
+<w>  at file C:\Users\monus\source\repos\gottoursixreact\node_modules\next\dist\build\webpack\loaders\next-route-loader\index.js
+<w>  at resolve commonjs C:\Users\monus\source\repos\gottoursixreact\node_modules\next\dist\build\webpack\loaders\next-route-loader\index.js

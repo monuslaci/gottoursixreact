@@ -6,6 +6,7 @@ export type TopicListItem = {
   slug: string;
   description: string | null;
   tags: string[];
+  deletedAt: string | null;
   createdAt: string;
   updatedAt: string;
   counts: {
@@ -95,6 +96,7 @@ function toTopicListItem(topic: {
   slug: string;
   description: string | null;
   tags: string[];
+  deletedAt: Date | null;
   createdAt: Date;
   updatedAt: Date;
   _count: {
@@ -109,6 +111,7 @@ function toTopicListItem(topic: {
     slug: topic.slug,
     description: topic.description,
     tags: topic.tags,
+    deletedAt: topic.deletedAt?.toISOString() ?? null,
     createdAt: topic.createdAt.toISOString(),
     updatedAt: topic.updatedAt.toISOString(),
     counts: {
@@ -151,15 +154,23 @@ function toTopicPostItem(post: {
   };
 }
 
-async function generateUniqueTopicSlug(title: string) {
+async function generateUniqueTopicSlug(title: string, excludeTopicId?: string) {
   const baseSlug = slugify(title) || "topic";
   const existingSlugs = await prisma.topic.findMany({
     where: {
       slug: {
         startsWith: baseSlug,
       },
+      ...(excludeTopicId
+        ? {
+            NOT: {
+              id: excludeTopicId,
+            },
+          }
+        : {}),
     },
     select: {
+      id: true,
       slug: true,
     },
   });
@@ -179,6 +190,26 @@ async function generateUniqueTopicSlug(title: string) {
 }
 
 export async function listTopics() {
+  const topics = await prisma.topic.findMany({
+    where: {
+      deletedAt: null,
+    },
+    orderBy: [{ createdAt: "desc" }],
+    include: {
+      _count: {
+        select: {
+          subtopics: true,
+          subscriptions: true,
+          posts: true,
+        },
+      },
+    },
+  });
+
+  return topics.map(toTopicListItem);
+}
+
+export async function listAdminTopics() {
   const topics = await prisma.topic.findMany({
     orderBy: [{ createdAt: "desc" }],
     include: {
@@ -222,6 +253,10 @@ export async function getTopicById(topicId: string) {
   });
 
   if (!topic) {
+    return null;
+  }
+
+  if (topic.deletedAt) {
     return null;
   }
 
@@ -272,6 +307,108 @@ export async function createTopic(input: {
       description: input.description?.trim() || null,
       tags,
       createdById: input.createdById ?? null,
+    },
+    include: {
+      _count: {
+        select: {
+          subtopics: true,
+          subscriptions: true,
+          posts: true,
+        },
+      },
+    },
+  });
+
+  return toTopicListItem(topic);
+}
+
+export async function updateTopic(
+  topicId: string,
+  input: {
+    title: string;
+    description?: string | null;
+    tags?: string[] | string;
+  }
+) {
+  const existingTopic = await prisma.topic.findUnique({
+    where: {
+      id: topicId,
+    },
+    select: {
+      id: true,
+      title: true,
+      deletedAt: true,
+    },
+  });
+
+  if (!existingTopic || existingTopic.deletedAt) {
+    throw new CommunityError("Topic not found.", 404);
+  }
+
+  const title = input.title.trim();
+
+  if (!title) {
+    throw new CommunityError("Topic title is required.", 400);
+  }
+
+  const slug =
+    title === existingTopic.title
+      ? undefined
+      : await generateUniqueTopicSlug(title, topicId);
+
+  const tags = Array.isArray(input.tags)
+    ? normalizeTags(input.tags)
+    : normalizeTags(
+        typeof input.tags === "string"
+          ? input.tags.split(",")
+          : undefined
+      );
+
+  const topic = await prisma.topic.update({
+    where: {
+      id: topicId,
+    },
+    data: {
+      title,
+      ...(slug ? { slug } : {}),
+      description: input.description?.trim() || null,
+      tags,
+    },
+    include: {
+      _count: {
+        select: {
+          subtopics: true,
+          subscriptions: true,
+          posts: true,
+        },
+      },
+    },
+  });
+
+  return toTopicListItem(topic);
+}
+
+export async function softDeleteTopic(topicId: string) {
+  const existingTopic = await prisma.topic.findUnique({
+    where: {
+      id: topicId,
+    },
+    select: {
+      id: true,
+      deletedAt: true,
+    },
+  });
+
+  if (!existingTopic || existingTopic.deletedAt) {
+    throw new CommunityError("Topic not found.", 404);
+  }
+
+  const topic = await prisma.topic.update({
+    where: {
+      id: topicId,
+    },
+    data: {
+      deletedAt: new Date(),
     },
     include: {
       _count: {
@@ -340,10 +477,15 @@ export async function createTopicPost(
     },
     select: {
       id: true,
+      deletedAt: true,
     },
   });
 
   if (!topic) {
+    throw new CommunityError("Topic not found.", 404);
+  }
+
+  if (topic.deletedAt) {
     throw new CommunityError("Topic not found.", 404);
   }
 

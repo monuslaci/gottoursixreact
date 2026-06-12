@@ -94,43 +94,25 @@ export default function HomePage() {
             </div>
           </div>
 
-          <div className="bg-brotherhood-navy p-5 text-white sm:p-8">
-            <div className="flex h-full flex-col justify-between gap-8">
-              <div className="space-y-5">
-                <div className="w-fit rounded-xl bg-white/10 px-3 py-2 text-xs font-medium uppercase tracking-[0.16em] text-white/80">
-                  Operating posture
-                </div>
-                <div className="space-y-3">
-                  <p className="text-2xl font-semibold">Steady. Private. Accountable.</p>
-                  <p className="text-sm leading-6 text-white/72">
-                    The base experience favors clear navigation, visible status,
-                    and restrained surfaces that feel at home in coaching,
-                    wellness, and veteran-support environments.
-                  </p>
-                </div>
+          <div className="flex items-center justify-center bg-brotherhood-navy p-5 text-white sm:p-8">
+            <div className="flex w-full max-w-md flex-col items-center gap-5 text-center">
+              <div className="relative flex h-44 w-44 items-center justify-center overflow-hidden rounded-[1.75rem] border border-white/12 bg-white/8 shadow-[0_24px_70px_rgb(0_0_0/0.18)] sm:h-56 sm:w-56">
+                <Image
+                  src="/logo.png"
+                  alt="Six logo"
+                  fill
+                  sizes="224px"
+                  className="object-contain p-4"
+                  priority
+                />
               </div>
-
-              <div className="grid gap-3">
-                {[
-                  ["01", "Topic spaces", "Public discussion and guided groups"],
-                  ["02", "Private messages", "Friendship building and check-ins"],
-                  ["03", "Admin visibility", "Moderation and safety workflows"],
-                ].map(([count, title, text]) => (
-                  <div
-                    key={title}
-                    className="rounded-xl border border-white/12 bg-white/8 p-4"
-                  >
-                    <div className="flex items-start gap-3">
-                      <span className="text-sm font-semibold text-brotherhood-bronze">
-                        {count}
-                      </span>
-                      <div>
-                        <p className="text-sm font-semibold text-white">{title}</p>
-                        <p className="mt-1 text-xs text-white/65">{text}</p>
-                      </div>
-                    </div>
-                  </div>
-                ))}
+              <div className="space-y-2">
+                <p className="text-xs font-medium uppercase tracking-[0.2em] text-white/70">
+                  Six
+                </p>
+                <p className="text-sm leading-6 text-white/72">
+                  A private support community for steady conversations and accountable growth.
+                </p>
               </div>
             </div>
           </div>

@@ -88,6 +88,7 @@ model Topic {
   description String?   @db.Text
   tags        String[]   @default([])
   createdById String?
+  deletedAt   DateTime?
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
 
@@ -97,6 +98,7 @@ model Topic {
   posts       DiscussionPost[]
 
   @@index([createdById])
+  @@index([deletedAt])
   @@map("topics")
 }
 
