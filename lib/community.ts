@@ -34,6 +34,28 @@ export type TopicPostItem = {
   replyCount: number;
 };
 
+export type TopicDetailItem = {
+  id: string;
+  title: string;
+  slug: string;
+  description: string | null;
+  tags: string[];
+  createdAt: string;
+  updatedAt: string;
+  counts: {
+    subtopics: number;
+    subscriptions: number;
+    posts: number;
+  };
+  subtopics: Array<{
+    id: string;
+    title: string;
+    slug: string;
+    description: string | null;
+    sortOrder: number;
+  }>;
+};
+
 export class CommunityError extends Error {
   statusCode: number;
 
@@ -171,6 +193,55 @@ export async function listTopics() {
   });
 
   return topics.map(toTopicListItem);
+}
+
+export async function getTopicById(topicId: string) {
+  const topic = await prisma.topic.findUnique({
+    where: {
+      id: topicId,
+    },
+    include: {
+      subtopics: {
+        orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
+        select: {
+          id: true,
+          title: true,
+          slug: true,
+          description: true,
+          sortOrder: true,
+        },
+      },
+      _count: {
+        select: {
+          subtopics: true,
+          subscriptions: true,
+          posts: true,
+        },
+      },
+    },
+  });
+
+  if (!topic) {
+    return null;
+  }
+
+  const detail: TopicDetailItem = {
+    id: topic.id,
+    title: topic.title,
+    slug: topic.slug,
+    description: topic.description,
+    tags: topic.tags,
+    createdAt: topic.createdAt.toISOString(),
+    updatedAt: topic.updatedAt.toISOString(),
+    counts: {
+      subtopics: topic._count.subtopics,
+      subscriptions: topic._count.subscriptions,
+      posts: topic._count.posts,
+    },
+    subtopics: topic.subtopics,
+  };
+
+  return detail;
 }
 
 export async function createTopic(input: {

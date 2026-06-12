@@ -1,16 +1,55 @@
 "use client";
 
-import type { TopicListItem } from "@/lib/community";
-import { Button, Card, CardBody, Chip, Input, Textarea } from "@heroui/react";
-import { Hash, Plus, Sparkles, MessageSquareText } from "lucide-react";
+import { Button, Card, CardBody, Chip } from "@heroui/react";
+import { Plus, Sparkles } from "lucide-react";
 import { useState, type FormEvent } from "react";
 
-type TopicsDashboardProps = {
-  initialTopics: TopicListItem[];
+type FloatingFieldProps = {
+  isRequired?: boolean;
+  label: string;
+  value: string;
+  onValueChange: (value: string) => void;
 };
 
-export function TopicsDashboard({ initialTopics }: TopicsDashboardProps) {
-  const [topics, setTopics] = useState(initialTopics);
+function FloatingInput({
+  isRequired,
+  label,
+  value,
+  onValueChange,
+}: FloatingFieldProps) {
+  return (
+    <label className="group relative block w-full">
+      <input
+        required={isRequired}
+        className="peer h-14 w-full rounded-xl border border-divider/70 bg-content1/90 px-4 pb-2 pt-6 text-sm text-foreground shadow-sm outline-none transition-colors placeholder:text-transparent focus:border-primary/40 focus:shadow-[0_0_0_4px_rgb(var(--heroui-colors-primary-500)/0.08)]"
+        placeholder=" "
+        value={value}
+        onChange={(event) => onValueChange(event.target.value)}
+      />
+      <span className="pointer-events-none absolute left-4 top-2 text-xs font-medium text-default-600 transition-all peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:text-sm peer-placeholder-shown:font-normal peer-placeholder-shown:text-default-500 peer-focus:top-2 peer-focus:translate-y-0 peer-focus:text-xs peer-focus:font-medium peer-focus:text-default-700">
+        {label}
+      </span>
+    </label>
+  );
+}
+
+function FloatingTextarea({ label, value, onValueChange }: FloatingFieldProps) {
+  return (
+    <label className="group relative block w-full">
+      <textarea
+        className="peer min-h-28 w-full resize-y rounded-xl border border-divider/70 bg-content1/90 px-4 pb-3 pt-7 text-sm leading-6 text-foreground shadow-sm outline-none transition-colors placeholder:text-transparent focus:border-primary/40 focus:shadow-[0_0_0_4px_rgb(var(--heroui-colors-primary-500)/0.08)]"
+        placeholder=" "
+        value={value}
+        onChange={(event) => onValueChange(event.target.value)}
+      />
+      <span className="pointer-events-none absolute left-4 top-2 text-xs font-medium text-default-600 transition-all peer-placeholder-shown:top-6 peer-placeholder-shown:text-sm peer-placeholder-shown:font-normal peer-placeholder-shown:text-default-500 peer-focus:top-2 peer-focus:text-xs peer-focus:font-medium peer-focus:text-default-700">
+        {label}
+      </span>
+    </label>
+  );
+}
+
+export function TopicsDashboard() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [tags, setTags] = useState("");
@@ -35,16 +74,10 @@ export function TopicsDashboard({ initialTopics }: TopicsDashboardProps) {
         }),
       });
 
-      const payload = (await response.json()) as
-        | { topic: TopicListItem }
-        | { error: string };
+      const payload = (await response.json()) as { error: string };
 
       if (!response.ok) {
         throw new Error("error" in payload ? payload.error : "Unable to create topic.");
-      }
-
-      if ("topic" in payload) {
-        setTopics((current) => [payload.topic, ...current]);
       }
 
       setTitle("");
@@ -58,180 +91,52 @@ export function TopicsDashboard({ initialTopics }: TopicsDashboardProps) {
   }
 
   return (
-    <div className="grid gap-4 lg:grid-cols-[1.2fr_0.8fr]">
-      <Card className="border border-primary/12 bg-content1 shadow-[0_18px_48px_rgb(var(--heroui-colors-primary-500)/0.08)]">
-        <CardBody className="gap-5 p-5 sm:p-6">
-          <div className="flex flex-wrap items-center gap-2">
-            <Chip color="primary" variant="flat">
-              Topics
-            </Chip>
-            <Chip color="secondary" variant="flat">
-              Public discussion
-            </Chip>
-            <Chip className="bg-brotherhood-forest/16 text-brotherhood-forest" variant="flat">
-              Seeded demo data
-            </Chip>
+    <Card className="border border-primary/12 bg-content1 shadow-[0_18px_48px_rgb(var(--heroui-colors-primary-500)/0.08)]">
+      <CardBody className="gap-4 p-4 sm:p-5">
+        <div className="flex items-center gap-3">
+          <div className="rounded-xl bg-primary/10 p-3 text-primary">
+            <Plus className="h-5 w-5" />
           </div>
-
-          <div className="space-y-3">
-            <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">
-              Browse the first community spaces and start new ones.
-            </h1>
-            <p className="max-w-2xl text-sm leading-6 text-default-600 sm:text-base">
-              This page is wired to the new topic API and seeded with sample
-              spaces so you can see real records in the database immediately.
+          <div className="space-y-1">
+            <Chip color="primary" variant="flat">
+              Create topic
+            </Chip>
+            <p className="text-sm text-default-600">
+              Add a new topic with optional tags.
             </p>
           </div>
+        </div>
 
-          <div className="grid gap-3 sm:grid-cols-3">
-            {[
-              ["Topics", `${topics.length} live spaces`],
-              ["Posts", `${topics.reduce((sum, topic) => sum + topic.counts.posts, 0)} seeded posts`],
-              ["Subscriptions", `${topics.reduce((sum, topic) => sum + topic.counts.subscriptions, 0)} demo follows`],
-            ].map(([label, value]) => (
-              <div
-                key={label}
-                className="rounded-xl border border-divider bg-background/80 p-4"
-              >
-                <p className="text-xs font-medium uppercase tracking-[0.14em] text-secondary">
-                  {label}
-                </p>
-                <p className="mt-1 text-sm font-semibold text-foreground">{value}</p>
-              </div>
-            ))}
-          </div>
+        <form className="grid gap-3" onSubmit={handleSubmit}>
+          <FloatingInput
+            isRequired
+            label="Title"
+            value={title}
+            onValueChange={setTitle}
+          />
+          <FloatingTextarea
+            label="Description"
+            value={description}
+            onValueChange={setDescription}
+          />
+          <FloatingInput
+            label="Tags"
+            value={tags}
+            onValueChange={setTags}
+          />
 
-          <div className="grid gap-4 xl:grid-cols-[1fr_360px]">
-            <div className="grid gap-3">
-              {topics.map((topic) => (
-                <Card
-                  key={topic.id}
-                  className="border border-primary/10 bg-background/80 shadow-none"
-                >
-                  <CardBody className="gap-4 p-4">
-                    <div className="flex items-start justify-between gap-4">
-                      <div className="space-y-2">
-                        <div className="flex items-center gap-2">
-                          <div className="rounded-xl bg-secondary/12 p-2 text-secondary">
-                            <Hash className="h-4 w-4" />
-                          </div>
-                          <div>
-                            <h2 className="text-base font-semibold">
-                              {topic.title}
-                            </h2>
-                            <p className="text-xs text-default-500">
-                              /{topic.slug}
-                            </p>
-                          </div>
-                        </div>
-                        <p className="text-sm leading-6 text-default-600">
-                          {topic.description || "A discussion space ready for a focused conversation."}
-                        </p>
-                      </div>
+          {error ? <p className="text-sm text-danger-500">{error}</p> : null}
 
-                      <div className="rounded-xl bg-primary/10 px-3 py-2 text-right">
-                        <p className="text-xs font-medium uppercase tracking-[0.12em] text-primary">
-                          Activity
-                        </p>
-                        <p className="text-sm font-semibold text-foreground">
-                          {topic.counts.posts} posts
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="flex flex-wrap gap-2">
-                      {topic.tags.length > 0 ? (
-                        topic.tags.map((tag) => (
-                          <Chip key={`${topic.id}-${tag}`} size="sm" variant="flat">
-                            {tag}
-                          </Chip>
-                        ))
-                      ) : (
-                        <Chip size="sm" variant="flat">
-                          No tags yet
-                        </Chip>
-                      )}
-                    </div>
-
-                    <div className="flex flex-wrap items-center gap-3 text-xs text-default-500">
-                      <span>{topic.counts.subtopics} subtopics</span>
-                      <span>{topic.counts.subscriptions} subscribers</span>
-                      <span>Created {new Date(topic.createdAt).toLocaleDateString()}</span>
-                    </div>
-                  </CardBody>
-                </Card>
-              ))}
-            </div>
-
-            <Card className="border border-primary/12 bg-brotherhood-navy text-white shadow-[0_18px_48px_rgb(var(--heroui-colors-primary-500)/0.12)]">
-              <CardBody className="gap-4 p-4">
-                <div className="flex items-center gap-3">
-                  <div className="rounded-xl bg-white/10 p-3 text-brotherhood-bronze">
-                    <Plus className="h-5 w-5" />
-                  </div>
-                  <div>
-                    <p className="text-sm font-semibold text-white">Create a topic</p>
-                    <p className="text-xs text-white/65">
-                      Use comma-separated tags to organize the space.
-                    </p>
-                  </div>
-                </div>
-
-                <form className="space-y-4" onSubmit={handleSubmit}>
-                  <Input
-                    isRequired
-                    label="Topic title"
-                    labelPlacement="outside"
-                    placeholder="e.g. Career and purpose"
-                    value={title}
-                    onChange={(event) => setTitle(event.target.value)}
-                  />
-                  <Textarea
-                    label="Description"
-                    labelPlacement="outside"
-                    minRows={4}
-                    placeholder="A clear, supportive space for discussion."
-                    value={description}
-                    onChange={(event) => setDescription(event.target.value)}
-                  />
-                  <Input
-                    label="Tags"
-                    labelPlacement="outside"
-                    placeholder="growth, work, goals"
-                    value={tags}
-                    onChange={(event) => setTags(event.target.value)}
-                  />
-
-                  {error ? (
-                    <p className="text-sm text-danger-300">{error}</p>
-                  ) : null}
-
-                  <Button
-                    color="primary"
-                    fullWidth
-                    isLoading={isSubmitting}
-                    startContent={<Sparkles size={16} />}
-                    type="submit"
-                  >
-                    Create topic
-                  </Button>
-                </form>
-
-                <div className="rounded-xl border border-white/10 bg-white/8 p-4">
-                  <div className="flex items-center gap-2 text-sm font-medium text-white">
-                    <MessageSquareText className="h-4 w-4 text-brotherhood-bronze" />
-                    Posts API ready
-                  </div>
-                  <p className="mt-2 text-xs leading-5 text-white/70">
-                    The topic posts route is ready for thread creation and reply
-                    workflows when you want to wire the next screen.
-                  </p>
-                </div>
-              </CardBody>
-            </Card>
-          </div>
-        </CardBody>
-      </Card>
-    </div>
+          <Button
+            color="primary"
+            isLoading={isSubmitting}
+            startContent={<Sparkles size={16} />}
+            type="submit"
+          >
+            Create topic
+          </Button>
+        </form>
+      </CardBody>
+    </Card>
   );
 }

@@ -1,0 +1,19 @@
+
+> gottoursixreact@0.1.0 dev
+> next dev
+
+  ▲ Next.js 14.2.35
+  - Local:        http://localhost:3000
+  - Environments: .env.local, .env
+
+ ✓ Starting...
+ ✓ Ready in 1942ms
+ ○ Compiling / ...
+ ✓ Compiled / in 16.7s (3939 modules)
+ ○ Compiling /admin ...
+ ✓ Compiled /admin in 1732ms (3949 modules)
+ GET /admin 200 in 1976ms
+ ○ Compiling /topics ...
+ ✓ Compiled /topics in 938ms (3951 modules)
+ GET /topics 200 in 3325ms
+[?25h

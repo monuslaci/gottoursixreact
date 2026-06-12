@@ -74,23 +74,6 @@ export default function HomePage() {
               </p>
             </div>
 
-            <div className="grid gap-3 sm:grid-cols-3">
-              {[
-                ["Navy", "Command and trust", "bg-brotherhood-navy"],
-                ["Steel", "Calm structure", "bg-brotherhood-steel"],
-                ["Bronze", "Progress earned", "bg-brotherhood-bronze"],
-              ].map(([name, text, color]) => (
-                <div
-                  key={name}
-                  className="rounded-xl border border-primary/10 bg-background/80 p-3"
-                >
-                  <div className={`mb-3 h-1.5 w-12 rounded-full ${color}`} />
-                  <p className="text-sm font-semibold text-foreground">{name}</p>
-                  <p className="mt-1 text-xs text-default-500">{text}</p>
-                </div>
-              ))}
-            </div>
-
             <div className="flex flex-col gap-3 sm:flex-row">
               <Button
                 as={Link}
@@ -187,10 +170,10 @@ export default function HomePage() {
         </div>
         <div className="grid gap-3 sm:grid-cols-3">
           {[
-              ["Topics", "Discussion spaces"],
-              ["Messages", "Private support"],
-              ["Safety", "Admin visibility"],
-            ].map(([label, text]) => (
+            ["Topics", "Discussion spaces"],
+            ["Messages", "Private support"],
+            ["Safety", "Admin visibility"],
+          ].map(([label, text]) => (
             <div
               key={label}
               className="rounded-xl border border-divider bg-background/80 p-4"
