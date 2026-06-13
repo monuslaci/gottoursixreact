@@ -1,3 +1,5 @@
+"use client";
+
 import { Button, Card, CardBody, Chip } from "@heroui/react";
 import { ArrowLeft, ShieldCheck } from "lucide-react";
 import Link from "next/link";

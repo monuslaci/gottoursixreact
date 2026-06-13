@@ -13,6 +13,7 @@ export const siteConfig = {
     { label: "Home", href: "/" },
     { label: "Topics", href: "/topics" },
     { label: "Rules", href: "/rules" },
+    { label: "Profile", href: "/profile" },
     { label: "Admin", href: "/admin" },
     { label: "Demo", href: "/demo" },
     { label: "Messages", href: "/messages" },

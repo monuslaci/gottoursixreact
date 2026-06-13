@@ -2,7 +2,7 @@
 
 import { Button, Card, CardBody, Navbar, NavbarBrand, NavbarContent, NavbarItem } from "@heroui/react";
 import { AnimatePresence, motion } from "framer-motion";
-import { MessageSquare, Menu, X } from "lucide-react";
+import { MessageSquare, Menu, UserRound, X } from "lucide-react";
 import NextLink from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
@@ -18,6 +18,7 @@ export function AppNavbar() {
   const unreadMessageCount = 0;
 
   const isActive = (href: string) => pathname === href;
+  const isProfileActive = isActive("/profile");
 
   return (
     <div className="sticky top-0 z-50">
@@ -73,6 +74,20 @@ export function AppNavbar() {
         </NavbarContent>
 
         <NavbarContent justify="end" className="gap-2">
+          <Button
+            as={NextLink}
+            href="/profile"
+            isIconOnly
+            variant="flat"
+            className={cn(
+              isProfileActive
+                ? "bg-primary text-primary-foreground hover:bg-primary/90"
+                : "bg-secondary/10 text-primary hover:bg-secondary/16"
+            )}
+            aria-label="Profile"
+          >
+            <UserRound className="h-5 w-5" />
+          </Button>
           <Button
             as={NextLink}
             href="/messages"
