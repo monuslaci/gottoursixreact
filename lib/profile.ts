@@ -3,11 +3,12 @@ import { Prisma } from "@prisma/client";
 import { CommunityError } from "@/lib/community";
 import { prisma } from "@/lib/prisma";
 
-export const DEFAULT_PROFILE_EMAIL = "miles.parker@six.local";
+export const DEFAULT_PROFILE_EMAIL = "miles.parker@gotyoursix.local";
 
 export type ProfileUser = {
   id: string;
   name: string | null;
+  username: string;
   email: string | null;
   image: string | null;
   givenName: string | null;
@@ -61,6 +62,7 @@ export type ProfilePayload = {
 export type UpdateProfileInput = {
   userId?: string | null;
   name?: string | null;
+  username?: string | null;
   image?: string | null;
   givenName?: string | null;
   surname?: string | null;
@@ -80,9 +82,27 @@ function normalizeText(value: string | null | undefined) {
   return trimmed.length > 0 ? trimmed : null;
 }
 
+export function normalizeUsername(value: string | null | undefined) {
+  if (typeof value !== "string") {
+    return null;
+  }
+
+  const trimmed = value.trim().toLowerCase();
+
+  if (!trimmed) {
+    return null;
+  }
+
+  return trimmed
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .replace(/-{2,}/g, "-");
+}
+
 function mapUser(user: {
   id: string;
   name: string | null;
+  username: string;
   email: string | null;
   image: string | null;
   givenName: string | null;
@@ -99,6 +119,7 @@ function mapUser(user: {
   return {
     id: user.id,
     name: user.name,
+    username: user.username,
     email: user.email,
     image: user.image,
     givenName: user.givenName,
@@ -140,6 +161,7 @@ async function resolveDemoProfileUser(userId?: string | null) {
   return prisma.user.create({
     data: {
       name: "Miles Parker",
+      username: "miles-parker",
       email: DEFAULT_PROFILE_EMAIL,
       businessPhones: [],
       givenName: "Miles",
@@ -244,9 +266,15 @@ export async function getProfilePayload(userId?: string | null) {
 
 export async function updateProfilePayload(input: UpdateProfileInput) {
   const user = await resolveDemoProfileUser(input.userId ?? null);
+  const username = normalizeUsername(input.username);
+
+  if (!username) {
+    throw new CommunityError("Username is required.", 400);
+  }
 
   const data: Prisma.UserUpdateInput = {
     name: normalizeText(input.name),
+    username,
     image: normalizeText(input.image),
     givenName: normalizeText(input.givenName),
     surname: normalizeText(input.surname),

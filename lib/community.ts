@@ -24,6 +24,7 @@ export type TopicPostItem = {
   author: {
     id: string;
     name: string | null;
+    username: string;
     image: string | null;
   } | null;
   subtopic: {
@@ -279,6 +280,7 @@ function toTopicPostItem(post: {
   author: {
     id: string;
     name: string | null;
+    username: string;
     image: string | null;
   } | null;
   subtopic: {
@@ -659,6 +661,54 @@ export async function listTopicPosts(topicId: string) {
         select: {
           id: true,
           name: true,
+          username: true,
+          image: true,
+        },
+      },
+      subtopic: {
+        select: {
+          id: true,
+          title: true,
+          slug: true,
+        },
+      },
+      _count: {
+        select: {
+          replies: true,
+        },
+      },
+    },
+  });
+
+  return posts.map(toTopicPostItem);
+}
+
+export async function listSubtopicPosts(subtopicId: string) {
+  const subtopic = await prisma.subtopic.findUnique({
+    where: {
+      id: subtopicId,
+    },
+    select: {
+      id: true,
+      deletedAt: true,
+    },
+  });
+
+  if (!subtopic || subtopic.deletedAt) {
+    throw new CommunityError("Subtopic not found.", 404);
+  }
+
+  const posts = await prisma.discussionPost.findMany({
+    where: {
+      subtopicId,
+    },
+    orderBy: [{ createdAt: "desc" }],
+    include: {
+      author: {
+        select: {
+          id: true,
+          name: true,
+          username: true,
           image: true,
         },
       },
@@ -771,6 +821,7 @@ export async function createTopicPost(
         select: {
           id: true,
           name: true,
+          username: true,
           image: true,
         },
       },
@@ -790,6 +841,37 @@ export async function createTopicPost(
   });
 
   return toTopicPostItem(post);
+}
+
+export async function createSubtopicPost(
+  subtopicId: string,
+  input: {
+    body: string;
+    authorId?: string | null;
+    parentPostId?: string | null;
+  }
+) {
+  const subtopic = await prisma.subtopic.findUnique({
+    where: {
+      id: subtopicId,
+    },
+    select: {
+      id: true,
+      topicId: true,
+      deletedAt: true,
+    },
+  });
+
+  if (!subtopic || subtopic.deletedAt) {
+    throw new CommunityError("Subtopic not found.", 404);
+  }
+
+  return createTopicPost(subtopic.topicId, {
+    body: input.body,
+    authorId: input.authorId ?? null,
+    subtopicId,
+    parentPostId: input.parentPostId ?? null,
+  });
 }
 
 export async function listAdminSubtopics() {

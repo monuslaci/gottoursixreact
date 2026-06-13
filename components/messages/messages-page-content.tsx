@@ -7,7 +7,6 @@ import {
   CardBody,
   Chip,
   Divider,
-  Input,
   Skeleton,
   Textarea,
 } from "@heroui/react";
@@ -21,13 +20,16 @@ import {
   Sparkles,
 } from "lucide-react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 
 import { useUserProfile } from "@/lib/hooks/useUserProfile";
 import type { ConversationDetails, ConversationListItem } from "@/lib/messages";
 
-function initialsFromName(name: string | null, email: string | null) {
-  const source = name || email || "Member";
+const PAGE_SIZE = 15;
+
+function initialsFromName(username: string | null, name: string | null) {
+  const source = username || name || "Member";
   const parts = source.trim().split(/\s+/);
 
   if (parts.length >= 2) {
@@ -53,6 +55,40 @@ function formatDateTime(value: string) {
   });
 }
 
+function truncateWords(value: string, limit: number) {
+  const words = value.trim().split(/\s+/);
+
+  if (words.length <= limit) {
+    return value;
+  }
+
+  return `${words.slice(0, limit).join(" ")}...`;
+}
+
+function FloatingInput({
+  label,
+  value,
+  onValueChange,
+}: {
+  label: string;
+  value: string;
+  onValueChange: (value: string) => void;
+}) {
+  return (
+    <label className="group relative block w-full">
+      <input
+        className="peer h-14 w-full rounded-xl border border-divider/70 bg-content1/90 px-4 pb-2 pt-6 text-sm text-foreground shadow-sm outline-none transition-colors placeholder:text-transparent focus:border-primary/40 focus:shadow-[0_0_0_4px_rgb(var(--heroui-colors-primary-500)/0.08)]"
+        placeholder=" "
+        value={value}
+        onChange={(event) => onValueChange(event.target.value)}
+      />
+      <span className="pointer-events-none absolute left-4 top-2 text-xs font-medium text-default-600 transition-all peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:text-sm peer-placeholder-shown:font-normal peer-placeholder-shown:text-default-500 peer-focus:top-2 peer-focus:translate-y-0 peer-focus:text-xs peer-focus:font-medium peer-focus:text-default-700">
+        {label}
+      </span>
+    </label>
+  );
+}
+
 function MessageThreadSkeleton() {
   return (
     <Card className="border border-primary/12 bg-content1 shadow-[0_18px_48px_rgb(var(--heroui-colors-primary-500)/0.08)]">
@@ -72,6 +108,9 @@ function MessageThreadSkeleton() {
 
 export function MessagesPageContent() {
   const { user, isLoading: isLoadingProfile } = useUserProfile();
+  const searchParams = useSearchParams();
+  const recipientUsernameParam =
+    searchParams.get("recipientUsername") || searchParams.get("recipientEmail");
   const [conversations, setConversations] = useState<ConversationListItem[]>([]);
   const [selectedConversationId, setSelectedConversationId] = useState<
     string | null
@@ -84,6 +123,7 @@ export function MessagesPageContent() {
   const [recipientEmail, setRecipientEmail] = useState("");
   const [starterBody, setStarterBody] = useState("");
   const [search, setSearch] = useState("");
+  const [inboxPage, setInboxPage] = useState(1);
   const [error, setError] = useState<string | null>(null);
   const [sendingConversationId, setSendingConversationId] = useState<
     string | null
@@ -101,7 +141,7 @@ export function MessagesPageContent() {
         conversation.title,
         conversation.preview,
         conversation.members
-          .map((member) => member.name || member.email || "")
+          .map((member) => member.username || member.name || "")
           .join(" "),
       ]
         .join(" ")
@@ -118,7 +158,20 @@ export function MessagesPageContent() {
     [conversations, selectedConversationId]
   );
 
+  const totalInboxPages = Math.max(1, Math.ceil(filteredConversations.length / PAGE_SIZE));
+  const safeInboxPage = Math.min(inboxPage, totalInboxPages);
+  const inboxConversations = filteredConversations.slice(
+    (safeInboxPage - 1) * PAGE_SIZE,
+    safeInboxPage * PAGE_SIZE
+  );
+
   const currentUserId = user?.id ?? null;
+
+  useEffect(() => {
+    if (recipientUsernameParam) {
+      setRecipientEmail(recipientUsernameParam);
+    }
+  }, [recipientUsernameParam]);
 
   function emitMessageChange() {
     window.dispatchEvent(new Event("messages-changed"));
@@ -233,6 +286,10 @@ export function MessagesPageContent() {
     }
   }, [filteredConversations, selectedConversationId]);
 
+  useEffect(() => {
+    setInboxPage(1);
+  }, [search]);
+
   async function handleCreateConversation() {
     const email = user?.email;
 
@@ -245,7 +302,7 @@ export function MessagesPageContent() {
     const trimmedBody = starterBody.trim();
 
     if (!trimmedRecipient) {
-      setError("Recipient email is required.");
+      setError("Recipient username is required.");
       return;
     }
 
@@ -260,7 +317,7 @@ export function MessagesPageContent() {
         },
         body: JSON.stringify({
           userEmail: email,
-          recipientEmail: trimmedRecipient,
+          recipientUsername: trimmedRecipient,
           body: trimmedBody,
         }),
       });
@@ -370,8 +427,9 @@ export function MessagesPageContent() {
                 Message another member directly.
               </h1>
               <p className="max-w-2xl text-sm leading-6 text-default-600 sm:text-base">
-                Start a conversation by email, then keep the thread going with a simple
-                editor. The navbar message icon updates when unread messages are present.
+                Start a conversation by username, then keep the thread going with a
+                simple editor. The navbar message icon updates when unread messages are
+                present.
               </p>
             </div>
           </CardBody>
@@ -386,37 +444,51 @@ export function MessagesPageContent() {
           className="space-y-4"
         >
           <Card className="border border-primary/12 bg-content1 shadow-[0_18px_48px_rgb(var(--heroui-colors-primary-500)/0.08)]">
-            <CardBody className="gap-4 p-5 sm:p-6">
-              <div className="space-y-1">
+            <CardBody className="gap-5 p-5 sm:p-6">
+              <div className="space-y-2">
                 <Chip color="primary" variant="flat">
                   Start conversation
                 </Chip>
-                <p className="text-sm text-default-600">
-                  Send a first message to another member.
+                <p className="max-w-md text-sm leading-6 text-default-600">
+                  Send a first message to another member by their public username.
                 </p>
               </div>
 
-              <Input
-                label="Recipient email"
-                placeholder=" "
+              <FloatingInput
+                label="Recipient username"
                 value={recipientEmail}
                 onValueChange={setRecipientEmail}
               />
-              <Textarea
-                label="First message"
-                minRows={4}
-                placeholder=" "
-                value={starterBody}
-                onValueChange={setStarterBody}
-              />
-              <Button
-                color="primary"
-                isLoading={sendingConversationId === "new"}
-                startContent={<MessageSquarePlus className="h-4 w-4" />}
-                onPress={() => void handleCreateConversation()}
-              >
-                Start conversation
-              </Button>
+
+              <div className="space-y-4">
+                <Textarea
+                  label="First message"
+                  minRows={6}
+                  placeholder=" "
+                  value={starterBody}
+                  onValueChange={setStarterBody}
+                  classNames={{
+                    inputWrapper:
+                      "min-h-[170px] border border-divider/70 bg-background/90 shadow-sm",
+                    input: "pt-2",
+                  }}
+                />
+                <div className="flex flex-col gap-3 border-t border-divider/60 pt-3 sm:flex-row sm:items-center sm:justify-between">
+                  <p className="max-w-xl text-xs leading-5 text-default-500">
+                    Your first message opens the thread immediately and helps get the
+                    conversation started.
+                  </p>
+                  <Button
+                    color="primary"
+                    isLoading={sendingConversationId === "new"}
+                    startContent={<MessageSquarePlus className="h-4 w-4" />}
+                    className="h-auto w-full whitespace-normal px-4 py-3 text-center leading-5 sm:w-auto"
+                    onPress={() => void handleCreateConversation()}
+                  >
+                    Start conversation
+                  </Button>
+                </div>
+              </div>
             </CardBody>
           </Card>
 
@@ -451,8 +523,16 @@ export function MessagesPageContent() {
                   Array.from({ length: 3 }).map((_, index) => (
                     <Skeleton key={index} className="h-24 rounded-2xl" />
                   ))
-                ) : filteredConversations.length > 0 ? (
-                  filteredConversations.map((conversation) => {
+                ) : inboxConversations.length > 0 ? (
+                  inboxConversations.map((conversation) => {
+                    const otherMember =
+                      conversation.members.find((member) => member.id !== currentUserId) ??
+                      null;
+                    const displayName =
+                      otherMember?.username ? `@${otherMember.username}` : conversation.title;
+                    const preview = conversation.preview
+                      ? truncateWords(conversation.preview, 8)
+                      : "No messages yet.";
                     const isSelected = conversation.id === selectedConversationId;
                     const lastMessageAt = conversation.lastMessageAt
                       ? formatDateTime(conversation.lastMessageAt)
@@ -473,10 +553,8 @@ export function MessagesPageContent() {
                         <div className="flex w-full items-start gap-3">
                           <Avatar
                             name={initialsFromName(
-                              conversation.members.find((member) => member.id !== currentUserId)
-                                ?.name ?? conversation.title,
-                              conversation.members.find((member) => member.id !== currentUserId)
-                                ?.email ?? null
+                              otherMember?.username ?? null,
+                              otherMember?.name ?? conversation.title
                             )}
                             size="sm"
                             showFallback
@@ -484,7 +562,7 @@ export function MessagesPageContent() {
                           <div className="min-w-0 flex-1 space-y-1">
                             <div className="flex items-center justify-between gap-2">
                               <p className="truncate text-sm font-semibold text-foreground">
-                                {conversation.title}
+                                {displayName}
                               </p>
                               {unreadCount > 0 ? (
                                 <Chip color="primary" size="sm" variant="flat">
@@ -493,7 +571,7 @@ export function MessagesPageContent() {
                               ) : null}
                             </div>
                             <p className="truncate text-xs text-default-500">
-                              {conversation.preview}
+                              {preview}
                             </p>
                             <p className="text-[11px] uppercase tracking-[0.14em] text-default-400">
                               {lastMessageAt}
@@ -512,6 +590,32 @@ export function MessagesPageContent() {
                   </div>
                 )}
               </div>
+
+              {!isLoadingConversations && filteredConversations.length > PAGE_SIZE ? (
+                <div className="flex items-center justify-between gap-3 border-t border-divider/70 pt-3">
+                  <p className="text-xs text-default-500">
+                    Page {safeInboxPage} of {totalInboxPages}
+                  </p>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      isDisabled={safeInboxPage <= 1}
+                      variant="flat"
+                      onPress={() => setInboxPage((current) => Math.max(1, current - 1))}
+                    >
+                      Previous
+                    </Button>
+                    <Button
+                      isDisabled={safeInboxPage >= totalInboxPages}
+                      variant="flat"
+                      onPress={() =>
+                        setInboxPage((current) => Math.min(totalInboxPages, current + 1))
+                      }
+                    >
+                      Next
+                    </Button>
+                  </div>
+                </div>
+              ) : null}
             </CardBody>
           </Card>
         </motion.section>
@@ -544,7 +648,7 @@ export function MessagesPageContent() {
                     <p className="text-sm text-default-500">
                       {selectedConversation.members
                         .filter((member) => member.id !== currentUserId)
-                        .map((member) => member.name || member.email || "Member")
+                        .map((member) => member.username || member.name || "Member")
                         .join(", ") || "Conversation"}
                     </p>
                   </div>
@@ -579,7 +683,7 @@ export function MessagesPageContent() {
                           >
                             <div className="mb-1 flex items-center justify-between gap-3 text-[11px] uppercase tracking-[0.14em] opacity-80">
                               <span>
-                                {message.sender?.name || message.sender?.email || "Member"}
+                                {message.sender?.username || message.sender?.name || "Member"}
                               </span>
                               <span>{formatTime(message.createdAt)}</span>
                             </div>
@@ -602,17 +706,23 @@ export function MessagesPageContent() {
 
                 <Divider />
 
-                <div className="space-y-3">
+                <div className="space-y-4">
                   <Textarea
                     label="Write a message"
-                    minRows={4}
+                    minRows={5}
                     placeholder=" "
                     value={messageBody}
                     onValueChange={setMessageBody}
+                    classNames={{
+                      inputWrapper:
+                        "min-h-[150px] border border-divider/70 bg-background/90 shadow-sm",
+                      input: "pt-2",
+                    }}
                   />
-                  <div className="flex flex-wrap items-center justify-between gap-3">
-                    <p className="text-xs text-default-500">
-                      Messages are delivered immediately and mark the thread as read when opened.
+                  <div className="flex flex-col gap-3 border-t border-divider/60 pt-3 sm:flex-row sm:items-center sm:justify-between">
+                    <p className="max-w-xl text-xs leading-5 text-default-500">
+                      Messages are delivered immediately and marked as read when you open
+                      the thread.
                     </p>
                     <Button
                       color="primary"

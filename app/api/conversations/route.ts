@@ -42,6 +42,7 @@ export async function POST(request: Request) {
       userEmail: body.userEmail ?? null,
       recipientId: body.recipientId ?? null,
       recipientEmail: body.recipientEmail ?? null,
+      recipientUsername: body.recipientUsername ?? null,
       body: body.body ?? null,
     });
 

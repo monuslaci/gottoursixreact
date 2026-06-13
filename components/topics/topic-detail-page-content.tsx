@@ -1,7 +1,15 @@
 "use client";
 
-import { Button, Card, CardBody, Chip } from "@heroui/react";
-import { ArrowLeft, ChevronRight, Hash, MessageSquareText, Search, Users } from "lucide-react";
+import { Button, Card, CardBody, Chip, Textarea } from "@heroui/react";
+import {
+  ArrowLeft,
+  ChevronRight,
+  Hash,
+  MessageSquareText,
+  Search,
+  Send,
+  Users,
+} from "lucide-react";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 
@@ -21,8 +29,11 @@ export function TopicDetailPageContent({
   posts,
 }: TopicDetailPageContentProps) {
   const { user } = useUserProfile();
+  const [postsState, setPostsState] = useState(posts);
   const [subtopicQuery, setSubtopicQuery] = useState("");
   const [activeSubtopicId, setActiveSubtopicId] = useState<string>("all");
+  const [postBody, setPostBody] = useState("");
+  const [isCreatingPost, setIsCreatingPost] = useState(false);
   const [topicSubscriptionState, setTopicSubscriptionState] = useState({
     isSubscribed: false,
     isLoading: true,
@@ -36,15 +47,20 @@ export function TopicDetailPageContent({
   const [subscriptionError, setSubscriptionError] = useState<string | null>(
     null
   );
+  const [postError, setPostError] = useState<string | null>(null);
 
   const subtopicCounts = useMemo(() => {
-    return posts.reduce<SubtopicCountMap>((accumulator, post) => {
+    return postsState.reduce<SubtopicCountMap>((accumulator, post) => {
       if (post.subtopic) {
         accumulator[post.subtopic.id] = (accumulator[post.subtopic.id] ?? 0) + 1;
       }
 
       return accumulator;
     }, {});
+  }, [postsState]);
+
+  useEffect(() => {
+    setPostsState(posts);
   }, [posts]);
 
   const filteredSubtopics = topic.subtopics.filter((subtopic) => {
@@ -70,8 +86,13 @@ export function TopicDetailPageContent({
 
   const visiblePosts =
     activeSubtopicId === "all"
-      ? posts
-      : posts.filter((post) => post.subtopic?.id === activeSubtopicId);
+      ? postsState
+      : postsState.filter((post) => post.subtopic?.id === activeSubtopicId);
+
+  useEffect(() => {
+    setPostBody("");
+    setPostError(null);
+  }, [activeSubtopicId]);
 
   useEffect(() => {
     let isMounted = true;
@@ -274,6 +295,62 @@ export function TopicDetailPageContent({
         ...current,
         [subtopicId]: false,
       }));
+    }
+  }
+
+  async function createPost() {
+    if (!activeSubtopic) {
+      setPostError("Select a subtopic before posting.");
+      return;
+    }
+
+    if (!user?.id) {
+      setPostError("A member profile is required to create a post.");
+      return;
+    }
+
+    const trimmedBody = postBody.trim();
+
+    if (!trimmedBody) {
+      setPostError("Write something before posting.");
+      return;
+    }
+
+    setIsCreatingPost(true);
+    setPostError(null);
+
+    try {
+      const response = await fetch(`/api/subtopics/${activeSubtopic.id}/posts`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          body: trimmedBody,
+          authorId: user.id,
+        }),
+      });
+
+      const payload = (await response.json()) as {
+        post?: TopicPostItem;
+        error?: string;
+      };
+
+      if (!response.ok) {
+        throw new Error(payload.error || "Unable to create post.");
+      }
+
+      if (payload.post) {
+        setPostsState((current) => [payload.post!, ...current]);
+      }
+
+      setPostBody("");
+    } catch (error) {
+      setPostError(
+        error instanceof Error ? error.message : "Unable to create post."
+      );
+    } finally {
+      setIsCreatingPost(false);
     }
   }
 
@@ -499,15 +576,68 @@ export function TopicDetailPageContent({
           )}
         </div>
 
+        {activeSubtopic ? (
+          <Card className="border border-primary/12 bg-content1 shadow-[0_18px_48px_rgb(var(--heroui-colors-primary-500)/0.08)]">
+            <CardBody className="gap-4 p-4 sm:p-5">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div className="space-y-1">
+                  <p className="text-xs uppercase tracking-[0.16em] text-secondary">
+                    New post
+                  </p>
+                  <h3 className="text-base font-semibold text-foreground">
+                    Post in {activeSubtopic.title}
+                  </h3>
+                </div>
+                <Chip variant="flat">Subtopic post</Chip>
+              </div>
+
+              <Textarea
+                label="Write your post"
+                minRows={4}
+                placeholder=" "
+                value={postBody}
+                onValueChange={setPostBody}
+              />
+
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <p className="text-xs text-default-500">
+                  Your post will appear under this subtopic and be visible in the topic feed.
+                </p>
+                <Button
+                  color="primary"
+                  isLoading={isCreatingPost}
+                  startContent={<Send className="h-4 w-4" />}
+                  onPress={() => void createPost()}
+                >
+                  Post in subtopic
+                </Button>
+              </div>
+            </CardBody>
+          </Card>
+        ) : null}
+
+        {postError ? <p className="text-sm text-danger-500">{postError}</p> : null}
+
         <div className="grid gap-3">
           {visiblePosts.length > 0 ? (
             visiblePosts.map((post) => (
               <Card key={post.id} className="border border-divider bg-content1 shadow-sm">
                 <CardBody className="gap-3 p-4">
                   <div className="flex flex-wrap items-center gap-2 text-xs text-default-500">
-                    <span className="font-medium text-foreground">
-                      {post.author?.name || "Unknown member"}
-                    </span>
+                    {post.author?.username ? (
+                      <Link
+                        className="font-medium text-foreground transition hover:text-primary hover:underline"
+                        href={`/messages?recipientUsername=${encodeURIComponent(
+                          post.author.username
+                        )}`}
+                      >
+                        {post.author.username}
+                      </Link>
+                    ) : (
+                      <span className="font-medium text-foreground">
+                        Unknown member
+                      </span>
+                    )}
                     {post.subtopic ? (
                       <Chip size="sm" variant="flat">
                         {post.subtopic.title}

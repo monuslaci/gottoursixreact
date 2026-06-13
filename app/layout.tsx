@@ -10,6 +10,10 @@ const AppNavbar = dynamic(
   () => import("@/components/navbar").then((mod) => mod.AppNavbar),
   { ssr: false }
 );
+const AppFooter = dynamic(
+  () => import("@/components/footer").then((mod) => mod.AppFooter),
+  { ssr: false }
+);
 
 const inter = Inter({
   subsets: ["latin"],
@@ -17,7 +21,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Six",
+  title: "Got Your Six",
   description: "A mobile-first community base for topics and private support.",
   icons: {
     icon: "/favicon.png",
@@ -38,6 +42,7 @@ export default function RootLayout({
             <main className="mx-auto w-full max-w-7xl px-4 pb-12 pt-4 sm:px-6 lg:px-8">
               {children}
             </main>
+            <AppFooter />
           </div>
         </Providers>
       </body>

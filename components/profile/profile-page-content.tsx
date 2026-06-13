@@ -12,7 +12,6 @@ import {
 import { motion } from "framer-motion";
 import {
   Building2,
-  Mail,
   ArrowUpRight,
   Phone,
   Search,
@@ -35,6 +34,7 @@ const PAGE_SIZE = 5;
 
 type ProfileFormState = {
   name: string;
+  username: string;
   image: string;
   givenName: string;
   surname: string;
@@ -54,6 +54,7 @@ type FloatingFieldProps = {
 
 const EMPTY_FORM: ProfileFormState = {
   name: "",
+  username: "",
   image: "",
   givenName: "",
   surname: "",
@@ -67,6 +68,7 @@ const EMPTY_FORM: ProfileFormState = {
 function buildFormState(profile: ProfilePayload): ProfileFormState {
   return {
     name: profile.user.name ?? "",
+    username: profile.user.username ?? "",
     image: profile.user.image ?? "",
     givenName: profile.user.givenName ?? "",
     surname: profile.user.surname ?? "",
@@ -78,19 +80,19 @@ function buildFormState(profile: ProfilePayload): ProfileFormState {
   };
 }
 
-function initialsFromName(name: string | null, email: string | null) {
-  if (name) {
-    const parts = name.trim().split(/\s+/);
+function initialsFromName(username: string | null, name: string | null) {
+  if (username) {
+    const parts = username.trim().split(/[-_.\s]+/);
 
     if (parts.length >= 2) {
       return `${parts[0][0]}${parts[parts.length - 1][0]}`.toUpperCase();
     }
 
-    return name.slice(0, 1).toUpperCase();
+    return username.slice(0, 1).toUpperCase();
   }
 
-  if (email) {
-    return email.slice(0, 1).toUpperCase();
+  if (name) {
+    return name.slice(0, 1).toUpperCase();
   }
 
   return "U";
@@ -619,7 +621,7 @@ export function ProfilePageContent() {
               <Avatar
                 size="lg"
                 src={profile.user.image || undefined}
-                name={initialsFromName(profile.user.name, profile.user.email)}
+                name={initialsFromName(profile.user.username, profile.user.name)}
                 showFallback
                 className="h-20 w-20 rounded-2xl"
               />
@@ -639,11 +641,11 @@ export function ProfilePageContent() {
 
                 <div className="space-y-1">
                   <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">
-                    {profile.user.name || "Member profile"}
+                    @{profile.user.username}
                   </h1>
                   <p className="max-w-2xl text-sm leading-6 text-default-600 sm:text-base">
-                    Edit your basic information and keep track of the topics and
-                    subtopics you follow.
+                    Edit your public username and personal information. Other members
+                    will only see your username.
                   </p>
                 </div>
               </div>
@@ -656,20 +658,20 @@ export function ProfilePageContent() {
                 value={`${subscriptionCounts.subtopics}`}
               />
               <StatCard
-                label="Identity"
-                value={profile.user.email || "No email on file"}
+                label="Username"
+                value={`@${profile.user.username}`}
               />
             </div>
 
             <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
               <div className="flex items-center gap-3 rounded-xl border border-divider/70 bg-background/80 p-3">
-                <Mail className="h-4 w-4 text-secondary" />
+                <UserRound className="h-4 w-4 text-secondary" />
                 <div>
                   <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-default-500">
-                    Email
+                    Username
                   </p>
                   <p className="text-sm font-medium text-foreground">
-                    {profile.user.email || "No email set"}
+                    @{profile.user.username}
                   </p>
                 </div>
               </div>
@@ -741,6 +743,12 @@ export function ProfilePageContent() {
                   label="Display name"
                   value={form.name}
                   onValueChange={(value) => updateField("name", value)}
+                />
+                <FloatingInput
+                  label="Username"
+                  value={form.username}
+                  onValueChange={(value) => updateField("username", value)}
+                  isRequired
                 />
                 <FloatingInput
                   label="Image URL"

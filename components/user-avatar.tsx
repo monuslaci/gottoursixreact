@@ -25,22 +25,22 @@ export function UserAvatar({ size = "md", showName = false, className }: UserAva
   return null;
  }
 
- const getInitials = (name: string | null, email: string | null): string => {
-  if (name) {
-   const parts = name.trim().split(" ");
+ const getInitials = (username: string | null, name: string | null): string => {
+  if (username) {
+   const parts = username.trim().split(/[-_.\s]+/);
    if (parts.length >= 2) {
     return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
    }
-   return name[0].toUpperCase();
+   return username[0].toUpperCase();
   }
-  if (email) {
-   return email[0].toUpperCase();
+  if (name) {
+   return name[0].toUpperCase();
   }
   return "U";
  };
 
- const getAvatarColor = (name: string | null, email: string | null): string => {
-  const str = name || email || "User";
+ const getAvatarColor = (username: string | null, name: string | null): string => {
+  const str = username || name || "User";
   const colors = [
    "bg-blue-500",
    "bg-green-500",
@@ -64,19 +64,16 @@ export function UserAvatar({ size = "md", showName = false, className }: UserAva
    <Avatar
     size={size}
     src={user.image || undefined}
-    name={getInitials(user.name, user.email)}
+    name={getInitials(user.username, user.name)}
     showFallback
-    className={!user.image ? getAvatarColor(user.name, user.email) : undefined}
+    className={!user.image ? getAvatarColor(user.username, user.name) : undefined}
    />
    {showName && (
     <div className="flex flex-col">
      <span className="text-sm font-medium">
-      {user.name || user.email || "User"}
+      @{user.username}
      </span>
-     {user.name && user.email && (
-      <span className="text-xs text-default-500">{user.email}</span>
-     )}
-    </div>
+   </div>
    )}
   </div>
  );

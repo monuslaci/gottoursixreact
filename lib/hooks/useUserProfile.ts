@@ -8,7 +8,8 @@ const FALLBACK_PROFILE: ProfilePayload = {
   user: {
     id: "demo-member",
     name: "Miles Parker",
-    email: "miles.parker@six.local",
+    username: "miles-parker",
+    email: "miles.parker@gotyoursix.local",
     image: null,
     givenName: "Miles",
     surname: "Parker",

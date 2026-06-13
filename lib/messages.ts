@@ -1,11 +1,11 @@
 import { CommunityError } from "@/lib/community";
-import { DEFAULT_PROFILE_EMAIL } from "@/lib/profile";
+import { DEFAULT_PROFILE_EMAIL, normalizeUsername } from "@/lib/profile";
 import { prisma } from "@/lib/prisma";
 
 export type MessageUser = {
   id: string;
   name: string | null;
-  email: string | null;
+  username: string;
   image: string | null;
 };
 
@@ -41,6 +41,7 @@ export type ConversationDetails = {
 type IdentityInput = {
   userId?: string | null;
   userEmail?: string | null;
+  userUsername?: string | null;
 };
 
 function normalizeIdentityValue(value: string | null | undefined) {
@@ -65,6 +66,23 @@ async function resolveConversationUser(input: IdentityInput) {
 
     if (userById) {
       return userById;
+    }
+  }
+
+  const username = normalizeUsername(input.userUsername);
+
+  if (username) {
+    const userByUsername = await prisma.user.findUnique({
+      where: {
+        username,
+      },
+      select: {
+        id: true,
+      },
+    });
+
+    if (userByUsername) {
+      return userByUsername;
     }
   }
 
@@ -101,6 +119,7 @@ async function resolveConversationUser(input: IdentityInput) {
   return prisma.user.create({
     data: {
       name: "Miles Parker",
+      username: "miles-parker",
       email: DEFAULT_PROFILE_EMAIL,
       businessPhones: [],
       givenName: "Miles",
@@ -120,13 +139,13 @@ async function resolveConversationParticipant(input: IdentityInput) {
 function mapUser(user: {
   id: string;
   name: string | null;
-  email: string | null;
+  username: string;
   image: string | null;
 }): MessageUser {
   return {
     id: user.id,
     name: user.name,
-    email: user.email,
+    username: user.username,
     image: user.image,
   };
 }
@@ -140,14 +159,18 @@ function formatConversationTitle(
 ) {
   if (conversation.isGroup) {
     const names = conversation.members
-      .map(({ user }) => user.name || user.email || "Member")
+      .map(({ user }) => user.username || user.name || "Member")
       .filter(Boolean);
 
     return names.length > 0 ? names.join(", ") : "Group conversation";
   }
 
   const otherMember = conversation.members.find(({ user }) => user.id !== viewerId);
-  return otherMember?.user.name || otherMember?.user.email || "Conversation";
+  return (
+    otherMember?.user.username ||
+    otherMember?.user.name ||
+    "Conversation"
+  );
 }
 
 function countUnreadMessages(
@@ -242,14 +265,14 @@ async function getConversationMembers(conversationId: string) {
       conversationId,
     },
     include: {
-      user: {
-        select: {
-          id: true,
-          name: true,
-          email: true,
-          image: true,
+        user: {
+          select: {
+            id: true,
+            name: true,
+            username: true,
+            image: true,
+          },
         },
-      },
     },
   });
 }
@@ -315,7 +338,7 @@ export async function listConversations(identity: IdentityInput) {
                 select: {
                   id: true,
                   name: true,
-                  email: true,
+                  username: true,
                   image: true,
                 },
               },
@@ -331,7 +354,7 @@ export async function listConversations(identity: IdentityInput) {
                 select: {
                   id: true,
                   name: true,
-                  email: true,
+                  username: true,
                   image: true,
                 },
               },
@@ -377,6 +400,7 @@ export async function createOrOpenConversation(input: {
   userEmail?: string | null;
   recipientId?: string | null;
   recipientEmail?: string | null;
+  recipientUsername?: string | null;
   body?: string | null;
 }) {
   const viewerId = await resolveConversationParticipant({
@@ -385,6 +409,23 @@ export async function createOrOpenConversation(input: {
   });
 
   let recipientId = input.recipientId ?? null;
+
+  if (!recipientId && input.recipientUsername) {
+    const username = normalizeUsername(input.recipientUsername);
+
+    if (username) {
+      const recipient = await prisma.user.findUnique({
+        where: {
+          username,
+        },
+        select: {
+          id: true,
+        },
+      });
+
+      recipientId = recipient?.id ?? null;
+    }
+  }
 
   if (!recipientId && input.recipientEmail) {
     const recipient = await prisma.user.findUnique({
@@ -456,7 +497,7 @@ export async function createOrOpenConversation(input: {
         select: {
           id: true,
           name: true,
-          email: true,
+          username: true,
           image: true,
         },
       },
@@ -509,7 +550,7 @@ export async function getConversationMessages(
             select: {
               id: true,
               name: true,
-              email: true,
+              username: true,
               image: true,
             },
           },
@@ -524,7 +565,7 @@ export async function getConversationMessages(
             select: {
               id: true,
               name: true,
-              email: true,
+              username: true,
               image: true,
             },
           },
@@ -600,7 +641,7 @@ export async function sendConversationMessage(
         select: {
           id: true,
           name: true,
-          email: true,
+          username: true,
           image: true,
         },
       },

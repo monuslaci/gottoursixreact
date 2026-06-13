@@ -1,6 +1,20 @@
 import { PrismaClient } from "@prisma/client";
+import { pbkdf2Sync, randomBytes } from "node:crypto";
 
 const prisma = new PrismaClient();
+const DEMO_PASSWORD = "Password123!";
+
+function createPasswordRecord(password: string) {
+  const salt = randomBytes(16).toString("hex");
+  const hash = pbkdf2Sync(password, salt, 210_000, 32, "sha256").toString("hex");
+
+  return {
+    salt,
+    hash,
+  };
+}
+
+const demoPasswordRecord = createPasswordRecord(DEMO_PASSWORD);
 
 type SeedPost = {
   body: string;
@@ -25,39 +39,51 @@ type TopicSeed = {
 async function main() {
   const admin = await prisma.user.upsert({
     where: {
-      email: "alex.hartley@six.local",
+      email: "alex.hartley@gotyoursix.local",
     },
     update: {
       name: "Alex Hartley",
+      username: "alex-hartley",
       businessPhones: [],
       givenName: "Alex",
       surname: "Hartley",
+      passwordHash: demoPasswordRecord.hash,
+      passwordSalt: demoPasswordRecord.salt,
     },
     create: {
       name: "Alex Hartley",
-      email: "alex.hartley@six.local",
+      username: "alex-hartley",
+      email: "alex.hartley@gotyoursix.local",
       businessPhones: [],
       givenName: "Alex",
       surname: "Hartley",
+      passwordHash: demoPasswordRecord.hash,
+      passwordSalt: demoPasswordRecord.salt,
     },
   });
 
   const member = await prisma.user.upsert({
     where: {
-      email: "miles.parker@six.local",
+      email: "miles.parker@gotyoursix.local",
     },
     update: {
       name: "Miles Parker",
+      username: "miles-parker",
       businessPhones: [],
       givenName: "Miles",
       surname: "Parker",
+      passwordHash: demoPasswordRecord.hash,
+      passwordSalt: demoPasswordRecord.salt,
     },
     create: {
       name: "Miles Parker",
-      email: "miles.parker@six.local",
+      username: "miles-parker",
+      email: "miles.parker@gotyoursix.local",
       businessPhones: [],
       givenName: "Miles",
       surname: "Parker",
+      passwordHash: demoPasswordRecord.hash,
+      passwordSalt: demoPasswordRecord.salt,
     },
   });
 

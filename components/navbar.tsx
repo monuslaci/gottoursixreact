@@ -2,7 +2,7 @@
 
 import { Button, Card, CardBody, Navbar, NavbarBrand, NavbarContent, NavbarItem } from "@heroui/react";
 import { AnimatePresence, motion } from "framer-motion";
-import { MessageSquare, Menu, UserRound, X } from "lucide-react";
+import { LogIn, LogOut, MessageSquare, Menu, UserRound, X } from "lucide-react";
 import NextLink from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
@@ -11,15 +11,33 @@ import { useState } from "react";
 import { siteConfig } from "@/config/site";
 import { ThemeSwitch } from "@/components/theme-switch";
 import { cn } from "@/lib/client-utils";
+import { useAuthSession } from "@/lib/hooks/useAuthSession";
 import { useUnreadMessageCount } from "@/lib/hooks/useUnreadMessageCount";
 
 export function AppNavbar() {
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
+  const { isAuthenticated, user, refresh } = useAuthSession();
   const { unreadCount: unreadMessageCount } = useUnreadMessageCount();
 
   const isActive = (href: string) => pathname === href;
   const isProfileActive = isActive("/profile");
+  const desktopNavItems = siteConfig.navItems.filter((item) => {
+    if (isAuthenticated) {
+      return true;
+    }
+
+    return item.href !== "/admin" && item.href !== "/topics";
+  });
+
+  async function handleLogout() {
+    await fetch("/api/auth/logout", {
+      method: "POST",
+    });
+
+    await refresh();
+    window.location.href = "/";
+  }
 
   return (
     <div className="sticky top-0 z-50">
@@ -52,7 +70,7 @@ export function AppNavbar() {
           </NavbarBrand>
 
           <div className="hidden md:flex items-center gap-1">
-            {siteConfig.navItems.map((item) => {
+            {desktopNavItems.map((item) => {
               const active = isActive(item.href);
 
               return (
@@ -75,40 +93,72 @@ export function AppNavbar() {
         </NavbarContent>
 
         <NavbarContent justify="end" className="gap-2">
-          <Button
-            as={NextLink}
-            href="/profile"
-            isIconOnly
-            variant="flat"
-            className={cn(
-              isProfileActive
-                ? "bg-primary text-primary-foreground hover:bg-primary/90"
-                : "bg-secondary/10 text-primary hover:bg-secondary/16"
-            )}
-            aria-label="Profile"
-          >
-            <UserRound className="h-5 w-5" />
-          </Button>
-          <Button
-            as={NextLink}
-            href="/messages"
-            isIconOnly
-            variant="flat"
-            className="relative bg-secondary/10 text-primary hover:bg-secondary/16"
-            aria-label={
-              unreadMessageCount > 0
-                ? `Messages, ${unreadMessageCount} unread`
-                : "Messages"
-            }
-          >
-            <MessageSquare className="h-5 w-5" />
-            {unreadMessageCount > 0 ? (
-              <span
-                aria-hidden="true"
-                className="absolute right-1 top-1 h-2 w-2 rounded-full bg-danger"
-              />
-            ) : null}
-          </Button>
+          {isAuthenticated ? (
+            <>
+              <Button
+                as={NextLink}
+                href="/profile"
+                isIconOnly
+                variant="flat"
+                className={cn(
+                  isProfileActive
+                    ? "bg-primary text-primary-foreground hover:bg-primary/90"
+                    : "bg-secondary/10 text-primary hover:bg-secondary/16"
+                )}
+                aria-label={user ? `Profile for @${user.username}` : "Profile"}
+              >
+                <UserRound className="h-5 w-5" />
+              </Button>
+              <Button
+                as={NextLink}
+                href="/messages"
+                isIconOnly
+                variant="flat"
+                className="relative bg-secondary/10 text-primary hover:bg-secondary/16"
+                aria-label={
+                  unreadMessageCount > 0
+                    ? `Messages, ${unreadMessageCount} unread`
+                    : "Messages"
+                }
+              >
+                <MessageSquare className="h-5 w-5" />
+                {unreadMessageCount > 0 ? (
+                  <span
+                    aria-hidden="true"
+                    className="absolute right-1 top-1 h-2 w-2 rounded-full bg-danger"
+                  />
+                ) : null}
+              </Button>
+              <Button
+                variant="flat"
+                className="hidden bg-secondary/10 text-primary hover:bg-secondary/16 sm:inline-flex"
+                startContent={<LogOut className="h-4 w-4" />}
+                onPress={() => void handleLogout()}
+              >
+                Sign out
+              </Button>
+            </>
+          ) : (
+            <>
+              <Button
+                as={NextLink}
+                href="/auth?mode=login"
+                variant="flat"
+                className="hidden bg-secondary/10 text-primary hover:bg-secondary/16 sm:inline-flex"
+                startContent={<LogIn className="h-4 w-4" />}
+              >
+                Sign in
+              </Button>
+              <Button
+                as={NextLink}
+                href="/auth?mode=register"
+                color="primary"
+                className="hidden sm:inline-flex"
+              >
+                Register
+              </Button>
+            </>
+          )}
           <ThemeSwitch />
           <Button
             isIconOnly
@@ -137,6 +187,16 @@ export function AppNavbar() {
                   {siteConfig.navMenuItems.map((item) => {
                     const active = isActive(item.href);
 
+                    if (
+                      !isAuthenticated &&
+                      (item.href === "/topics" ||
+                        item.href === "/messages" ||
+                        item.href === "/profile" ||
+                        item.href === "/admin")
+                    ) {
+                      return null;
+                    }
+
                     return (
                       <NextLink
                         key={item.href}
@@ -153,6 +213,31 @@ export function AppNavbar() {
                       </NextLink>
                     );
                   })}
+                  <div className="mt-2 flex flex-col gap-2 border-t border-divider/70 pt-3">
+                    {isAuthenticated ? (
+                      <Button
+                        variant="flat"
+                        startContent={<LogOut className="h-4 w-4" />}
+                        onPress={() => void handleLogout()}
+                      >
+                        Sign out
+                      </Button>
+                    ) : (
+                      <>
+                        <Button
+                          as={NextLink}
+                          href="/auth?mode=login"
+                          variant="flat"
+                          startContent={<LogIn className="h-4 w-4" />}
+                        >
+                          Sign in
+                        </Button>
+                        <Button as={NextLink} href="/auth?mode=register" color="primary">
+                          Register
+                        </Button>
+                      </>
+                    )}
+                  </div>
                 </nav>
               </CardBody>
             </Card>

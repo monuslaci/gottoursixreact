@@ -10,15 +10,14 @@ interface LoginButtonProps {
 export function LoginButton({ className }: LoginButtonProps) {
   return (
     <Link
-      href="/demo"
+      href="/auth"
       className={cn(
         "inline-flex h-10 items-center justify-center gap-2 rounded-xl bg-primary px-4 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90",
         className
       )}
     >
-      Enter demo
+      Open app
       <ArrowRight className="h-4 w-4" />
     </Link>
   );
 }
-

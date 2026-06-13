@@ -2,10 +2,10 @@
 
 import { useEffect, useState } from "react";
 
-import { useUserProfile } from "@/lib/hooks/useUserProfile";
+import { useAuthSession } from "@/lib/hooks/useAuthSession";
 
 export function useUnreadMessageCount() {
-  const { user } = useUserProfile();
+  const { user, isLoading: isLoadingSession } = useAuthSession();
   const [unreadCount, setUnreadCount] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -58,6 +58,10 @@ export function useUnreadMessageCount() {
       void loadUnreadCount();
     }
 
+    if (isLoadingSession) {
+      return;
+    }
+
     setIsLoading(true);
     void loadUnreadCount();
 
@@ -67,7 +71,7 @@ export function useUnreadMessageCount() {
       isMounted = false;
       window.removeEventListener("messages-changed", handleMessagesChanged);
     };
-  }, [user?.email]);
+  }, [user?.email, isLoadingSession]);
 
   return {
     unreadCount,
