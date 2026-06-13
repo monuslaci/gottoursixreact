@@ -3,7 +3,7 @@ import { Prisma } from "@prisma/client";
 import { CommunityError } from "@/lib/community";
 import { prisma } from "@/lib/prisma";
 
-const DEFAULT_PROFILE_EMAIL = "miles.parker@six.local";
+export const DEFAULT_PROFILE_EMAIL = "miles.parker@six.local";
 
 export type ProfileUser = {
   id: string;

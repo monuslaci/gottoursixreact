@@ -11,11 +11,12 @@ import { useState } from "react";
 import { siteConfig } from "@/config/site";
 import { ThemeSwitch } from "@/components/theme-switch";
 import { cn } from "@/lib/client-utils";
+import { useUnreadMessageCount } from "@/lib/hooks/useUnreadMessageCount";
 
 export function AppNavbar() {
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
-  const unreadMessageCount = 0;
+  const { unreadCount: unreadMessageCount } = useUnreadMessageCount();
 
   const isActive = (href: string) => pathname === href;
   const isProfileActive = isActive("/profile");
