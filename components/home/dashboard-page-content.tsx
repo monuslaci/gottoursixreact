@@ -6,6 +6,9 @@ import type {
 } from "@/lib/community";
 import Link from "next/link";
 import { motion } from "framer-motion";
+import { Compass, MessageSquareMore, Scale, Users } from "lucide-react";
+
+import { AnimatedCtaLink } from "@/components/home/animated-cta-link";
 
 const supportAreas = [
   {
@@ -119,12 +122,23 @@ export function DashboardPageContent({
           </div>
 
           <div className="public-actions">
-            <Link href="/topics" className="public-button public-button--primary">
+            <AnimatedCtaLink
+              href="/topics"
+              icon={Compass}
+              delay={0.08}
+              showArrow
+              variant="hero-primary"
+            >
               Find support
-            </Link>
-            <Link href="/messages" className="public-button public-button--secondary">
+            </AnimatedCtaLink>
+            <AnimatedCtaLink
+              href="/messages"
+              icon={MessageSquareMore}
+              delay={0.14}
+              variant="hero-secondary"
+            >
               Check messages
-            </Link>
+            </AnimatedCtaLink>
           </div>
         </div>
 
@@ -284,12 +298,23 @@ export function DashboardPageContent({
           </p>
 
           <div className="public-actions public-actions--compact">
-            <Link href="/rules" className="public-button public-button--bronze">
+            <AnimatedCtaLink
+              href="/rules"
+              icon={Scale}
+              delay={0.05}
+              variant="hero-bronze"
+            >
               Community values
-            </Link>
-            <Link href="/topics" className="public-button public-button--outline">
+            </AnimatedCtaLink>
+            <AnimatedCtaLink
+              href="/topics"
+              icon={Users}
+              delay={0.1}
+              showArrow
+              variant="hero-outline"
+            >
               Join a conversation
-            </Link>
+            </AnimatedCtaLink>
           </div>
         </div>
       </motion.section>

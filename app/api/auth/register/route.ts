@@ -3,10 +3,10 @@ import { NextRequest, NextResponse } from "next/server";
 
 import { CommunityError } from "@/lib/community";
 import {
+  buildSessionCookieOptions,
   createAuthSession,
   hashPassword,
   mapPublicSessionUser,
-  SESSION_COOKIE_NAME,
 } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { normalizeUsername } from "@/lib/profile";
@@ -116,15 +116,7 @@ export async function POST(request: NextRequest) {
       expiresAt: session.expires.toISOString(),
     });
 
-    response.cookies.set({
-      name: SESSION_COOKIE_NAME,
-      value: session.token,
-      httpOnly: true,
-      sameSite: "lax",
-      secure: process.env.NODE_ENV === "production",
-      path: "/",
-      expires: session.expires,
-    });
+    response.cookies.set(buildSessionCookieOptions(session.token, session.expires));
 
     return response;
   } catch (error) {

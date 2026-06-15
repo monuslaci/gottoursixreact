@@ -2,17 +2,22 @@ import { randomBytes, pbkdf2Sync, timingSafeEqual } from "node:crypto";
 
 import { cookies } from "next/headers";
 import type { NextRequest } from "next/server";
+import type { ResponseCookie } from "next/dist/compiled/@edge-runtime/cookies";
 
 import { prisma } from "@/lib/prisma";
 import { generateUniqueUsername, normalizeUsername } from "@/lib/profile";
 
 export const SESSION_COOKIE_NAME = "six_session";
-const SESSION_DURATION_MS = 1000 * 60 * 60 * 24 * 14;
+const MINIMUM_SESSION_DAYS = 3;
+const DEFAULT_SESSION_DAYS = 14;
 const PASSWORD_ITERATIONS = 210_000;
 const PASSWORD_KEY_LENGTH = 32;
 const AUTH_DISABLED = process.env.NEXT_PUBLIC_DISABLE_AUTH === "true";
 const DEV_USER_EMAIL = normalizeEmail(process.env.NEXT_PUBLIC_DEV_USER_EMAIL);
 const DEV_USER_NAME = normalizeText(process.env.NEXT_PUBLIC_DEV_USER_NAME);
+const SESSION_DURATION_DAYS = readSessionDurationDays(
+  process.env.AUTH_SESSION_DURATION_DAYS
+);
 
 export type PublicSessionUser = {
   id: string;
@@ -48,6 +53,16 @@ function normalizeText(value: string | null | undefined) {
 
   const trimmed = value.trim();
   return trimmed.length > 0 ? trimmed : null;
+}
+
+function readSessionDurationDays(value: string | undefined) {
+  const parsed = Number(value);
+
+  if (!Number.isFinite(parsed)) {
+    return DEFAULT_SESSION_DAYS;
+  }
+
+  return Math.max(MINIMUM_SESSION_DAYS, Math.floor(parsed));
 }
 
 function splitNameParts(name: string | null) {
@@ -200,7 +215,40 @@ export function createSessionToken() {
 }
 
 export function buildSessionExpiresAt() {
-  return new Date(Date.now() + SESSION_DURATION_MS);
+  return new Date(Date.now() + SESSION_DURATION_DAYS * 24 * 60 * 60 * 1000);
+}
+
+export function getSessionDurationDays() {
+  return SESSION_DURATION_DAYS;
+}
+
+export function buildSessionCookieOptions(
+  token: string,
+  expires: Date
+): ResponseCookie {
+  return {
+    name: SESSION_COOKIE_NAME,
+    value: token,
+    httpOnly: true,
+    sameSite: "lax",
+    secure: process.env.NODE_ENV === "production",
+    path: "/",
+    expires,
+    maxAge: SESSION_DURATION_DAYS * 24 * 60 * 60,
+  };
+}
+
+export function buildExpiredSessionCookieOptions(): ResponseCookie {
+  return {
+    name: SESSION_COOKIE_NAME,
+    value: "",
+    httpOnly: true,
+    sameSite: "lax",
+    secure: process.env.NODE_ENV === "production",
+    path: "/",
+    expires: new Date(0),
+    maxAge: 0,
+  };
 }
 
 export function mapPublicSessionUser(user: {
@@ -328,6 +376,24 @@ export async function createAuthSession(userId: string) {
     data: {
       sessionToken: token,
       userId,
+      expires,
+    },
+  });
+
+  return {
+    token,
+    expires,
+  };
+}
+
+export async function refreshAuthSession(token: string) {
+  const expires = buildSessionExpiresAt();
+
+  await prisma.session.updateMany({
+    where: {
+      sessionToken: token,
+    },
+    data: {
       expires,
     },
   });

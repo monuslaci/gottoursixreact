@@ -1,7 +1,9 @@
 "use client";
 
-import Link from "next/link";
 import { motion } from "framer-motion";
+import { LogIn, ShieldPlus, UserPlus } from "lucide-react";
+
+import { AnimatedCtaLink } from "@/components/home/animated-cta-link";
 
 const whyYouMightBeHere = [
   "My marriage is falling apart.",
@@ -106,12 +108,23 @@ export function PublicLanding() {
           </div>
 
           <div className="public-actions">
-            <Link href="/auth?mode=register" className="public-button public-button--primary">
+            <AnimatedCtaLink
+              href="/auth?mode=register"
+              icon={UserPlus}
+              delay={0.08}
+              showArrow
+              variant="hero-primary"
+            >
               Create account
-            </Link>
-            <Link href="/auth?mode=login" className="public-button public-button--secondary">
+            </AnimatedCtaLink>
+            <AnimatedCtaLink
+              href="/auth?mode=login"
+              icon={LogIn}
+              delay={0.14}
+              variant="hero-secondary"
+            >
               Sign in
-            </Link>
+            </AnimatedCtaLink>
           </div>
         </div>
 
@@ -262,12 +275,23 @@ export function PublicLanding() {
           </p>
 
           <div className="public-actions public-actions--compact">
-            <Link href="/auth?mode=register" className="public-button public-button--bronze">
+            <AnimatedCtaLink
+              href="/auth?mode=register"
+              icon={ShieldPlus}
+              delay={0.05}
+              showArrow
+              variant="hero-bronze"
+            >
               Create account
-            </Link>
-            <Link href="/auth?mode=login" className="public-button public-button--outline">
+            </AnimatedCtaLink>
+            <AnimatedCtaLink
+              href="/auth?mode=login"
+              icon={LogIn}
+              delay={0.1}
+              variant="hero-outline"
+            >
               Sign in
-            </Link>
+            </AnimatedCtaLink>
           </div>
 
           <p className="public-steps-card__quote">
