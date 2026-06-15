@@ -146,7 +146,7 @@ export function SuggestionsManager() {
   }
 
   return (
-    <Card className="border border-primary/12 bg-content1 shadow-[0_18px_48px_rgb(var(--heroui-colors-primary-500)/0.08)]">
+    <Card className="internal-card internal-card--strong">
       <CardBody className="gap-5 p-4 sm:p-5">
         <div className="flex items-center gap-3">
           <div className="rounded-xl bg-secondary/12 p-3 text-secondary">
@@ -167,7 +167,7 @@ export function SuggestionsManager() {
             <Search className="pointer-events-none absolute left-4 top-1/2 z-10 h-4 w-4 -translate-y-1/2 text-default-400" />
             <input
               aria-label="Search suggestions"
-              className="h-12 w-full rounded-xl border border-divider/70 bg-content1/90 pl-11 pr-4 text-sm text-foreground shadow-sm outline-none transition-colors placeholder:text-transparent focus:border-primary/40"
+              className="internal-field h-12 w-full pl-11 pr-4 text-sm text-foreground outline-none transition-colors placeholder:text-transparent focus:border-primary/40"
               placeholder=" "
               value={search}
               onChange={(event) => setSearch(event.target.value)}
@@ -197,13 +197,13 @@ export function SuggestionsManager() {
         {error ? <p className="text-sm text-danger-500">{error}</p> : null}
 
         {isLoading ? (
-          <div className="rounded-xl border border-divider/70 bg-background/70 p-4 text-sm text-default-500">
+          <div className="internal-empty p-4 text-sm text-default-500">
             Loading suggestions...
           </div>
         ) : null}
 
         {!isLoading && visibleSuggestions.length === 0 ? (
-          <div className="rounded-xl border border-divider/70 bg-background/70 p-4 text-sm text-default-500">
+          <div className="internal-empty p-4 text-sm text-default-500">
             No suggestions match that filter.
           </div>
         ) : null}
@@ -217,7 +217,7 @@ export function SuggestionsManager() {
               return (
                 <Card
                   key={suggestion.id}
-                  className="border border-divider/70 bg-background/80 shadow-sm"
+                  className="internal-card"
                 >
                   <CardBody className="gap-3 p-4">
                     <div className="flex items-start justify-between gap-3">

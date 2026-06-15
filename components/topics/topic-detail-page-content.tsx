@@ -371,7 +371,7 @@ export function TopicDetailPageContent({
       </div>
 
       <section className="grid gap-4 lg:grid-cols-[0.95fr_1.05fr]">
-        <Card className="border border-primary/12 bg-content1 shadow-[0_18px_48px_rgb(var(--heroui-colors-primary-500)/0.08)]">
+        <Card className="internal-card internal-card--strong">
           <CardBody className="gap-3 p-4 sm:p-5">
             <div className="flex items-center gap-3">
               <div className="rounded-xl bg-secondary/12 p-3 text-secondary">
@@ -413,7 +413,7 @@ export function TopicDetailPageContent({
               ].map(([label, value]) => (
                 <div
                   key={label}
-                  className="rounded-xl border border-divider bg-background/80 p-3.5"
+                  className="internal-stat p-3.5"
                 >
                   <p className="text-xs font-medium uppercase tracking-[0.14em] text-secondary">
                     {label}
@@ -442,7 +442,7 @@ export function TopicDetailPageContent({
           </CardBody>
         </Card>
 
-        <Card className="border border-primary/12 bg-content1 shadow-[0_18px_48px_rgb(var(--heroui-colors-primary-500)/0.08)]">
+        <Card className="internal-card internal-card--strong">
           <CardBody className="gap-3 p-4 sm:p-5">
             <div className="flex items-center justify-between gap-3">
               <div className="flex items-center gap-2">
@@ -462,7 +462,7 @@ export function TopicDetailPageContent({
               <Search className="pointer-events-none absolute left-4 top-1/2 z-10 h-4 w-4 -translate-y-1/2 text-default-400" />
               <input
                 aria-label="Search subtopics"
-                className="h-12 w-full rounded-xl border border-divider/70 bg-content1/90 pl-11 pr-4 text-sm text-foreground shadow-sm outline-none transition-colors placeholder:text-default-400 focus:border-primary/40"
+                className="internal-field h-12 w-full pl-11 pr-4 text-sm text-foreground outline-none transition-colors placeholder:text-default-400 focus:border-primary/40"
                 placeholder="Search subtopics"
                 value={subtopicQuery}
                 onChange={(event) => setSubtopicQuery(event.target.value)}
@@ -481,10 +481,10 @@ export function TopicDetailPageContent({
                   return (
                     <Card
                       key={subtopic.id}
-                      className={`border transition ${
+                      className={`internal-card transition ${
                         isActive
                           ? "border-primary/30 bg-primary/5"
-                          : "border-divider bg-background/80"
+                          : "border-divider bg-content1/80"
                       }`}
                     >
                       <CardBody className="gap-3 p-3">
@@ -577,7 +577,7 @@ export function TopicDetailPageContent({
         </div>
 
         {activeSubtopic ? (
-          <Card className="border border-primary/12 bg-content1 shadow-[0_18px_48px_rgb(var(--heroui-colors-primary-500)/0.08)]">
+          <Card className="internal-card internal-card--strong">
             <CardBody className="gap-4 p-4 sm:p-5">
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <div className="space-y-1">
@@ -621,7 +621,7 @@ export function TopicDetailPageContent({
         <div className="grid gap-3">
           {visiblePosts.length > 0 ? (
             visiblePosts.map((post) => (
-              <Card key={post.id} className="border border-divider bg-content1 shadow-sm">
+              <Card key={post.id} className="internal-card">
                 <CardBody className="gap-3 p-4">
                   <div className="flex flex-wrap items-center gap-2 text-xs text-default-500">
                     {post.author?.username ? (
@@ -656,7 +656,7 @@ export function TopicDetailPageContent({
               </Card>
             ))
           ) : (
-            <Card className="border border-divider bg-content1 shadow-sm">
+            <Card className="internal-empty">
               <CardBody className="p-4">
                 <p className="text-sm text-default-600">No posts yet for this subtopic.</p>
               </CardBody>

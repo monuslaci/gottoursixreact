@@ -28,7 +28,7 @@ export function TopicPaginationBar({
   const isLastPage = page === totalPages;
 
   return (
-    <div className="rounded-2xl border border-divider/70 bg-content1/80 p-3 shadow-sm backdrop-blur sm:p-4">
+    <div className="internal-card rounded-2xl p-3 backdrop-blur sm:p-4">
       <div className="flex flex-wrap items-center justify-center gap-2 lg:justify-between">
         <div className="flex flex-wrap items-center justify-center gap-2">
           <Button
@@ -90,7 +90,6 @@ export function TopicPaginationBar({
             Showing {firstItem}-{lastItem} of {totalItems}
           </p>
         </div>
-
       </div>
     </div>
   );

@@ -36,7 +36,7 @@ function FloatingInput({
     <label className="group relative block w-full">
       <input
         required={isRequired}
-        className="peer h-12 w-full rounded-xl border border-divider/70 bg-content1/90 px-4 pb-2 pt-5 text-sm text-foreground shadow-sm outline-none transition-colors placeholder:text-transparent focus:border-primary/40"
+        className="peer internal-field h-12 w-full px-4 pb-2 pt-5 text-sm text-foreground outline-none transition-colors placeholder:text-transparent focus:border-primary/40"
         placeholder=" "
         value={value}
         onChange={(event) => onValueChange(event.target.value)}
@@ -52,7 +52,7 @@ function FloatingTextarea({ label, value, onValueChange }: FloatingFieldProps) {
   return (
     <label className="group relative block w-full">
       <textarea
-        className="peer min-h-24 w-full resize-y rounded-xl border border-divider/70 bg-content1/90 px-4 pb-3 pt-6 text-sm leading-6 text-foreground shadow-sm outline-none transition-colors placeholder:text-transparent focus:border-primary/40"
+        className="peer internal-field min-h-24 w-full resize-y px-4 pb-3 pt-6 text-sm leading-6 text-foreground outline-none transition-colors placeholder:text-transparent focus:border-primary/40"
         placeholder=" "
         value={value}
         onChange={(event) => onValueChange(event.target.value)}
@@ -75,7 +75,7 @@ function FloatingSelect({
   return (
     <label className="group relative block w-full">
       <select
-        className="h-12 w-full rounded-xl border border-divider/70 bg-content1/90 px-4 pb-2 pt-5 text-sm text-foreground shadow-sm outline-none transition-colors focus:border-primary/40"
+        className="internal-field h-12 w-full px-4 pb-2 pt-5 text-sm text-foreground outline-none transition-colors focus:border-primary/40"
         disabled={options.length === 0}
         value={value}
         onChange={(event) => onValueChange(event.target.value)}
@@ -339,7 +339,7 @@ export function SubtopicsManager({ topics }: SubtopicsManagerProps) {
   }
 
   return (
-    <Card className="border border-primary/12 bg-content1 shadow-[0_18px_48px_rgb(var(--heroui-colors-primary-500)/0.08)]">
+    <Card className="internal-card internal-card--strong">
       <CardBody className="gap-5 p-4 sm:p-5">
         <div className="space-y-1">
           <Chip color="secondary" variant="flat">
@@ -360,7 +360,7 @@ export function SubtopicsManager({ topics }: SubtopicsManagerProps) {
             }}
             options={topicOptions}
           />
-          <div className="rounded-xl border border-divider/70 bg-background/70 p-4">
+          <div className="internal-stat p-4">
             <p className="text-xs uppercase tracking-[0.14em] text-default-500">
               Active topic
             </p>
@@ -441,13 +441,13 @@ export function SubtopicsManager({ topics }: SubtopicsManagerProps) {
         ) : null}
 
         {isLoadingSubtopics ? (
-          <div className="rounded-xl border border-divider/70 bg-background/70 p-4 text-sm text-default-500">
+          <div className="internal-empty p-4 text-sm text-default-500">
             Loading subtopics...
           </div>
         ) : null}
 
         {!isLoadingSubtopics && selectedTopic && visibleSubtopics.length === 0 ? (
-          <div className="rounded-xl border border-divider/70 bg-background/70 p-4 text-sm text-default-500">
+          <div className="internal-empty p-4 text-sm text-default-500">
             No subtopics match this topic and search.
           </div>
         ) : null}
@@ -463,7 +463,7 @@ export function SubtopicsManager({ topics }: SubtopicsManagerProps) {
               return (
                 <Card
                   key={subtopic.id}
-                  className="h-full border border-divider/70 bg-background/80 shadow-sm"
+                  className="internal-card h-full"
                 >
                   <CardBody className="flex h-full flex-col gap-3 p-4">
                     {isEditing ? (

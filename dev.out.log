@@ -95,3 +95,223 @@ The column `users.username` does not exist in the current database.
  GET /api/auth/username 200 in 28ms
  ✓ Compiled in 1469ms (3988 modules)
  ✓ Compiled in 527ms (1987 modules)
+   Reload env: .env.local
+ ✓ Compiled in 13.5s (3997 modules)
+ GET /auth?mode=register 200 in 6880ms
+ ○ Compiling /api/auth/session ...
+ ✓ Compiled /api/auth/session in 1228ms (2029 modules)
+ GET /api/auth/session 200 in 1386ms
+ GET /api/auth/session 200 in 1411ms
+ GET /api/auth/session 200 in 1413ms
+ GET /api/auth/session 200 in 1416ms
+ ○ Compiling /api/auth/username ...
+ ✓ Compiled /api/auth/username in 899ms (2029 modules)
+ GET /api/auth/username 200 in 3139ms
+ GET /api/auth/username 200 in 37ms
+ GET /api/auth/username 200 in 28ms
+ GET /api/auth/username 200 in 38ms
+ GET /api/auth/username 200 in 39ms
+ GET /api/auth/username 200 in 38ms
+ GET /api/auth/username 200 in 46ms
+ GET /api/auth/username 200 in 29ms
+ GET /api/auth/username 200 in 40ms
+ ✓ Compiled in 1472ms (4016 modules)
+ ○ Compiling /api/auth/session ...
+ ✓ Compiled /api/auth/session in 687ms (2031 modules)
+ GET /api/auth/session 200 in 847ms
+   Reload env: .env.local
+ ✓ Compiled in 1203ms (4002 modules)
+ ✓ Compiled /api/auth/username in 337ms (2031 modules)
+ GET /api/auth/username 200 in 422ms
+ GET /api/auth/username 200 in 33ms
+ GET /api/auth/username 200 in 30ms
+ ○ Compiling /api/auth/register ...
+ ✓ Compiled /api/auth/register in 741ms (2033 modules)
+ POST /api/auth/register 409 in 877ms
+ POST /api/auth/register 200 in 2363ms
+ ✓ Compiled in 1771ms (3988 modules)
+ ○ Compiling /api/auth/session ...
+ ✓ Compiled /api/auth/session in 564ms (2029 modules)
+ GET /api/auth/session 200 in 733ms
+ GET /api/auth/session 200 in 577ms
+ GET /api/auth/session 200 in 561ms
+ GET /api/auth/session 200 in 554ms
+ GET /api/auth/session 200 in 549ms
+ GET /api/auth/session 200 in 765ms
+ ○ Compiling /api/conversations ...
+ ✓ Compiled /api/conversations in 917ms (2032 modules)
+ GET /api/conversations?userEmail=monuslaci%40gmail.com 200 in 1046ms
+ ✓ Compiled in 1022ms (4019 modules)
+ GET /api/auth/session 200 in 43ms
+ GET /api/auth/session 200 in 69ms
+ GET /api/auth/session 200 in 34ms
+ GET /api/auth/session 200 in 43ms
+ GET /api/auth/session 200 in 41ms
+ GET /api/auth/session 200 in 41ms
+ GET /api/conversations?userEmail=monuslaci%40gmail.com 200 in 54ms
+ ✓ Compiled in 2.1s (4010 modules)
+ GET /api/auth/session 200 in 81ms
+ GET /api/auth/session 200 in 112ms
+ GET /api/auth/session 200 in 113ms
+ GET /api/auth/session 200 in 113ms
+ GET /api/conversations?userEmail=monuslaci%40gmail.com 200 in 35ms
+ ✓ Compiled in 1327ms (4010 modules)
+ ✓ Compiled in 1518ms (4010 modules)
+ ✓ Compiled in 1015ms (3979 modules)
+ ○ Compiling /api/auth/session ...
+ ✓ Compiled /api/auth/session in 582ms (2022 modules)
+ GET /api/auth/session 200 in 675ms
+ GET /api/auth/session 200 in 705ms
+ ✓ Compiled /api/conversations in 377ms (2025 modules)
+ GET /api/conversations?userEmail=monuslaci%40gmail.com 200 in 468ms
+ ✓ Compiled in 1569ms (4010 modules)
+ ✓ Compiled in 962ms (3979 modules)
+ ✓ Compiled /api/auth/logout in 389ms (2022 modules)
+ POST /api/auth/logout 200 in 2495ms
+ ✓ Compiled /api/auth/session in 215ms (2024 modules)
+ GET /api/auth/session 200 in 252ms
+ GET / 500 in 185ms
+ GET /api/auth/session 200 in 18ms
+ GET /api/auth/session 200 in 27ms
+ GET /api/auth/session 200 in 27ms
+ GET /api/auth/session 200 in 26ms
+ ✓ Compiled in 712ms (4009 modules)
+ GET / 500 in 146ms
+ GET /api/auth/session 200 in 20ms
+ GET /api/auth/session 200 in 29ms
+ GET /api/auth/session 200 in 26ms
+ GET /api/auth/session 200 in 27ms
+ ✓ Compiled /api/auth/login in 496ms (2022 modules)
+ POST /api/auth/login 200 in 615ms
+ ✓ Compiled in 501ms (4007 modules)
+ GET / 500 in 119ms
+ ✓ Compiled /api/auth/session in 132ms (2024 modules)
+ GET /api/auth/session 200 in 160ms
+ GET /api/auth/session 200 in 152ms
+ GET /api/auth/session 200 in 151ms
+ GET /api/auth/session 200 in 164ms
+ ✓ Compiled /api/conversations in 297ms (2027 modules)
+ GET /api/conversations?userEmail=monuslaci%40gmail.com 200 in 340ms
+ ✓ Compiled in 439ms (4010 modules)
+ GET / 500 in 144ms
+ GET /api/auth/session 200 in 35ms
+ GET /api/auth/session 200 in 35ms
+ GET /api/auth/session 200 in 32ms
+ GET /api/auth/session 200 in 32ms
+ GET /api/conversations?userEmail=monuslaci%40gmail.com 200 in 16ms
+ GET / 500 in 78ms
+ GET /api/auth/session 200 in 21ms
+ GET /api/auth/session 200 in 33ms
+ GET /api/auth/session 200 in 32ms
+ GET /api/auth/session 200 in 31ms
+ GET /api/conversations?userEmail=monuslaci%40gmail.com 200 in 20ms
+ ✓ Compiled in 217ms (1985 modules)
+ GET / 500 in 40ms
+ GET /api/auth/session 200 in 14ms
+ GET /api/auth/session 200 in 15ms
+ GET /api/auth/session 200 in 13ms
+ GET /api/auth/session 200 in 12ms
+ GET /api/conversations?userEmail=monuslaci%40gmail.com 200 in 10ms
+ ✓ Compiled in 866ms (3979 modules)
+ GET / 500 in 2172ms
+ ✓ Compiled /api/auth/session in 160ms (2022 modules)
+ GET /api/auth/session 200 in 207ms
+ GET /api/auth/session 200 in 194ms
+ GET /api/auth/session 200 in 194ms
+ GET /api/auth/session 200 in 209ms
+ ✓ Compiled /api/conversations in 110ms (2025 modules)
+ GET /api/conversations?userEmail=monuslaci%40gmail.com 200 in 138ms
+ ✓ Compiled in 225ms (1985 modules)
+ GET / 500 in 129ms
+ GET /api/auth/session 200 in 13ms
+ GET /api/auth/session 200 in 13ms
+ GET /api/auth/session 200 in 12ms
+ GET /api/auth/session 200 in 17ms
+ GET /api/conversations?userEmail=monuslaci%40gmail.com 200 in 9ms
+ ✓ Compiled in 206ms (1985 modules)
+ GET / 500 in 45ms
+ GET /api/auth/session 200 in 16ms
+ GET /api/auth/session 200 in 18ms
+ GET /api/auth/session 200 in 16ms
+ GET /api/auth/session 200 in 17ms
+ GET /api/conversations?userEmail=monuslaci%40gmail.com 200 in 12ms
+ ✓ Compiled in 189ms (1985 modules)
+ GET / 500 in 29ms
+ GET /api/auth/session 200 in 11ms
+ GET /api/auth/session 200 in 18ms
+ GET /api/auth/session 200 in 19ms
+ GET /api/auth/session 200 in 20ms
+ GET /api/conversations?userEmail=monuslaci%40gmail.com 200 in 12ms
+ ✓ Compiled in 171ms (1985 modules)
+ GET / 500 in 32ms
+ GET /api/auth/session 200 in 13ms
+ GET /api/auth/session 200 in 14ms
+ GET /api/auth/session 200 in 11ms
+ GET /api/auth/session 200 in 12ms
+ GET /api/conversations?userEmail=monuslaci%40gmail.com 200 in 11ms
+ ✓ Compiled in 183ms (1985 modules)
+ GET / 500 in 35ms
+ GET /api/auth/session 200 in 9ms
+ GET /api/auth/session 200 in 13ms
+ GET /api/auth/session 200 in 14ms
+ GET /api/auth/session 200 in 15ms
+ GET /api/conversations?userEmail=monuslaci%40gmail.com 200 in 12ms
+ ✓ Compiled in 172ms (1985 modules)
+ GET / 500 in 31ms
+ GET /api/auth/session 200 in 11ms
+ GET /api/auth/session 200 in 14ms
+ GET /api/auth/session 200 in 10ms
+ GET /api/auth/session 200 in 13ms
+ GET /api/conversations?userEmail=monuslaci%40gmail.com 200 in 12ms
+ ✓ Compiled in 194ms (1985 modules)
+ GET / 500 in 31ms
+ GET /api/auth/session 200 in 10ms
+ GET /api/auth/session 200 in 11ms
+ GET /api/auth/session 200 in 12ms
+ GET /api/auth/session 200 in 12ms
+ GET /api/conversations?userEmail=monuslaci%40gmail.com 200 in 11ms
+ ✓ Compiled in 248ms (1985 modules)
+ GET / 500 in 35ms
+ GET /api/auth/session 200 in 17ms
+ GET /api/auth/session 200 in 16ms
+ GET /api/auth/session 200 in 22ms
+ GET /api/auth/session 200 in 22ms
+ GET /api/conversations?userEmail=monuslaci%40gmail.com 200 in 8ms
+ ✓ Compiled in 240ms (1985 modules)
+ ✓ Compiled in 167ms (1985 modules)
+ GET / 500 in 27ms
+ GET / 500 in 2778ms
+ GET /api/auth/session 200 in 10ms
+ GET /api/auth/session 200 in 12ms
+ GET /api/auth/session 200 in 7ms
+ GET /api/auth/session 200 in 8ms
+ GET /api/conversations?userEmail=monuslaci%40gmail.com 200 in 11ms
+ ✓ Compiled in 510ms (4008 modules)
+ GET / 500 in 118ms
+ GET /api/auth/session 200 in 22ms
+ GET /api/auth/session 200 in 21ms
+ GET /api/auth/session 200 in 13ms
+ GET /api/auth/session 200 in 15ms
+ GET /api/conversations?userEmail=monuslaci%40gmail.com 200 in 10ms
+ GET / 500 in 4171ms
+ GET /api/auth/session 200 in 21ms
+ GET /api/auth/session 200 in 20ms
+ GET /api/auth/session 200 in 21ms
+ GET /api/auth/session 200 in 21ms
+ GET /api/conversations?userEmail=monuslaci%40gmail.com 200 in 13ms
+ ✓ Compiled in 615ms (3969 modules)
+ GET / 500 in 146ms
+ ✓ Compiled /api/auth/session in 157ms (2017 modules)
+ GET /api/auth/session 200 in 203ms
+ GET /api/auth/session 200 in 196ms
+ GET /api/auth/session 200 in 195ms
+ GET /api/auth/session 200 in 204ms
+ ✓ Compiled /api/conversations in 116ms (2020 modules)
+ GET /api/conversations?userEmail=monuslaci%40gmail.com 200 in 144ms
+ ✓ Compiled in 412ms (4000 modules)
+ GET / 500 in 99ms
+ GET /api/auth/session 200 in 17ms
+ GET /api/auth/session 200 in 18ms
+ GET /api/auth/session 200 in 17ms
+ GET /api/auth/session 200 in 16ms
+ GET /api/conversations?userEmail=monuslaci%40gmail.com 200 in 12ms

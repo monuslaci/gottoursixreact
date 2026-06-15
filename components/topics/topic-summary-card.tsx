@@ -26,7 +26,7 @@ export function TopicSummaryCard({
   const content = (
     <Card
       isPressable={Boolean(href)}
-      className={`${cardHeightClass} overflow-hidden rounded-[28px] border border-divider/70 bg-content1 shadow-[0_18px_44px_rgba(15,23,42,0.08)] transition hover:-translate-y-0.5 hover:border-primary/25 hover:shadow-[0_24px_52px_rgba(15,23,42,0.12)]`}
+      className={`${cardHeightClass} internal-card overflow-hidden rounded-[28px] transition hover:-translate-y-0.5 hover:shadow-[0_24px_52px_rgba(15,23,42,0.12)]`}
     >
       <CardBody className="flex h-full flex-col p-0">
         <div className="h-1.5 bg-gradient-to-r from-primary/70 via-secondary/70 to-brotherhood-bronze/70" />

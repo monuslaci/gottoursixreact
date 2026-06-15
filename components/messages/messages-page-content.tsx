@@ -77,7 +77,7 @@ function FloatingInput({
   return (
     <label className="group relative block w-full">
       <input
-        className="peer h-14 w-full rounded-xl border border-divider/70 bg-content1/90 px-4 pb-2 pt-6 text-sm text-foreground shadow-sm outline-none transition-colors placeholder:text-transparent focus:border-primary/40 focus:shadow-[0_0_0_4px_rgb(var(--heroui-colors-primary-500)/0.08)]"
+        className="peer internal-field h-14 w-full px-4 pb-2 pt-6 text-sm text-foreground outline-none transition-colors placeholder:text-transparent focus:border-primary/40 focus:shadow-[0_0_0_4px_rgb(var(--heroui-colors-primary-500)/0.08)]"
         placeholder=" "
         value={value}
         onChange={(event) => onValueChange(event.target.value)}
@@ -91,7 +91,7 @@ function FloatingInput({
 
 function MessageThreadSkeleton() {
   return (
-    <Card className="border border-primary/12 bg-content1 shadow-[0_18px_48px_rgb(var(--heroui-colors-primary-500)/0.08)]">
+    <Card className="internal-card">
       <CardBody className="gap-4 p-5 sm:p-6">
         <Skeleton className="h-6 w-40 rounded-lg" />
         <Skeleton className="h-4 w-64 rounded-lg" />
@@ -408,7 +408,7 @@ export function MessagesPageContent() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.24 }}
       >
-        <Card className="border border-primary/12 bg-content1 shadow-[0_18px_48px_rgb(var(--heroui-colors-primary-500)/0.1)]">
+        <Card className="internal-card internal-card--strong">
           <CardBody className="gap-5 p-5 sm:p-6">
             <div className="flex flex-wrap items-center gap-2">
               <Chip color="primary" variant="flat">
@@ -443,7 +443,7 @@ export function MessagesPageContent() {
           transition={{ duration: 0.24, delay: 0.05 }}
           className="space-y-4"
         >
-          <Card className="border border-primary/12 bg-content1 shadow-[0_18px_48px_rgb(var(--heroui-colors-primary-500)/0.08)]">
+          <Card className="internal-card internal-card--strong">
             <CardBody className="gap-5 p-5 sm:p-6">
               <div className="space-y-2">
                 <Chip color="primary" variant="flat">
@@ -469,7 +469,7 @@ export function MessagesPageContent() {
                   onValueChange={setStarterBody}
                   classNames={{
                     inputWrapper:
-                      "min-h-[170px] border border-divider/70 bg-background/90 shadow-sm",
+                      "min-h-[170px] border border-divider/70 bg-content1/90 shadow-sm",
                     input: "pt-2",
                   }}
                 />
@@ -492,7 +492,7 @@ export function MessagesPageContent() {
             </CardBody>
           </Card>
 
-          <Card className="border border-primary/12 bg-content1 shadow-[0_18px_48px_rgb(var(--heroui-colors-primary-500)/0.08)]">
+          <Card className="internal-card">
             <CardBody className="gap-4 p-5 sm:p-6">
               <div className="flex items-center justify-between gap-3">
                 <div className="flex items-center gap-2">
@@ -508,7 +508,7 @@ export function MessagesPageContent() {
                 <Search className="pointer-events-none absolute left-4 top-1/2 z-10 h-4 w-4 -translate-y-1/2 text-default-400" />
                 <input
                   aria-label="Search conversations"
-                  className="h-12 w-full rounded-xl border border-divider/70 bg-content1/90 pl-11 pr-4 text-sm text-foreground shadow-sm outline-none transition-colors placeholder:text-transparent focus:border-primary/40"
+                  className="internal-field h-12 w-full pl-11 pr-4 text-sm text-foreground outline-none transition-colors placeholder:text-transparent focus:border-primary/40"
                   placeholder=" "
                   value={search}
                   onChange={(event) => setSearch(event.target.value)}
@@ -545,7 +545,7 @@ export function MessagesPageContent() {
                         className={`h-auto w-full justify-start rounded-2xl border px-4 py-4 text-left transition ${
                           isSelected
                             ? "border-primary/30 bg-primary/5"
-                            : "border-divider/70 bg-background/80 hover:bg-default-100"
+                            : "border-divider/70 bg-content1/80 hover:bg-default-100"
                         }`}
                         variant="flat"
                         onPress={() => setSelectedConversationId(conversation.id)}
@@ -582,7 +582,7 @@ export function MessagesPageContent() {
                     );
                   })
                 ) : (
-                  <div className="rounded-2xl border border-dashed border-divider bg-background/70 p-4">
+                  <div className="internal-empty p-4">
                     <p className="text-sm font-medium text-foreground">No conversations yet.</p>
                     <p className="mt-1 text-sm text-default-500">
                       Send a first message to start your inbox.
@@ -628,7 +628,7 @@ export function MessagesPageContent() {
           {isLoadingMessages && selectedConversationId ? (
             <MessageThreadSkeleton />
           ) : selectedConversation ? (
-            <Card className="border border-primary/12 bg-content1 shadow-[0_18px_48px_rgb(var(--heroui-colors-primary-500)/0.08)]">
+            <Card className="internal-card internal-card--strong">
               <CardBody className="gap-5 p-5 sm:p-6">
                 <div className="flex items-start justify-between gap-3">
                   <div className="space-y-1">
@@ -678,7 +678,7 @@ export function MessagesPageContent() {
                             className={`max-w-[82%] rounded-2xl px-4 py-3 shadow-sm ${
                               isMine
                                 ? "bg-primary text-primary-foreground"
-                                : "border border-divider bg-background/90"
+                                : "border border-divider bg-content1/90"
                             }`}
                           >
                             <div className="mb-1 flex items-center justify-between gap-3 text-[11px] uppercase tracking-[0.14em] opacity-80">
@@ -707,18 +707,18 @@ export function MessagesPageContent() {
                 <Divider />
 
                 <div className="space-y-4">
-                  <Textarea
-                    label="Write a message"
-                    minRows={5}
-                    placeholder=" "
-                    value={messageBody}
-                    onValueChange={setMessageBody}
-                    classNames={{
-                      inputWrapper:
-                        "min-h-[150px] border border-divider/70 bg-background/90 shadow-sm",
-                      input: "pt-2",
-                    }}
-                  />
+                <Textarea
+                  label="Write a message"
+                  minRows={5}
+                  placeholder=" "
+                  value={messageBody}
+                  onValueChange={setMessageBody}
+                  classNames={{
+                    inputWrapper:
+                      "min-h-[150px] border border-divider/70 bg-content1/90 shadow-sm",
+                    input: "pt-2",
+                  }}
+                />
                   <div className="flex flex-col gap-3 border-t border-divider/60 pt-3 sm:flex-row sm:items-center sm:justify-between">
                     <p className="max-w-xl text-xs leading-5 text-default-500">
                       Messages are delivered immediately and marked as read when you open
@@ -737,7 +737,7 @@ export function MessagesPageContent() {
               </CardBody>
             </Card>
           ) : (
-            <Card className="border border-dashed border-divider bg-content1">
+            <Card className="internal-empty">
               <CardBody className="gap-3 p-5">
                 <p className="text-sm font-medium text-foreground">Select a conversation</p>
                 <p className="text-sm text-default-500">

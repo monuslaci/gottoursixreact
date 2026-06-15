@@ -4,12 +4,15 @@ import { cookies } from "next/headers";
 import type { NextRequest } from "next/server";
 
 import { prisma } from "@/lib/prisma";
-import { normalizeUsername } from "@/lib/profile";
+import { generateUniqueUsername, normalizeUsername } from "@/lib/profile";
 
 export const SESSION_COOKIE_NAME = "six_session";
 const SESSION_DURATION_MS = 1000 * 60 * 60 * 24 * 14;
 const PASSWORD_ITERATIONS = 210_000;
 const PASSWORD_KEY_LENGTH = 32;
+const AUTH_DISABLED = process.env.NEXT_PUBLIC_DISABLE_AUTH === "true";
+const DEV_USER_EMAIL = normalizeEmail(process.env.NEXT_PUBLIC_DEV_USER_EMAIL);
+const DEV_USER_NAME = normalizeText(process.env.NEXT_PUBLIC_DEV_USER_NAME);
 
 export type PublicSessionUser = {
   id: string;
@@ -45,6 +48,122 @@ function normalizeText(value: string | null | undefined) {
 
   const trimmed = value.trim();
   return trimmed.length > 0 ? trimmed : null;
+}
+
+function splitNameParts(name: string | null) {
+  if (!name) {
+    return {
+      givenName: null,
+      surname: null,
+    };
+  }
+
+  const parts = name.split(/\s+/).filter(Boolean);
+
+  if (parts.length === 0) {
+    return {
+      givenName: null,
+      surname: null,
+    };
+  }
+
+  return {
+    givenName: parts[0] ?? null,
+    surname: parts.length > 1 ? parts.slice(1).join(" ") : null,
+  };
+}
+
+async function buildDevUsername(email: string, name: string | null) {
+  const emailLocalPart = email.split("@")[0] ?? "";
+  const candidates = [normalizeUsername(emailLocalPart), normalizeUsername(name)];
+
+  for (const candidate of candidates) {
+    if (!candidate) {
+      continue;
+    }
+
+    const existing = await prisma.user.findUnique({
+      where: {
+        username: candidate,
+      },
+      select: {
+        id: true,
+        email: true,
+      },
+    });
+
+    if (!existing || existing.email === email) {
+      return candidate;
+    }
+  }
+
+  return generateUniqueUsername();
+}
+
+async function getDevSessionUser() {
+  if (!AUTH_DISABLED || !DEV_USER_EMAIL) {
+    return null;
+  }
+
+  const existingUser = await prisma.user.findUnique({
+    where: {
+      email: DEV_USER_EMAIL,
+    },
+    select: {
+      id: true,
+      name: true,
+      username: true,
+      email: true,
+      image: true,
+      givenName: true,
+      surname: true,
+      jobTitle: true,
+      department: true,
+      companyName: true,
+      officeLocation: true,
+      mobilePhone: true,
+      createdAt: true,
+      updatedAt: true,
+      lastLoginAt: true,
+    },
+  });
+
+  if (existingUser) {
+    return mapPublicSessionUser(existingUser);
+  }
+
+  const username = await buildDevUsername(DEV_USER_EMAIL, DEV_USER_NAME);
+  const nameParts = splitNameParts(DEV_USER_NAME);
+  const createdUser = await prisma.user.create({
+    data: {
+      email: DEV_USER_EMAIL,
+      name: DEV_USER_NAME,
+      username,
+      givenName: nameParts.givenName,
+      surname: nameParts.surname,
+      businessPhones: [],
+      lastLoginAt: new Date(),
+    },
+    select: {
+      id: true,
+      name: true,
+      username: true,
+      email: true,
+      image: true,
+      givenName: true,
+      surname: true,
+      jobTitle: true,
+      department: true,
+      companyName: true,
+      officeLocation: true,
+      mobilePhone: true,
+      createdAt: true,
+      updatedAt: true,
+      lastLoginAt: true,
+    },
+  });
+
+  return mapPublicSessionUser(createdUser);
 }
 
 export function hashPassword(password: string, salt = randomBytes(16).toString("hex")) {
@@ -168,6 +287,12 @@ async function loadSessionByToken(token: string) {
 }
 
 export async function getCurrentSessionUser() {
+  const devUser = await getDevSessionUser();
+
+  if (devUser) {
+    return devUser;
+  }
+
   const token = cookies().get(SESSION_COOKIE_NAME)?.value;
 
   if (!token) {
@@ -179,6 +304,12 @@ export async function getCurrentSessionUser() {
 }
 
 export async function getCurrentSessionUserFromRequest(request: NextRequest) {
+  const devUser = await getDevSessionUser();
+
+  if (devUser) {
+    return devUser;
+  }
+
   const token = request.cookies.get(SESSION_COOKIE_NAME)?.value;
 
   if (!token) {

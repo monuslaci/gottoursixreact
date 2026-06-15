@@ -37,7 +37,7 @@ function FloatingInput({
     <label className="group relative block w-full">
       <input
         required={isRequired}
-        className="peer h-14 w-full rounded-xl border border-divider/70 bg-content1/90 px-4 pb-2 pt-6 text-sm text-foreground shadow-sm outline-none transition-colors placeholder:text-transparent focus:border-primary/40 focus:shadow-[0_0_0_4px_rgb(var(--heroui-colors-primary-500)/0.08)]"
+        className="peer internal-field h-14 w-full px-4 pb-2 pt-6 text-sm text-foreground outline-none transition-colors placeholder:text-transparent focus:border-primary/40 focus:shadow-[0_0_0_4px_rgb(var(--heroui-colors-primary-500)/0.08)]"
         placeholder=" "
         value={value}
         onChange={(event) => onValueChange(event.target.value)}
@@ -53,7 +53,7 @@ function FloatingTextarea({ label, value, onValueChange }: FloatingFieldProps) {
   return (
     <label className="group relative block w-full">
       <textarea
-        className="peer min-h-28 w-full resize-y rounded-xl border border-divider/70 bg-content1/90 px-4 pb-3 pt-7 text-sm leading-6 text-foreground shadow-sm outline-none transition-colors placeholder:text-transparent focus:border-primary/40 focus:shadow-[0_0_0_4px_rgb(var(--heroui-colors-primary-500)/0.08)]"
+        className="peer internal-field min-h-28 w-full resize-y px-4 pb-3 pt-7 text-sm leading-6 text-foreground outline-none transition-colors placeholder:text-transparent focus:border-primary/40 focus:shadow-[0_0_0_4px_rgb(var(--heroui-colors-primary-500)/0.08)]"
         placeholder=" "
         value={value}
         onChange={(event) => onValueChange(event.target.value)}
@@ -272,7 +272,7 @@ export function TopicsDashboard() {
   );
 
   return (
-    <Card className="border border-primary/12 bg-content1 shadow-[0_18px_48px_rgb(var(--heroui-colors-primary-500)/0.08)]">
+    <Card className="internal-card internal-card--strong">
       <CardBody className="gap-6 p-4 sm:p-5">
         <div className="sticky top-3 z-10 space-y-3 rounded-[28px] border border-divider/70 bg-gradient-to-br from-content1 via-content1 to-background/80 p-4 shadow-[0_18px_48px_rgba(15,23,42,0.08)] backdrop-blur">
             <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
@@ -422,10 +422,7 @@ export function TopicsDashboard() {
                       const isPendingDelete = pendingDeleteTopicId === topic.id;
 
                       return isEditing ? (
-                        <Card
-                          key={topic.id}
-                          className="h-full overflow-hidden rounded-[28px] border border-divider/70 bg-background/80 shadow-[0_18px_44px_rgba(15,23,42,0.08)]"
-                        >
+                        <Card key={topic.id} className="internal-card internal-card--strong h-full overflow-hidden rounded-[28px]">
                           <CardBody className="flex h-full flex-col gap-4 p-6">
                             <FloatingInput
                               isRequired

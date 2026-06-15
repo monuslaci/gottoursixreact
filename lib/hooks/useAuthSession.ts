@@ -25,12 +25,19 @@ type AuthSessionPayload = {
   user: AuthSessionUser | null;
 };
 
-export function useAuthSession() {
-  const [session, setSession] = useState<AuthSessionPayload>({
-    authenticated: false,
-    user: null,
-  });
-  const [isLoading, setIsLoading] = useState(true);
+export type InitialAuthSession = {
+  authenticated: boolean;
+  user: AuthSessionUser | null;
+};
+
+export function useAuthSession(initialSession?: InitialAuthSession) {
+  const [session, setSession] = useState<AuthSessionPayload>(
+    initialSession ?? {
+      authenticated: false,
+      user: null,
+    }
+  );
+  const [isLoading, setIsLoading] = useState(!initialSession);
 
   const refresh = useCallback(async () => {
     setIsLoading(true);

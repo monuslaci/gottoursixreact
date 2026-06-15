@@ -107,7 +107,7 @@ function StatCard({
   value: string;
 }) {
   return (
-    <div className="rounded-xl border border-divider/70 bg-background/80 p-3">
+    <div className="internal-stat p-3">
       <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-default-500">
         {label}
       </p>
@@ -126,7 +126,7 @@ function FloatingInput({
     <label className="group relative block w-full">
       <input
         required={isRequired}
-        className="peer h-14 w-full rounded-xl border border-divider/70 bg-content1/90 px-4 pb-2 pt-6 text-sm text-foreground shadow-sm outline-none transition-colors placeholder:text-transparent focus:border-primary/40 focus:shadow-[0_0_0_4px_rgb(var(--heroui-colors-primary-500)/0.08)]"
+        className="peer internal-field h-14 w-full px-4 pb-2 pt-6 text-sm text-foreground outline-none transition-colors placeholder:text-transparent focus:border-primary/40 focus:shadow-[0_0_0_4px_rgb(var(--heroui-colors-primary-500)/0.08)]"
         placeholder=" "
         value={value}
         onChange={(event) => onValueChange(event.target.value)}
@@ -152,7 +152,7 @@ function SearchInput({
       <Search className="pointer-events-none absolute left-4 top-1/2 z-10 h-4 w-4 -translate-y-1/2 text-default-400" />
       <input
         aria-label={label}
-        className="h-12 w-full rounded-xl border border-divider/70 bg-content1/90 pl-11 pr-4 text-sm text-foreground shadow-sm outline-none transition-colors placeholder:text-transparent focus:border-primary/40"
+        className="internal-field h-12 w-full pl-11 pr-4 text-sm text-foreground outline-none transition-colors placeholder:text-transparent focus:border-primary/40"
         placeholder=" "
         value={value}
         onChange={(event) => onValueChange(event.target.value)}
@@ -249,7 +249,7 @@ function SubscriptionListSection<T extends { id: string }>({
 
       <SearchInput label={`Search ${title.toLowerCase()}`} value={search} onValueChange={onSearchChange} />
 
-      <Card className="border border-divider/70 bg-background/80 shadow-sm">
+      <Card className="internal-card">
         <CardBody className="gap-0 p-0">
           {pageItems.length > 0 ? (
             <div className="divide-y divide-divider/70">
@@ -279,7 +279,7 @@ function SubscriptionListSection<T extends { id: string }>({
 function ProfileSkeleton() {
   return (
     <div className="space-y-6">
-      <Card className="border border-primary/12 bg-content1 shadow-[0_18px_48px_rgb(var(--heroui-colors-primary-500)/0.08)]">
+      <Card className="internal-card internal-card--strong">
         <CardBody className="gap-5 p-5 sm:p-6">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
             <Skeleton className="h-20 w-20 rounded-2xl" />
@@ -303,7 +303,7 @@ function ProfileSkeleton() {
       </Card>
 
       <div className="grid gap-4 lg:grid-cols-[1.05fr_0.95fr]">
-        <Card className="border border-primary/12 bg-content1 shadow-[0_18px_48px_rgb(var(--heroui-colors-primary-500)/0.08)]">
+        <Card className="internal-card internal-card--strong">
           <CardBody className="gap-4 p-5 sm:p-6">
             <Skeleton className="h-5 w-40 rounded-lg" />
             <div className="grid gap-4 sm:grid-cols-2">
@@ -314,7 +314,7 @@ function ProfileSkeleton() {
           </CardBody>
         </Card>
 
-        <Card className="border border-primary/12 bg-content1 shadow-[0_18px_48px_rgb(var(--heroui-colors-primary-500)/0.08)]">
+        <Card className="internal-card internal-card--strong">
           <CardBody className="gap-4 p-5 sm:p-6">
             <Skeleton className="h-5 w-44 rounded-lg" />
             <div className="grid gap-3">
@@ -628,7 +628,7 @@ export function ProfilePageContent() {
 
   if (!profile) {
     return (
-      <Card className="border border-dashed border-divider bg-content1">
+      <Card className="internal-empty">
         <CardBody className="gap-3 p-5">
           <p className="text-sm font-medium text-foreground">Profile unavailable.</p>
           <p className="text-sm text-default-500">
@@ -646,7 +646,7 @@ export function ProfilePageContent() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.24 }}
       >
-        <Card className="border border-primary/12 bg-content1 shadow-[0_18px_48px_rgb(var(--heroui-colors-primary-500)/0.08)]">
+        <Card className="internal-card internal-card--strong">
           <CardBody className="gap-5 p-5 sm:p-6">
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
               <Avatar
@@ -695,7 +695,7 @@ export function ProfilePageContent() {
             </div>
 
             <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-              <div className="flex items-center gap-3 rounded-xl border border-divider/70 bg-background/80 p-3">
+              <div className="internal-stat flex items-center gap-3 p-3">
                 <UserRound className="h-4 w-4 text-secondary" />
                 <div>
                   <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-default-500">
@@ -706,7 +706,7 @@ export function ProfilePageContent() {
                   </p>
                 </div>
               </div>
-              <div className="flex items-center gap-3 rounded-xl border border-divider/70 bg-background/80 p-3">
+              <div className="internal-stat flex items-center gap-3 p-3">
                 <UserRound className="h-4 w-4 text-secondary" />
                 <div>
                   <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-default-500">
@@ -719,7 +719,7 @@ export function ProfilePageContent() {
                   </p>
                 </div>
               </div>
-              <div className="flex items-center gap-3 rounded-xl border border-divider/70 bg-background/80 p-3">
+              <div className="internal-stat flex items-center gap-3 p-3">
                 <Building2 className="h-4 w-4 text-secondary" />
                 <div>
                   <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-default-500">
@@ -730,7 +730,7 @@ export function ProfilePageContent() {
                   </p>
                 </div>
               </div>
-              <div className="flex items-center gap-3 rounded-xl border border-divider/70 bg-background/80 p-3">
+              <div className="internal-stat flex items-center gap-3 p-3">
                 <Phone className="h-4 w-4 text-secondary" />
                 <div>
                   <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-default-500">
@@ -757,7 +757,7 @@ export function ProfilePageContent() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.24, delay: 0.05 }}
         >
-          <Card className="border border-primary/12 bg-content1 shadow-[0_18px_48px_rgb(var(--heroui-colors-primary-500)/0.08)]">
+          <Card className="internal-card internal-card--strong">
             <CardBody className="gap-5 p-5 sm:p-6">
               <div className="space-y-1">
                 <Chip color="primary" variant="flat">
@@ -858,7 +858,7 @@ export function ProfilePageContent() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.24, delay: 0.1 }}
         >
-          <Card className="border border-primary/12 bg-content1 shadow-[0_18px_48px_rgb(var(--heroui-colors-primary-500)/0.08)]">
+          <Card className="internal-card internal-card--strong">
             <CardBody className="gap-5 p-5 sm:p-6">
               <div className="space-y-1">
                 <Chip color="secondary" variant="flat">

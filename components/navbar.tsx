@@ -1,6 +1,15 @@
 "use client";
 
-import { Button, Card, CardBody, Navbar, NavbarBrand, NavbarContent, NavbarItem } from "@heroui/react";
+import {
+  Button,
+  Card,
+  CardBody,
+  Navbar,
+  NavbarBrand,
+  NavbarContent,
+  NavbarItem,
+  Tooltip,
+} from "@heroui/react";
 import { AnimatePresence, motion } from "framer-motion";
 import { LogIn, LogOut, MessageSquare, Menu, UserRound, X } from "lucide-react";
 import NextLink from "next/link";
@@ -11,13 +20,17 @@ import { useState } from "react";
 import { siteConfig } from "@/config/site";
 import { ThemeSwitch } from "@/components/theme-switch";
 import { cn } from "@/lib/client-utils";
-import { useAuthSession } from "@/lib/hooks/useAuthSession";
+import { useAuthSession, type InitialAuthSession } from "@/lib/hooks/useAuthSession";
 import { useUnreadMessageCount } from "@/lib/hooks/useUnreadMessageCount";
 
-export function AppNavbar() {
+type AppNavbarProps = {
+  initialAuthSession?: InitialAuthSession;
+};
+
+export function AppNavbar({ initialAuthSession }: AppNavbarProps) {
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
-  const { isAuthenticated, user, refresh } = useAuthSession();
+  const { isAuthenticated, user, refresh } = useAuthSession(initialAuthSession);
   const { unreadCount: unreadMessageCount } = useUnreadMessageCount();
 
   const isActive = (href: string) => pathname === href;
@@ -95,48 +108,62 @@ export function AppNavbar() {
         <NavbarContent justify="end" className="gap-2">
           {isAuthenticated ? (
             <>
-              <Button
-                as={NextLink}
-                href="/profile"
-                isIconOnly
-                variant="flat"
-                className={cn(
-                  isProfileActive
-                    ? "bg-primary text-primary-foreground hover:bg-primary/90"
-                    : "bg-secondary/10 text-primary hover:bg-secondary/16"
-                )}
-                aria-label={user ? `Profile for @${user.username}` : "Profile"}
-              >
-                <UserRound className="h-5 w-5" />
-              </Button>
-              <Button
-                as={NextLink}
-                href="/messages"
-                isIconOnly
-                variant="flat"
-                className="relative bg-secondary/10 text-primary hover:bg-secondary/16"
-                aria-label={
+              <Tooltip content="Profile" showArrow>
+                <Button
+                  as={NextLink}
+                  href="/profile"
+                  isIconOnly
+                  variant="flat"
+                  className={cn(
+                    isProfileActive
+                      ? "bg-primary text-primary-foreground hover:bg-primary/90"
+                      : "bg-secondary/10 text-primary hover:bg-secondary/16"
+                  )}
+                  aria-label={user ? `Profile for @${user.username}` : "Profile"}
+                >
+                  <UserRound className="h-5 w-5" />
+                </Button>
+              </Tooltip>
+              <Tooltip
+                content={
                   unreadMessageCount > 0
                     ? `Messages, ${unreadMessageCount} unread`
                     : "Messages"
                 }
+                showArrow
               >
-                <MessageSquare className="h-5 w-5" />
-                {unreadMessageCount > 0 ? (
-                  <span
-                    aria-hidden="true"
-                    className="absolute right-1 top-1 h-2 w-2 rounded-full bg-danger"
-                  />
-                ) : null}
-              </Button>
-              <Button
-                variant="flat"
-                className="hidden bg-secondary/10 text-primary hover:bg-secondary/16 sm:inline-flex"
-                startContent={<LogOut className="h-4 w-4" />}
-                onPress={() => void handleLogout()}
-              >
-                Sign out
-              </Button>
+                <Button
+                  as={NextLink}
+                  href="/messages"
+                  isIconOnly
+                  variant="flat"
+                  className="relative bg-secondary/10 text-primary hover:bg-secondary/16"
+                  aria-label={
+                    unreadMessageCount > 0
+                      ? `Messages, ${unreadMessageCount} unread`
+                      : "Messages"
+                  }
+                >
+                  <MessageSquare className="h-5 w-5" />
+                  {unreadMessageCount > 0 ? (
+                    <span
+                      aria-hidden="true"
+                      className="absolute right-1 top-1 h-2 w-2 rounded-full bg-danger"
+                    />
+                  ) : null}
+                </Button>
+              </Tooltip>
+              <Tooltip content="Sign out" showArrow>
+                <Button
+                  isIconOnly
+                  variant="flat"
+                  className="hidden bg-secondary/10 text-primary hover:bg-secondary/16 sm:inline-flex"
+                  aria-label="Sign out"
+                  onPress={() => void handleLogout()}
+                >
+                  <LogOut className="h-4 w-4" />
+                </Button>
+              </Tooltip>
             </>
           ) : (
             <>

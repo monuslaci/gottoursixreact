@@ -29,7 +29,7 @@ function FloatingSearchField({
       <Search className="pointer-events-none absolute left-4 top-1/2 z-10 h-4 w-4 -translate-y-1/2 text-default-400" />
       <input
         aria-label="Search topics"
-        className="peer h-14 w-full rounded-xl border border-divider/70 bg-content1/90 pb-2 pl-11 pr-4 pt-6 text-sm text-foreground shadow-sm outline-none transition-colors placeholder:text-transparent focus:border-primary/40 focus:shadow-[0_0_0_4px_rgb(var(--heroui-colors-primary-500)/0.08)]"
+        className="peer internal-field h-14 w-full pb-2 pl-11 pr-4 pt-6 text-sm text-foreground outline-none transition-colors placeholder:text-transparent focus:border-primary/40 focus:shadow-[0_0_0_4px_rgb(var(--heroui-colors-primary-500)/0.08)]"
         placeholder=" "
         value={value}
         onChange={(event) => onValueChange(event.target.value)}
@@ -137,7 +137,7 @@ export function TopicsPageContent({ topics: initialTopics }: TopicsPageContentPr
           />
         </>
       ) : (
-        <Card className="border border-divider bg-content1 shadow-sm">
+        <Card className="internal-empty">
           <CardBody className="p-5">
             <p className="text-sm text-default-600">
               No topics match that search. Try a different term or clear the search
