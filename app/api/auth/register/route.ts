@@ -6,7 +6,6 @@ import {
   createAuthSession,
   hashPassword,
   mapPublicSessionUser,
-  normalizeAuthName,
   SESSION_COOKIE_NAME,
 } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
@@ -24,14 +23,12 @@ function readText(value: unknown) {
 export async function POST(request: NextRequest) {
   try {
     const body = (await request.json().catch(() => ({}))) as {
-      name?: unknown;
       username?: unknown;
       email?: unknown;
       password?: unknown;
       confirmPassword?: unknown;
     };
 
-    const name = normalizeAuthName(readText(body.name));
     const username = normalizeUsername(readText(body.username));
     const email = readText(body.email)?.toLowerCase() ?? null;
     const password = readText(body.password);
@@ -71,7 +68,7 @@ export async function POST(request: NextRequest) {
     const passwordRecord = hashPassword(password);
     const user = await prisma.user.create({
       data: {
-        name: name ?? username,
+        name: null,
         username,
         email,
         passwordHash: passwordRecord.hash,

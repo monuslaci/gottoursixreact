@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  Dices,
   LockKeyhole,
   MessageSquareText,
   Shield,
@@ -74,12 +75,12 @@ function FeaturePill({
 export function AuthPageContent({ initialMode, nextPath }: AuthPageContentProps) {
   const router = useRouter();
   const [mode, setMode] = useState<AuthMode>(initialMode);
-  const [name, setName] = useState("");
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isGeneratingUsername, setIsGeneratingUsername] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const isRegister = mode === "register";
@@ -87,6 +88,33 @@ export function AuthPageContent({ initialMode, nextPath }: AuthPageContentProps)
     () => (isRegister ? "Create account" : "Open app"),
     [isRegister]
   );
+
+  async function handleGenerateUsername() {
+    setIsGeneratingUsername(true);
+    setError(null);
+
+    try {
+      const response = await fetch("/api/auth/username", {
+        method: "GET",
+        cache: "no-store",
+      });
+
+      const payload = (await response.json()) as {
+        username?: string;
+        error?: string;
+      };
+
+      if (!response.ok || !payload.username) {
+        throw new Error(payload.error || "Unable to generate a username.");
+      }
+
+      setUsername(payload.username);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Unable to generate a username.");
+    } finally {
+      setIsGeneratingUsername(false);
+    }
+  }
 
   async function handleSubmit() {
     setIsSubmitting(true);
@@ -103,7 +131,6 @@ export function AuthPageContent({ initialMode, nextPath }: AuthPageContentProps)
           body: JSON.stringify(
             isRegister
               ? {
-                  name,
                   username,
                   email,
                   password,
@@ -186,18 +213,25 @@ export function AuthPageContent({ initialMode, nextPath }: AuthPageContentProps)
               <div className="space-y-4">
                   {isRegister ? (
                     <>
-                      <FloatingField
-                        autoComplete="name"
-                        label="Display name"
-                        value={name}
-                        onValueChange={setName}
-                      />
-                      <FloatingField
-                        autoComplete="username"
-                        label="Username"
-                        value={username}
-                        onValueChange={setUsername}
-                      />
+                      <div className="flex flex-col gap-2 sm:flex-row">
+                        <div className="flex-1">
+                          <FloatingField
+                            autoComplete="username"
+                            label="Username"
+                            value={username}
+                            onValueChange={setUsername}
+                          />
+                        </div>
+                        <button
+                          type="button"
+                          disabled={isGeneratingUsername || isSubmitting}
+                          className="inline-flex h-14 shrink-0 items-center justify-center gap-2 rounded-xl border border-divider/70 bg-content2/70 px-4 text-sm font-semibold text-foreground transition-colors hover:bg-content2 disabled:cursor-not-allowed disabled:opacity-70"
+                          onClick={() => void handleGenerateUsername()}
+                        >
+                          <Dices className="h-4 w-4" />
+                          {isGeneratingUsername ? "Generating..." : "Generate"}
+                        </button>
+                      </div>
                       <FloatingField
                         autoComplete="email"
                         label="Email"

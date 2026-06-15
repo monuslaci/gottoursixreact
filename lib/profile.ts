@@ -5,6 +5,52 @@ import { prisma } from "@/lib/prisma";
 
 export const DEFAULT_PROFILE_EMAIL = "miles.parker@gotyoursix.local";
 
+const USERNAME_FIRST_WORDS = [
+  "amber",
+  "brave",
+  "cedar",
+  "clear",
+  "cloud",
+  "ember",
+  "field",
+  "flint",
+  "forest",
+  "gold",
+  "harbor",
+  "moss",
+  "north",
+  "oak",
+  "quiet",
+  "river",
+  "rock",
+  "silver",
+  "stone",
+  "summit",
+] as const;
+
+const USERNAME_SECOND_WORDS = [
+  "badger",
+  "beetle",
+  "brook",
+  "canyon",
+  "falcon",
+  "finch",
+  "forest",
+  "harbor",
+  "meadow",
+  "otter",
+  "panda",
+  "pine",
+  "ridge",
+  "robin",
+  "sparrow",
+  "thicket",
+  "trail",
+  "willow",
+  "wolf",
+  "wren",
+] as const;
+
 export type ProfileUser = {
   id: string;
   name: string | null;
@@ -97,6 +143,38 @@ export function normalizeUsername(value: string | null | undefined) {
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "")
     .replace(/-{2,}/g, "-");
+}
+
+function pickRandom<T>(items: readonly T[]) {
+  return items[Math.floor(Math.random() * items.length)];
+}
+
+function buildGeneratedUsername() {
+  const firstWord = pickRandom(USERNAME_FIRST_WORDS);
+  const secondWord = pickRandom(USERNAME_SECOND_WORDS);
+  const number = Math.floor(Math.random() * 99) + 1;
+
+  return `${firstWord}${secondWord}${number}`;
+}
+
+export async function generateUniqueUsername(maxAttempts = 50) {
+  for (let attempt = 0; attempt < maxAttempts; attempt += 1) {
+    const username = buildGeneratedUsername();
+    const existing = await prisma.user.findUnique({
+      where: {
+        username,
+      },
+      select: {
+        id: true,
+      },
+    });
+
+    if (!existing) {
+      return username;
+    }
+  }
+
+  throw new CommunityError("Unable to generate a unique username right now.", 503);
 }
 
 function mapUser(user: {

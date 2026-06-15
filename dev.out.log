@@ -30,3 +30,63 @@
  ✓ Compiled in 1389ms (3986 modules)
  ✓ Compiled in 2.1s (3986 modules)
  ✓ Compiled in 1379ms (3986 modules)
+ ✓ Compiled in 2.4s (3986 modules)
+ ✓ Compiled in 1861ms (3986 modules)
+ ✓ Compiled in 432ms (1986 modules)
+ ✓ Compiled in 1790ms (3988 modules)
+ ✓ Compiled in 568ms (1987 modules)
+ ✓ Compiled in 852ms (3988 modules)
+ ○ Compiling /api/auth/username ...
+ ✓ Compiled /api/auth/username in 632ms (2029 modules)
+prisma:error 
+Invalid `prisma.user.findUnique()` invocation:
+
+
+The column `users.username` does not exist in the current database.
+ GET /api/auth/username 500 in 3282ms
+prisma:error 
+Invalid `prisma.user.findUnique()` invocation:
+
+
+The column `users.username` does not exist in the current database.
+ GET /api/auth/username 500 in 40ms
+prisma:error 
+Invalid `prisma.user.findUnique()` invocation:
+
+
+The column `users.username` does not exist in the current database.
+ GET /api/auth/username 500 in 74ms
+prisma:error 
+Invalid `prisma.user.findUnique()` invocation:
+
+
+The column `users.username` does not exist in the current database.
+ GET /api/auth/username 500 in 56ms
+prisma:error 
+Invalid `prisma.user.findUnique()` invocation:
+
+
+The column `users.username` does not exist in the current database.
+ GET /api/auth/username 500 in 60ms
+prisma:error 
+Invalid `prisma.user.findUnique()` invocation:
+
+
+The column `users.username` does not exist in the current database.
+ GET /api/auth/username 500 in 61ms
+prisma:error 
+Invalid `prisma.user.findUnique()` invocation:
+
+
+The column `users.username` does not exist in the current database.
+ GET /api/auth/username 500 in 48ms
+ ○ Compiling /_not-found ...
+ ✓ Compiled /_not-found in 2.7s (4019 modules)
+ GET /.well-known/appspecific/com.chrome.devtools.json 404 in 3109ms
+prisma:error 
+Invalid `prisma.user.findUnique()` invocation:
+
+
+The column `users.username` does not exist in the current database.
+ GET /api/auth/username 500 in 82ms
+ GET /api/auth/username 200 in 178ms
