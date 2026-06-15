@@ -1,151 +1,190 @@
 "use client";
 
-import { Button, Card, CardBody, Chip } from "@heroui/react";
-import { motion } from "framer-motion";
-import {
-  ArrowRight,
-  MessageSquareText,
-  Shield,
-  Sparkles,
-  Users,
-} from "lucide-react";
 import Link from "next/link";
 
-import { LoginButton } from "@/components/auth/login-button";
+const topics = [
+  [
+    "Career",
+    "Interviews, job searching, career growth, leadership, workplace challenges, and professional development.",
+  ],
+  [
+    "Relationships",
+    "Dating, marriage, communication, boundaries, trust, and rebuilding relationships.",
+  ],
+  [
+    "Divorce & Separation",
+    "Co-parenting, custody arrangements, and rebuilding life after major changes.",
+  ],
+  [
+    "Fatherhood",
+    "Parenting, family life, and the practical work of raising children well.",
+  ],
+  [
+    "Mental Fitness",
+    "Stress, anxiety, burnout, confidence, motivation, and personal growth.",
+  ],
+  [
+    "Health & Fitness",
+    "Exercise, nutrition, sleep, recovery, and building healthier habits.",
+  ],
+];
 
-const highlights = [
-  {
-    title: "Topic spaces with real structure",
-    description:
-      "Browse discussions, subscribe to subtopics, and keep track of the conversations that matter.",
-    icon: Users,
-  },
-  {
-    title: "Private messages for direct support",
-    description:
-      "Reach out to another member by username without exposing personal details.",
-    icon: MessageSquareText,
-  },
-  {
-    title: "Public identity, private data",
-    description:
-      "Other members see your username. Your email and personal profile stay hidden.",
-    icon: Shield,
-  },
+const reasons = [
+  "Real men. Real experiences.",
+  "Anonymous if you want.",
+  "Judgment-free community.",
+  "Practical support.",
+  "Brotherhood.",
+];
+
+const steps = [
+  "Create a free account.",
+  "Complete your profile.",
+  "Browse topics that matter to you.",
+  "Ask questions or join discussions.",
+  "Support other members when you can.",
 ];
 
 export function PublicLanding() {
   return (
-    <div className="space-y-8">
-      <motion.section
-        initial={{ opacity: 0, y: 12 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.28 }}
-        className="relative overflow-hidden rounded-[2rem] border border-primary/12 bg-content1/85 px-6 py-10 shadow-[0_24px_80px_rgb(var(--heroui-colors-primary-500)/0.12)] backdrop-blur-xl sm:px-10 sm:py-14"
-      >
-        <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_top_right,rgba(22,160,133,0.15),transparent_28%),radial-gradient(circle_at_bottom_left,rgba(14,165,233,0.12),transparent_32%)]" />
-
-        <div className="grid gap-8 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
-          <div className="space-y-6">
-            <div className="flex flex-wrap items-center gap-2">
-              <Chip color="primary" variant="flat">
-                For honest conversation
-              </Chip>
-              <Chip variant="flat">Private by default</Chip>
-            </div>
-
-            <div className="space-y-4">
-              <h1 className="max-w-2xl text-4xl font-semibold tracking-tight text-foreground sm:text-5xl">
-                A better place for men to talk, learn, and support each other.
-              </h1>
-              <p className="max-w-2xl text-base leading-7 text-default-600 sm:text-lg">
-                Got Your Six brings together topic discussions, direct messaging, and
-                a simple profile system so people can show up with a public username
-                and keep the personal details private.
-              </p>
-            </div>
-
-            <div className="flex flex-wrap gap-3">
-              <Button
-                as={Link}
-                href="/auth?mode=register"
-                color="primary"
-                endContent={<ArrowRight className="h-4 w-4" />}
-              >
-                Register
-              </Button>
-              <LoginButton />
-            </div>
-
-            <div className="grid gap-3 sm:grid-cols-3">
-              <Card className="border border-divider/70 bg-background/70 shadow-sm">
-                <CardBody className="p-4">
-                  <p className="text-2xl font-semibold">1 username</p>
-                  <p className="text-sm text-default-500">That is all other members see.</p>
-                </CardBody>
-              </Card>
-              <Card className="border border-divider/70 bg-background/70 shadow-sm">
-                <CardBody className="p-4">
-                  <p className="text-2xl font-semibold">Private DMs</p>
-                  <p className="text-sm text-default-500">Start conversations directly.</p>
-                </CardBody>
-              </Card>
-              <Card className="border border-divider/70 bg-background/70 shadow-sm">
-                <CardBody className="p-4">
-                  <p className="text-2xl font-semibold">Topic feeds</p>
-                  <p className="text-sm text-default-500">Follow what matters most.</p>
-                </CardBody>
-              </Card>
-            </div>
+    <div className="public-landing">
+      <section className="public-hero">
+        <div className="public-hero__copy">
+          <div className="public-eyebrows">
+            <span className="public-pill public-pill--bronze">
+                Got Your Six
+            </span>
+            <span className="public-pill public-pill--slate">
+                Men helping men
+            </span>
           </div>
 
-          <div className="grid gap-4">
-            {highlights.map((item, index) => {
-              const Icon = item.icon;
+          <div className="public-heading">
+            <p className="public-kicker">
+                You're not alone
+            </p>
+            <h1>
+                A community for the burdens most men carry alone.
+            </h1>
+            <p>
+                Life can be tough. Career setbacks, relationship problems, divorce,
+                fatherhood challenges, stress, anxiety, loneliness, health concerns,
+                or simply feeling stuck.
+            </p>
+            <p>
+                Got Your Six exists so men can share experience, ask honest
+                questions, and find practical support from people who understand.
+            </p>
+          </div>
 
-              return (
-                <motion.div
-                  key={item.title}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.22, delay: index * 0.05 }}
-                >
-                  <Card className="border border-primary/12 bg-content1/90 shadow-[0_14px_40px_rgb(var(--heroui-colors-primary-500)/0.08)]">
-                    <CardBody className="flex flex-row items-start gap-4 p-5">
-                      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-primary/10 text-primary">
-                        <Icon className="h-5 w-5" />
-                      </div>
-                      <div className="space-y-1">
-                        <p className="text-base font-semibold text-foreground">
-                          {item.title}
-                        </p>
-                        <p className="text-sm leading-6 text-default-600">
-                          {item.description}
-                        </p>
-                      </div>
-                    </CardBody>
-                  </Card>
-                </motion.div>
-              );
-            })}
-
-            <Card className="border border-primary/12 bg-gradient-to-br from-primary/10 via-background to-secondary/10 shadow-[0_16px_44px_rgb(var(--heroui-colors-primary-500)/0.1)]">
-              <CardBody className="gap-3 p-5">
-                <div className="flex items-center gap-2 text-primary">
-                  <Sparkles className="h-5 w-5" />
-                  <p className="text-sm font-semibold uppercase tracking-[0.18em]">
-                    What you get
-                  </p>
-                </div>
-                <p className="text-sm leading-6 text-default-600">
-                  A clean landing page, a normal password login, and a dashboard that
-                  focuses on topics, subscriptions, and messages instead of clutter.
-                </p>
-              </CardBody>
-            </Card>
+          <div className="public-actions">
+            <Link href="/auth?mode=register" className="public-button public-button--primary">
+              Create account
+            </Link>
+            <Link href="/auth?mode=login" className="public-button public-button--secondary">
+              Sign in
+            </Link>
           </div>
         </div>
-      </motion.section>
+
+        <div className="public-hero__panel">
+          <div className="public-panel-top">
+            <div className="public-logo-frame public-logo-frame--hero">
+              <img src="/logo.png" alt="Got Your Six logo" />
+            </div>
+            <div className="public-panel-badge">
+                  Community first
+            </div>
+          </div>
+
+          <p className="public-panel-quote">
+                Whether you need guidance, encouragement, or someone who gets it,
+                you will find men here who have your back.
+          </p>
+        </div>
+      </section>
+
+      <section className="public-section">
+        <div className="public-section-head">
+          <div>
+            <p className="public-kicker">
+              What you can find here
+            </p>
+            <h2>
+              Focused spaces for real-life pressure points.
+            </h2>
+          </div>
+          <p>
+            Each area is built around practical experience, respectful discussion,
+            and support that is useful beyond the screen.
+          </p>
+        </div>
+
+        <div className="public-topic-grid">
+          {topics.map(([title, description], index) => (
+            <div key={title} className="public-card">
+              <div className="public-card-number">
+                {String(index + 1).padStart(2, "0")}
+              </div>
+              <h3>{title}</h3>
+              <p>{description}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section className="public-split">
+        <div className="public-info-card">
+          <p className="public-kicker">
+            Why join
+          </p>
+          <h2>
+            Support with standards.
+          </h2>
+
+          <div className="public-reason-grid">
+            {reasons.map((reason) => (
+              <div key={reason}>
+                {reason}
+              </div>
+            ))}
+          </div>
+
+          <p>
+            Advice comes from people who have lived through similar situations.
+            Conversations are focused on helping, not criticizing.
+          </p>
+        </div>
+
+        <div className="public-steps-card">
+          <p className="public-steps-kicker">
+            How it works
+          </p>
+          <h2>
+            The strongest communities are built when everyone contributes.
+          </h2>
+
+          <div className="public-steps">
+            {steps.map((step, index) => (
+              <div key={step}>
+                <span>
+                  {index + 1}
+                </span>
+                <p>{step}</p>
+              </div>
+            ))}
+          </div>
+
+          <div className="public-actions public-actions--compact">
+            <Link href="/auth?mode=register" className="public-button public-button--bronze">
+              Join now
+            </Link>
+            <Link href="/rules" className="public-button public-button--outline">
+              Community values
+            </Link>
+          </div>
+        </div>
+      </section>
     </div>
   );
 }

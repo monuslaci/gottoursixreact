@@ -40,3 +40,5 @@ pnpm-lock.yaml
 yarn.lock
 bun.lockb
 certificates
+dev.err.log
+dev.out.log

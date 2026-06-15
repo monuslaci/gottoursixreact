@@ -38,6 +38,8 @@ const config = {
             foreground: "rgb(var(--foreground) / <alpha-value>)",
             content1: "rgb(var(--content1) / <alpha-value>)",
             content2: "rgb(var(--content2) / <alpha-value>)",
+            content3: "rgb(var(--content3) / <alpha-value>)",
+            content4: "rgb(var(--content4) / <alpha-value>)",
             divider: "rgb(var(--divider) / <alpha-value>)",
             default: {
               100: "rgb(var(--default-100) / <alpha-value>)",
@@ -95,6 +97,8 @@ const config = {
             foreground: "rgb(var(--foreground) / <alpha-value>)",
             content1: "rgb(var(--content1) / <alpha-value>)",
             content2: "rgb(var(--content2) / <alpha-value>)",
+            content3: "rgb(var(--content3) / <alpha-value>)",
+            content4: "rgb(var(--content4) / <alpha-value>)",
             divider: "rgb(var(--divider) / <alpha-value>)",
             default: {
               100: "rgb(var(--default-100) / <alpha-value>)",

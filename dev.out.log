@@ -7,62 +7,26 @@
   - Environments: .env.local, .env
 
  ✓ Starting...
- ✓ Ready in 2.1s
- ○ Compiling /admin ...
- ✓ Compiled /admin in 620ms (59 modules)
- ✓ Compiled in 8.1s (1986 modules)
- GET /admin 200 in 9905ms
- GET /api/topics 200 in 12118ms
- ○ Compiling /topics ...
- ✓ Compiled /topics in 1689ms (3993 modules)
- ✓ Compiled in 571ms (1983 modules)
- ✓ Compiled in 424ms (1983 modules)
- ✓ Compiled /admin in 322ms (1968 modules)
- GET /admin 200 in 557ms
- ○ Compiling /topics ...
- ✓ Compiled /topics in 950ms (1980 modules)
- GET /topics 200 in 1512ms
- ✓ Compiled in 759ms (3952 modules)
- ○ Compiling /_not-found ...
- ✓ Compiled /_not-found in 1253ms (3941 modules)
- GET /topics 404 in 1363ms
- GET /_next/static/css/app/layout.css?v=1781247772337 404 in 52ms
- GET /_next/static/chunks/main-app.js?v=1781247772337 404 in 80ms
- GET /_next/static/chunks/app-pages-internals.js 404 in 80ms
- GET /_next/static/chunks/app/layout.js 404 in 80ms
- GET /topics 200 in 2164ms
- GET /_next/static/css/app/layout.css?v=1781247777226 404 in 62ms
- GET /_next/static/chunks/app-pages-internals.js 404 in 102ms
- GET /_next/static/chunks/main-app.js?v=1781247777226 404 in 105ms
- GET /_next/static/chunks/app/layout.js 404 in 104ms
- GET /_next/static/chunks/app/topics/page.js 404 in 103ms
- ✓ Compiled in 616ms (1987 modules)
- GET /topics 200 in 68ms
- GET /_next/static/css/app/layout.css?v=1781247783171 404 in 48ms
- GET /_next/static/chunks/main-app.js?v=1781247783171 404 in 78ms
- GET /_next/static/chunks/app-pages-internals.js 404 in 78ms
- GET /_next/static/chunks/app/topics/page.js 404 in 78ms
- ○ Compiling / ...
- ✓ Compiled / in 743ms (3951 modules)
- GET / 200 in 971ms
- GET /_next/static/css/app/layout.css?v=1781247791723 404 in 79ms
- GET /_next/static/chunks/app-pages-internals.js 404 in 113ms
- GET /_next/static/chunks/main-app.js?v=1781247791723 404 in 119ms
- ✓ Compiled /admin in 328ms (1989 modules)
- GET /admin 200 in 744ms
- GET /topics 200 in 744ms
- ○ Compiling /_error ...
- ✓ Compiled /_error in 2.4s (4193 modules)
- GET / 404 in 2555ms
- GET / 200 in 179ms
- GET /_next/static/css/app/layout.css?v=1781247820728 404 in 46ms
- GET /_next/static/chunks/main-app.js?v=1781247820728 404 in 92ms
- GET /_next/static/chunks/app-pages-internals.js 404 in 93ms
- GET /_next/static/chunks/app/page.js 404 in 91ms
- GET /_next/static/chunks/app/layout.js 404 in 82ms
- GET / 200 in 71ms
- ✓ Compiled in 1871ms (4185 modules)
- ✓ Compiled in 687ms (4185 modules)
- ✓ Compiled in 724ms (4185 modules)
- ✓ Compiled in 544ms (4185 modules)
- ✓ Compiled in 1686ms (4185 modules)
+ ✓ Ready in 2.8s
+ ○ Compiling /auth ...
+ ✓ Compiled /auth in 21.4s (3986 modules)
+ GET /auth 200 in 21896ms
+ GET / 200 in 21953ms
+ GET / 200 in 62ms
+ ○ Compiling /api/auth/session ...
+ ✓ Compiled /api/auth/session in 959ms (2028 modules)
+ GET /api/auth/session 200 in 1269ms
+ GET /api/auth/session 200 in 1271ms
+ GET /api/auth/session 200 in 1271ms
+ GET /api/auth/session 200 in 1274ms
+ ✓ Compiled in 2.1s (4014 modules)
+ ✓ Compiled in 1424ms (3986 modules)
+ GET /auth 200 in 325ms
+ ✓ Compiled in 1058ms (3986 modules)
+ GET /auth 200 in 205ms
+ ✓ Compiled in 2.6s (3986 modules)
+ ✓ Compiled in 1022ms (3986 modules)
+ ✓ Compiled in 1071ms (3986 modules)
+ ✓ Compiled in 1389ms (3986 modules)
+ ✓ Compiled in 2.1s (3986 modules)
+ ✓ Compiled in 1379ms (3986 modules)
