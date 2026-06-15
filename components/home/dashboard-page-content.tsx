@@ -1,72 +1,130 @@
 "use client";
 
-import type { TopicListItem } from "@/lib/community";
+import type {
+  RecentConversationItem,
+  TopicListItem,
+} from "@/lib/community";
+import Link from "next/link";
+import { motion } from "framer-motion";
+
+const supportAreas = [
+  {
+    title: "Career",
+    description:
+      "Interviews, promotions, leadership, workplace problems, job loss, and career changes.",
+  },
+  {
+    title: "Relationships",
+    description:
+      "Dating, marriage, communication, trust, boundaries, and rebuilding connection.",
+  },
+  {
+    title: "Divorce & Separation",
+    description:
+      "Custody, co-parenting, legal challenges, and rebuilding your life.",
+  },
+  {
+    title: "Fatherhood",
+    description:
+      "Parenting advice, family challenges, and raising strong and healthy children.",
+  },
+  {
+    title: "Mental Fitness",
+    description:
+      "Stress, anxiety, burnout, confidence, motivation, and purpose.",
+  },
+  {
+    title: "Health & Fitness",
+    description:
+      "Exercise, nutrition, sleep, recovery, and building healthy habits.",
+  },
+];
+
+const successStories = [
+  "Men rebuilding confidence after layoffs and difficult career transitions.",
+  "Fathers finding steadier footing through co-parenting and family change.",
+  "Members repairing relationships, setting boundaries, and starting over stronger.",
+];
+
+const communityValues = [
+  "Respect first",
+  "Honest conversation",
+  "Practical advice",
+  "No judgment",
+  "No personal attacks",
+  "Men helping men",
+];
 
 type DashboardPageContentProps = {
   topics: TopicListItem[];
+  recentPosts: RecentConversationItem[];
 };
 
-export function DashboardPageContent({ topics }: DashboardPageContentProps) {
-  const topTopics = topics.slice(0, 6);
+function formatConversationDate(value: string) {
+  return new Intl.DateTimeFormat("en", {
+    month: "short",
+    day: "numeric",
+  }).format(new Date(value));
+}
 
-  const totals = topics.reduce(
-    (accumulator, topic) => ({
-      topics: accumulator.topics + 1,
-      subtopics: accumulator.subtopics + topic.counts.subtopics,
-      posts: accumulator.posts + topic.counts.posts,
-      members: accumulator.members + topic.counts.subscriptions,
-    }),
-    {
-      topics: 0,
-      subtopics: 0,
-      posts: 0,
-      members: 0,
-    }
-  );
+function trimPreview(body: string, maxLength = 150) {
+  const normalized = body.replace(/\s+/g, " ").trim();
 
-  const dashboardStats = [
-    {
-      label: "Topics",
-      value: `${totals.topics}`,
-      helper: "Core spaces available now",
-    },
-    {
-      label: "Subtopics",
-      value: `${totals.subtopics}`,
-      helper: "Focused areas for discussion",
-    },
-    {
-      label: "Posts",
-      value: `${totals.posts}`,
-      helper: "Threads already in motion",
-    },
-    {
-      label: "Members",
-      value: `${totals.members}`,
-      helper: "Subscriptions and active reach",
-    },
-  ];
+  if (normalized.length <= maxLength) {
+    return normalized;
+  }
+
+  return `${normalized.slice(0, maxLength - 1).trimEnd()}…`;
+}
+
+export function DashboardPageContent({
+  topics,
+  recentPosts,
+}: DashboardPageContentProps) {
+  const topTopics = topics.slice(0, 3);
 
   return (
     <div className="public-landing">
-      <section className="public-hero">
-        <div className="public-hero__copy">
+      <motion.section
+        className="public-hero"
+        initial={{ opacity: 0, y: 24 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.45, ease: "easeOut" }}
+      >
+        <div className="public-hero__copy public-hero__copy--dashboard">
           <div className="public-eyebrows">
             <span className="public-pill public-pill--bronze">Got Your Six</span>
             <span className="public-pill public-pill--slate">Welcome back</span>
           </div>
 
           <div className="public-heading">
-            <p className="public-kicker">You're not alone</p>
-            <h1>A community for the burdens most men carry alone.</h1>
+            <p className="public-kicker">You&apos;ve got backup</p>
+            <h1>Most men are taught to carry everything themselves.</h1>
             <p>
-              Pick up where you left off with topic spaces, direct messages, and
-              member support built around honest conversation.
+              The stress. The uncertainty. The pressure to provide. The
+              relationship problems. The fear that nobody really understands
+              what you&apos;re going through.
             </p>
             <p>
-              The navigation above keeps the working areas close, while this home
-              screen stays calm, branded, and focused.
+              You don&apos;t have to carry it alone. Got Your Six is a community
+              of men helping men navigate life&apos;s challenges through honest
+              conversations, practical advice, and shared experience.
             </p>
+            <p>
+              Whether you&apos;re dealing with career setbacks, divorce,
+              fatherhood, loneliness, health concerns, or simply trying to
+              become a better man, you&apos;ll find people here who have walked
+              similar paths.
+            </p>
+          </div>
+
+          <div className="public-actions">
+            <Link href="/topics" className="public-button public-button--primary">
+              Find support
+            </Link>
+            <Link href="/messages" className="public-button public-button--secondary">
+              Check messages
+            </Link>
           </div>
         </div>
 
@@ -79,73 +137,162 @@ export function DashboardPageContent({ topics }: DashboardPageContentProps) {
           </div>
 
           <p className="public-panel-quote">
-            Whether you need guidance, encouragement, or someone who gets it,
-            you will find men here who have your back.
+            Because sometimes the strongest thing a man can do is ask for help.
           </p>
         </div>
-      </section>
+      </motion.section>
 
-      <section className="public-section">
+      <motion.section
+        className="public-section"
+        initial={{ opacity: 0, y: 24 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, amount: 0.2 }}
+        transition={{ duration: 0.4, ease: "easeOut" }}
+      >
         <div className="public-section-head">
           <div>
-            <p className="public-kicker">Live community</p>
-            <h2>A quick read on what is available now.</h2>
+            <p className="public-kicker">What do you need help with today?</p>
+            <h2>Start with the pressure point that feels heaviest right now.</h2>
           </div>
           <p>
-            These numbers come from the live topic data, so the home screen feels
-            connected to the actual community without turning into a busy dashboard.
+            Every topic area is built around honest discussion, lived
+            experience, and advice you can actually use in real life.
           </p>
         </div>
 
         <div className="public-topic-grid">
-          {dashboardStats.map((item, index) => (
-            <div key={item.label} className="public-card">
+          {supportAreas.map((item, index) => (
+            <Link key={item.title} href="/topics" className="public-card public-card--link">
               <div className="public-card-number">
                 {String(index + 1).padStart(2, "0")}
               </div>
-              <h3>
-                {item.value} {item.label}
-              </h3>
-              <p>{item.helper}</p>
-            </div>
+              <h3>{item.title}</h3>
+              <p>{item.description}</p>
+            </Link>
           ))}
         </div>
-      </section>
+      </motion.section>
 
-      <section className="public-section">
+      <motion.section
+        className="public-section"
+        initial={{ opacity: 0, y: 24 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, amount: 0.2 }}
+        transition={{ duration: 0.4, ease: "easeOut" }}
+      >
         <div className="public-section-head">
           <div>
-            <p className="public-kicker">Active topics</p>
-            <h2>Spaces people are using now.</h2>
+            <p className="public-kicker">Recent conversations</p>
+            <h2>Real men talking through real situations.</h2>
           </div>
           <p>
-            A simple preview of the topic areas currently available in the app.
+            These previews come from the latest discussion starters in the
+            community, so the page stays grounded in what members are actually
+            facing now.
           </p>
         </div>
 
-        {topTopics.length > 0 ? (
+        {recentPosts.length > 0 ? (
           <div className="public-topic-grid">
-            {topTopics.map((topic, index) => (
-              <div key={topic.id} className="public-card">
+            {recentPosts.map((post, index) => (
+              <Link
+                key={post.id}
+                href={post.topic ? `/topics/${post.topic.id}` : "/topics"}
+                className="public-card public-card--conversation"
+              >
                 <div className="public-card-number">
                   {String(index + 1).padStart(2, "0")}
                 </div>
-                <h3>{topic.title}</h3>
+                <div className="public-card-meta">
+                  <span>{post.topic?.title ?? "Community"}</span>
+                  {post.subtopic ? <span>{post.subtopic.title}</span> : null}
+                  <span>{formatConversationDate(post.createdAt)}</span>
+                </div>
                 <p>
-                  {topic.description ||
-                    "A discussion space ready for the next conversation."}
+                  {trimPreview(post.body)}
                 </p>
-              </div>
+                <h3>
+                  {post.author?.name || post.author?.username || "A member"}{" "}
+                  started this conversation
+                </h3>
+                <p className="public-card-helper">
+                  {post.replyCount} {post.replyCount === 1 ? "reply" : "replies"}
+                </p>
+              </Link>
             ))}
           </div>
         ) : (
           <div className="public-card">
             <div className="public-card-number">01</div>
-            <h3>No topics yet</h3>
-            <p>Use the admin area to create the first community spaces.</p>
+            <h3>No conversations yet</h3>
+            <p>The first honest post can set the tone for someone else to speak up.</p>
           </div>
         )}
-      </section>
+
+        {topTopics.length > 0 ? (
+          <div className="public-inline-links">
+            {topTopics.map((topic) => (
+              <Link key={topic.id} href={`/topics/${topic.id}`} className="public-inline-chip">
+                {topic.title}
+              </Link>
+            ))}
+          </div>
+        ) : null}
+      </motion.section>
+
+      <motion.section
+        className="public-split"
+        initial={{ opacity: 0, y: 24 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, amount: 0.2 }}
+        transition={{ duration: 0.4, ease: "easeOut" }}
+      >
+        <div className="public-info-card">
+          <p className="public-kicker">Success stories</p>
+          <h2>Proof that men can rebuild, recover, and move forward.</h2>
+
+          <div className="public-story-list">
+            {successStories.map((story, index) => (
+              <div key={story} className="public-story-item">
+                <span>{String(index + 1).padStart(2, "0")}</span>
+                <p>{story}</p>
+              </div>
+            ))}
+          </div>
+
+          <p>
+            Some men come here looking for answers. Others stay long enough to
+            become the answer for someone else.
+          </p>
+        </div>
+
+        <div className="public-steps-card">
+          <p className="public-steps-kicker">Community values</p>
+          <h2>The standard here is simple: respect, honesty, and real help.</h2>
+
+          <div className="public-values-grid">
+            {communityValues.map((value) => (
+              <div key={value} className="public-value-pill">
+                {value}
+              </div>
+            ))}
+          </div>
+
+          <p className="public-steps-card__quote">
+            And sometimes the best thing another man can say is: &quot;I&apos;ve got
+            your six.&quot;
+          </p>
+
+          <div className="public-actions public-actions--compact">
+            <Link href="/rules" className="public-button public-button--bronze">
+              Community values
+            </Link>
+            <Link href="/topics" className="public-button public-button--outline">
+              Join a conversation
+            </Link>
+          </div>
+        </div>
+      </motion.section>
     </div>
   );
 }

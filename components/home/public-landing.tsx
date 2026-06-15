@@ -1,54 +1,69 @@
 "use client";
 
 import Link from "next/link";
+import { motion } from "framer-motion";
+
+const whyYouMightBeHere = [
+  "My marriage is falling apart.",
+  "I'm struggling with anxiety.",
+  "I'm worried about my children.",
+  "I feel stuck in my career.",
+  "I don't have anyone to talk to.",
+  "I'm trying to rebuild my life after divorce.",
+];
 
 const topics = [
   [
-    "Career",
-    "Interviews, job searching, career growth, leadership, workplace challenges, and professional development.",
-  ],
-  [
-    "Relationships",
-    "Dating, marriage, communication, boundaries, trust, and rebuilding relationships.",
-  ],
-  [
     "Divorce & Separation",
-    "Co-parenting, custody arrangements, and rebuilding life after major changes.",
+    "When your life changes overnight and you're trying to figure out what comes next.",
   ],
   [
     "Fatherhood",
-    "Parenting, family life, and the practical work of raising children well.",
+    "Because raising children doesn't come with a manual.",
+  ],
+  [
+    "Relationships",
+    "Communication, trust, dating, marriage, boundaries, and everything in between.",
+  ],
+  [
+    "Career & Purpose",
+    "Job loss, career growth, leadership, burnout, and finding meaning in your work.",
   ],
   [
     "Mental Fitness",
-    "Stress, anxiety, burnout, confidence, motivation, and personal growth.",
+    "Stress, anxiety, confidence, motivation, resilience, and staying mentally strong.",
   ],
   [
     "Health & Fitness",
-    "Exercise, nutrition, sleep, recovery, and building healthier habits.",
+    "Sleep, nutrition, exercise, recovery, and building habits that last.",
   ],
 ];
 
 const reasons = [
-  "Real men. Real experiences.",
-  "Anonymous if you want.",
-  "Judgment-free community.",
-  "Practical support.",
-  "Brotherhood.",
+  "Because they realize they aren't the only one.",
+  "Because they find men who have lived through the same fears and setbacks.",
+  "Because sometimes the most valuable thing isn't advice.",
+  "It's hearing someone say: \"I've been there.\"",
 ];
 
-const steps = [
-  "Create a free account.",
-  "Complete your profile.",
-  "Browse topics that matter to you.",
-  "Ask questions or join discussions.",
-  "Support other members when you can.",
+const values = [
+  "Men support each other.",
+  "Questions are welcomed.",
+  "Vulnerability is not weakness.",
+  "Respect comes first.",
+  "Personal attacks have no place.",
+  "Growth matters more than ego.",
 ];
 
 export function PublicLanding() {
   return (
     <div className="public-landing">
-      <section className="public-hero">
+      <motion.section
+        className="public-hero"
+        initial={{ opacity: 0, y: 24 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.45, ease: "easeOut" }}
+      >
         <div className="public-hero__copy">
           <div className="public-eyebrows">
             <span className="public-pill public-pill--bronze">
@@ -61,19 +76,32 @@ export function PublicLanding() {
 
           <div className="public-heading">
             <p className="public-kicker">
-                You're not alone
+                Every man carries something
             </p>
             <h1>
-                A community for the burdens most men carry alone.
+                You don't have to carry it alone.
             </h1>
             <p>
-                Life can be tough. Career setbacks, relationship problems, divorce,
-                fatherhood challenges, stress, anxiety, loneliness, health concerns,
-                or simply feeling stuck.
+                Maybe it&apos;s stress. Maybe it&apos;s a relationship that&apos;s
+                falling apart. Maybe it&apos;s the pressure of providing for your
+                family. Maybe it&apos;s anxiety, loneliness, burnout, or the feeling
+                that you&apos;re supposed to have everything figured out by now.
             </p>
             <p>
-                Got Your Six exists so men can share experience, ask honest
-                questions, and find practical support from people who understand.
+                Most men carry these things silently. Not because they want to.
+                Because they&apos;ve been taught to.
+            </p>
+            <p>
+                Got Your Six is a community where men help men. No influencers.
+                No gurus. No pretending. Just honest conversations with people
+                who understand what you&apos;re going through because they&apos;ve
+                been there too.
+            </p>
+            <p>
+                Whether you&apos;re navigating divorce, fatherhood, career
+                challenges, mental health struggles, relationships, or major
+                life changes, you&apos;ll find men here who are willing to listen,
+                share their experiences, and help.
             </p>
           </div>
 
@@ -98,25 +126,69 @@ export function PublicLanding() {
           </div>
 
           <p className="public-panel-quote">
-                Whether you need guidance, encouragement, or someone who gets it,
-                you will find men here who have your back.
+                Most men don&apos;t need a brochure. They need to know someone
+                will understand.
           </p>
         </div>
-      </section>
+      </motion.section>
 
-      <section className="public-section">
+      <motion.section
+        className="public-section"
+        initial={{ opacity: 0, y: 24 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, amount: 0.2 }}
+        transition={{ duration: 0.4, ease: "easeOut" }}
+      >
         <div className="public-section-head">
           <div>
             <p className="public-kicker">
-              What you can find here
+              You might be here because...
             </p>
             <h2>
-              Focused spaces for real-life pressure points.
+              The thing weighing on you already has a place here.
             </h2>
           </div>
           <p>
-            Each area is built around practical experience, respectful discussion,
-            and support that is useful beyond the screen.
+            This page should feel familiar before it feels informative. Most men
+            arrive here carrying something they have not said out loud yet.
+          </p>
+        </div>
+
+        <div className="public-topic-grid">
+          {whyYouMightBeHere.map((reason, index) => (
+            <div key={reason} className="public-card">
+              <div className="public-card-number">
+                {String(index + 1).padStart(2, "0")}
+              </div>
+              <h3 className="public-card-copy-lg">{reason}</h3>
+              <p>
+                Honest conversation starts faster when someone else has already
+                put the feeling into words.
+              </p>
+            </div>
+          ))}
+        </div>
+      </motion.section>
+
+      <motion.section
+        className="public-section"
+        initial={{ opacity: 0, y: 24 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, amount: 0.2 }}
+        transition={{ duration: 0.4, ease: "easeOut" }}
+      >
+        <div className="public-section-head">
+          <div>
+            <p className="public-kicker">
+              What brings men here?
+            </p>
+            <h2>
+              The conversations usually begin in these parts of life.
+            </h2>
+          </div>
+          <p>
+            The categories matter, but only after a new visitor feels understood
+            enough to take the first step.
           </p>
         </div>
 
@@ -131,60 +203,78 @@ export function PublicLanding() {
             </div>
           ))}
         </div>
-      </section>
+      </motion.section>
 
-      <section className="public-split">
+      <motion.section
+        className="public-split"
+        initial={{ opacity: 0, y: 24 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, amount: 0.2 }}
+        transition={{ duration: 0.4, ease: "easeOut" }}
+      >
         <div className="public-info-card">
           <p className="public-kicker">
-            Why join
+            Why men stay
           </p>
           <h2>
-            Support with standards.
+            Because they realize they aren&apos;t the only one.
           </h2>
 
-          <div className="public-reason-grid">
+          <div className="public-story-list">
             {reasons.map((reason) => (
-              <div key={reason}>
-                {reason}
+              <div key={reason} className="public-story-item">
+                <p>{reason}</p>
               </div>
             ))}
           </div>
 
           <p>
-            Advice comes from people who have lived through similar situations.
-            Conversations are focused on helping, not criticizing.
+            They discover that other men have faced the same fears, made similar
+            mistakes, survived difficult situations, and found ways forward.
           </p>
         </div>
 
         <div className="public-steps-card">
           <p className="public-steps-kicker">
-            How it works
+            The kind of community we&apos;re building
           </p>
           <h2>
-            The strongest communities are built when everyone contributes.
+            This isn&apos;t social media. This is a brotherhood built around
+            helping each other navigate life.
           </h2>
 
-          <div className="public-steps">
-            {steps.map((step, index) => (
-              <div key={step}>
-                <span>
-                  {index + 1}
-                </span>
-                <p>{step}</p>
+          <div className="public-values-grid">
+            {values.map((value) => (
+              <div key={value} className="public-value-pill">
+                {value}
               </div>
             ))}
           </div>
 
+          <p className="public-steps-card__quote">
+            You don&apos;t need to have the answers. You just need to take the
+            first step.
+          </p>
+
+          <p className="public-steps-card__quote">
+            Create your account, introduce yourself, and join a community that
+            believes no man should face life&apos;s challenges alone.
+          </p>
+
           <div className="public-actions public-actions--compact">
             <Link href="/auth?mode=register" className="public-button public-button--bronze">
-              Join now
+              Create account
             </Link>
-            <Link href="/rules" className="public-button public-button--outline">
-              Community values
+            <Link href="/auth?mode=login" className="public-button public-button--outline">
+              Sign in
             </Link>
           </div>
+
+          <p className="public-steps-card__quote">
+            Because when things get difficult, we&apos;ve got your six.
+          </p>
         </div>
-      </section>
+      </motion.section>
     </div>
   );
 }

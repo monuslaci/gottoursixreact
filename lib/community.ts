@@ -36,6 +36,29 @@ export type TopicPostItem = {
   replyCount: number;
 };
 
+export type RecentConversationItem = {
+  id: string;
+  body: string;
+  createdAt: string;
+  replyCount: number;
+  author: {
+    id: string;
+    name: string | null;
+    username: string;
+    image: string | null;
+  } | null;
+  topic: {
+    id: string;
+    title: string;
+    slug: string;
+  } | null;
+  subtopic: {
+    id: string;
+    title: string;
+    slug: string;
+  } | null;
+};
+
 export type TopicDetailItem = {
   id: string;
   title: string;
@@ -728,6 +751,61 @@ export async function listSubtopicPosts(subtopicId: string) {
   });
 
   return posts.map(toTopicPostItem);
+}
+
+export async function listRecentCommunityPosts(limit = 4) {
+  const posts = await prisma.discussionPost.findMany({
+    where: {
+      parentPostId: null,
+      topicId: {
+        not: null,
+      },
+      topic: {
+        deletedAt: null,
+      },
+    },
+    orderBy: [{ createdAt: "desc" }],
+    take: limit,
+    include: {
+      author: {
+        select: {
+          id: true,
+          name: true,
+          username: true,
+          image: true,
+        },
+      },
+      topic: {
+        select: {
+          id: true,
+          title: true,
+          slug: true,
+        },
+      },
+      subtopic: {
+        select: {
+          id: true,
+          title: true,
+          slug: true,
+        },
+      },
+      _count: {
+        select: {
+          replies: true,
+        },
+      },
+    },
+  });
+
+  return posts.map((post): RecentConversationItem => ({
+    id: post.id,
+    body: post.body,
+    createdAt: post.createdAt.toISOString(),
+    replyCount: post._count.replies,
+    author: post.author,
+    topic: post.topic,
+    subtopic: post.subtopic,
+  }));
 }
 
 export async function createTopicPost(
