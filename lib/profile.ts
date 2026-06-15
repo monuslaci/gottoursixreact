@@ -350,6 +350,19 @@ export async function updateProfilePayload(input: UpdateProfileInput) {
     throw new CommunityError("Username is required.", 400);
   }
 
+  const usernameOwner = await prisma.user.findUnique({
+    where: {
+      username,
+    },
+    select: {
+      id: true,
+    },
+  });
+
+  if (usernameOwner && usernameOwner.id !== user.id) {
+    throw new CommunityError("That username is already in use.", 409);
+  }
+
   const data: Prisma.UserUpdateInput = {
     name: normalizeText(input.name),
     username,
@@ -375,7 +388,7 @@ export async function updateProfilePayload(input: UpdateProfileInput) {
   } catch (error) {
     if (error instanceof Prisma.PrismaClientKnownRequestError) {
       if (error.code === "P2002") {
-        throw new CommunityError("That profile value is already in use.", 409);
+        throw new CommunityError("That username is already in use.", 409);
       }
     }
 

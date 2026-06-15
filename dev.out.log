@@ -90,3 +90,8 @@ Invalid `prisma.user.findUnique()` invocation:
 The column `users.username` does not exist in the current database.
  GET /api/auth/username 500 in 82ms
  GET /api/auth/username 200 in 178ms
+ GET /api/auth/username 200 in 46ms
+ GET /api/auth/username 200 in 46ms
+ GET /api/auth/username 200 in 28ms
+ ✓ Compiled in 1469ms (3988 modules)
+ ✓ Compiled in 527ms (1987 modules)

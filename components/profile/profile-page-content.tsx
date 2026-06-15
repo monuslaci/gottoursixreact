@@ -20,6 +20,7 @@ import {
   ChevronLeft,
   ChevronRight,
   UserRound,
+  Dices,
 } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useMemo, useState, type ReactNode } from "react";
@@ -333,6 +334,7 @@ export function ProfilePageContent() {
   const [form, setForm] = useState<ProfileFormState>(EMPTY_FORM);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+  const [isGeneratingUsername, setIsGeneratingUsername] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
   const [unsubscribingId, setUnsubscribingId] = useState<string | null>(null);
@@ -441,6 +443,35 @@ export function ProfilePageContent() {
       ...current,
       [field]: value,
     }));
+  }
+
+  async function handleGenerateUsername() {
+    setIsGeneratingUsername(true);
+    setStatusMessage(null);
+    setError(null);
+
+    try {
+      const response = await fetch("/api/auth/username", {
+        method: "GET",
+        cache: "no-store",
+      });
+
+      const payload = (await response.json()) as {
+        username?: string;
+        error?: string;
+      };
+
+      if (!response.ok || !payload.username) {
+        throw new Error(payload.error || "Unable to generate a username.");
+      }
+
+      updateField("username", payload.username);
+      setStatusMessage("New username suggestion ready.");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Unable to generate a username.");
+    } finally {
+      setIsGeneratingUsername(false);
+    }
   }
 
   async function handleSaveProfile() {
@@ -744,12 +775,25 @@ export function ProfilePageContent() {
                   value={form.name}
                   onValueChange={(value) => updateField("name", value)}
                 />
-                <FloatingInput
-                  label="Username"
-                  value={form.username}
-                  onValueChange={(value) => updateField("username", value)}
-                  isRequired
-                />
+                <div className="flex flex-col gap-2 sm:flex-row sm:items-start">
+                  <div className="flex-1">
+                    <FloatingInput
+                      label="Username"
+                      value={form.username}
+                      onValueChange={(value) => updateField("username", value)}
+                      isRequired
+                    />
+                  </div>
+                  <Button
+                    className="h-14 shrink-0 sm:min-w-[120px]"
+                    isDisabled={isGeneratingUsername || isSaving}
+                    startContent={<Dices className="h-4 w-4" />}
+                    variant="flat"
+                    onPress={() => void handleGenerateUsername()}
+                  >
+                    {isGeneratingUsername ? "Generating..." : "Generate"}
+                  </Button>
+                </div>
                 <FloatingInput
                   label="Image URL"
                   value={form.image}
