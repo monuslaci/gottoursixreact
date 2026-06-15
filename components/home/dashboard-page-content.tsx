@@ -226,8 +226,7 @@ export function DashboardPageContent({
                   {trimPreview(post.body)}
                 </p>
                 <h3>
-                  {post.author?.name || post.author?.username || "A member"}{" "}
-                  started this conversation
+                  @{post.author?.username || "member"} started this conversation
                 </h3>
                 <p className="public-card-helper">
                   {post.replyCount} {post.replyCount === 1 ? "reply" : "replies"}

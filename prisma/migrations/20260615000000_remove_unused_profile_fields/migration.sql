@@ -1,0 +1,9 @@
+ALTER TABLE "users"
+DROP COLUMN "name",
+DROP COLUMN "jobTitle",
+DROP COLUMN "department",
+DROP COLUMN "companyName",
+DROP COLUMN "officeLocation",
+DROP COLUMN "mobilePhone",
+DROP COLUMN "givenName",
+DROP COLUMN "surname";

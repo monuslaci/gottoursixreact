@@ -7,17 +7,9 @@ import type { ProfilePayload } from "@/lib/profile";
 const FALLBACK_PROFILE: ProfilePayload = {
   user: {
     id: "demo-member",
-    name: "Miles Parker",
     username: "miles-parker",
     email: "miles.parker@gotyoursix.local",
     image: null,
-    givenName: "Miles",
-    surname: "Parker",
-    jobTitle: null,
-    department: null,
-    companyName: null,
-    officeLocation: null,
-    mobilePhone: null,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
     lastLoginAt: null,

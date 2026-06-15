@@ -28,8 +28,8 @@ import type { ConversationDetails, ConversationListItem } from "@/lib/messages";
 
 const PAGE_SIZE = 15;
 
-function initialsFromName(username: string | null, name: string | null) {
-  const source = username || name || "Member";
+function initialsFromName(username: string | null, fallback = "Member") {
+  const source = username || fallback;
   const parts = source.trim().split(/\s+/);
 
   if (parts.length >= 2) {
@@ -141,7 +141,7 @@ export function MessagesPageContent() {
         conversation.title,
         conversation.preview,
         conversation.members
-          .map((member) => member.username || member.name || "")
+          .map((member) => member.username || "")
           .join(" "),
       ]
         .join(" ")
@@ -554,7 +554,7 @@ export function MessagesPageContent() {
                           <Avatar
                             name={initialsFromName(
                               otherMember?.username ?? null,
-                              otherMember?.name ?? conversation.title
+                              conversation.title
                             )}
                             size="sm"
                             showFallback
@@ -648,7 +648,7 @@ export function MessagesPageContent() {
                     <p className="text-sm text-default-500">
                       {selectedConversation.members
                         .filter((member) => member.id !== currentUserId)
-                        .map((member) => member.username || member.name || "Member")
+                        .map((member) => member.username || "Member")
                         .join(", ") || "Conversation"}
                     </p>
                   </div>
@@ -683,7 +683,7 @@ export function MessagesPageContent() {
                           >
                             <div className="mb-1 flex items-center justify-between gap-3 text-[11px] uppercase tracking-[0.14em] opacity-80">
                               <span>
-                                {message.sender?.username || message.sender?.name || "Member"}
+                                {message.sender?.username || "Member"}
                               </span>
                               <span>{formatTime(message.createdAt)}</span>
                             </div>

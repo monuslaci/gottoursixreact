@@ -25,7 +25,7 @@ export function UserAvatar({ size = "md", showName = false, className }: UserAva
   return null;
  }
 
- const getInitials = (username: string | null, name: string | null): string => {
+ const getInitials = (username: string | null): string => {
   if (username) {
    const parts = username.trim().split(/[-_.\s]+/);
    if (parts.length >= 2) {
@@ -33,14 +33,11 @@ export function UserAvatar({ size = "md", showName = false, className }: UserAva
    }
    return username[0].toUpperCase();
   }
-  if (name) {
-   return name[0].toUpperCase();
-  }
   return "U";
  };
 
- const getAvatarColor = (username: string | null, name: string | null): string => {
-  const str = username || name || "User";
+ const getAvatarColor = (username: string | null): string => {
+  const str = username || "User";
   const colors = [
    "bg-blue-500",
    "bg-green-500",
@@ -64,9 +61,9 @@ export function UserAvatar({ size = "md", showName = false, className }: UserAva
    <Avatar
     size={size}
     src={user.image || undefined}
-    name={getInitials(user.username, user.name)}
+    name={getInitials(user.username)}
     showFallback
-    className={!user.image ? getAvatarColor(user.username, user.name) : undefined}
+    className={!user.image ? getAvatarColor(user.username) : undefined}
    />
    {showName && (
     <div className="flex flex-col">

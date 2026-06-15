@@ -11,15 +11,12 @@ import {
 } from "@heroui/react";
 import { motion } from "framer-motion";
 import {
-  Building2,
   ArrowUpRight,
-  Phone,
   Search,
   Save,
   Trash2,
   ChevronLeft,
   ChevronRight,
-  UserRound,
   Dices,
 } from "lucide-react";
 import Link from "next/link";
@@ -34,16 +31,8 @@ import type {
 const PAGE_SIZE = 5;
 
 type ProfileFormState = {
-  name: string;
   username: string;
   image: string;
-  givenName: string;
-  surname: string;
-  jobTitle: string;
-  department: string;
-  companyName: string;
-  officeLocation: string;
-  mobilePhone: string;
 };
 
 type FloatingFieldProps = {
@@ -54,34 +43,18 @@ type FloatingFieldProps = {
 };
 
 const EMPTY_FORM: ProfileFormState = {
-  name: "",
   username: "",
   image: "",
-  givenName: "",
-  surname: "",
-  jobTitle: "",
-  department: "",
-  companyName: "",
-  officeLocation: "",
-  mobilePhone: "",
 };
 
 function buildFormState(profile: ProfilePayload): ProfileFormState {
   return {
-    name: profile.user.name ?? "",
     username: profile.user.username ?? "",
     image: profile.user.image ?? "",
-    givenName: profile.user.givenName ?? "",
-    surname: profile.user.surname ?? "",
-    jobTitle: profile.user.jobTitle ?? "",
-    department: profile.user.department ?? "",
-    companyName: profile.user.companyName ?? "",
-    officeLocation: profile.user.officeLocation ?? "",
-    mobilePhone: profile.user.mobilePhone ?? "",
   };
 }
 
-function initialsFromName(username: string | null, name: string | null) {
+function initialsFromName(username: string | null) {
   if (username) {
     const parts = username.trim().split(/[-_.\s]+/);
 
@@ -90,10 +63,6 @@ function initialsFromName(username: string | null, name: string | null) {
     }
 
     return username.slice(0, 1).toUpperCase();
-  }
-
-  if (name) {
-    return name.slice(0, 1).toUpperCase();
   }
 
   return "U";
@@ -652,7 +621,7 @@ export function ProfilePageContent() {
               <Avatar
                 size="lg"
                 src={profile.user.image || undefined}
-                name={initialsFromName(profile.user.username, profile.user.name)}
+                name={initialsFromName(profile.user.username)}
                 showFallback
                 className="h-20 w-20 rounded-2xl"
               />
@@ -675,8 +644,8 @@ export function ProfilePageContent() {
                     @{profile.user.username}
                   </h1>
                   <p className="max-w-2xl text-sm leading-6 text-default-600 sm:text-base">
-                    Edit your public username and personal information. Other members
-                    will only see your username.
+                    Manage the public username and avatar other members see across
+                    conversations.
                   </p>
                 </div>
               </div>
@@ -694,55 +663,6 @@ export function ProfilePageContent() {
               />
             </div>
 
-            <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-              <div className="internal-stat flex items-center gap-3 p-3">
-                <UserRound className="h-4 w-4 text-secondary" />
-                <div>
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-default-500">
-                    Username
-                  </p>
-                  <p className="text-sm font-medium text-foreground">
-                    @{profile.user.username}
-                  </p>
-                </div>
-              </div>
-              <div className="internal-stat flex items-center gap-3 p-3">
-                <UserRound className="h-4 w-4 text-secondary" />
-                <div>
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-default-500">
-                    Name
-                  </p>
-                  <p className="text-sm font-medium text-foreground">
-                    {profile.user.givenName || profile.user.surname
-                      ? `${profile.user.givenName ?? ""} ${profile.user.surname ?? ""}`.trim()
-                      : profile.user.name || "Not set"}
-                  </p>
-                </div>
-              </div>
-              <div className="internal-stat flex items-center gap-3 p-3">
-                <Building2 className="h-4 w-4 text-secondary" />
-                <div>
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-default-500">
-                    Company
-                  </p>
-                  <p className="text-sm font-medium text-foreground">
-                    {profile.user.companyName || "Not set"}
-                  </p>
-                </div>
-              </div>
-              <div className="internal-stat flex items-center gap-3 p-3">
-                <Phone className="h-4 w-4 text-secondary" />
-                <div>
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-default-500">
-                    Mobile
-                  </p>
-                  <p className="text-sm font-medium text-foreground">
-                    {profile.user.mobilePhone || "Not set"}
-                  </p>
-                </div>
-              </div>
-            </div>
-
             {statusMessage ? (
               <p className="text-sm text-emerald-600">{statusMessage}</p>
             ) : null}
@@ -751,124 +671,85 @@ export function ProfilePageContent() {
         </Card>
       </motion.section>
 
-      <div className="grid gap-4 lg:grid-cols-[1.05fr_0.95fr]">
-        <motion.section
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.24, delay: 0.05 }}
-        >
-          <Card className="internal-card internal-card--strong">
-            <CardBody className="gap-5 p-5 sm:p-6">
-              <div className="space-y-1">
-                <Chip color="primary" variant="flat">
-                  Basic data
-                </Chip>
-                <p className="text-sm text-default-600">
-                  Update the public-facing profile details that help people
-                  recognise you.
-                </p>
-              </div>
+      <motion.section
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.24, delay: 0.05 }}
+      >
+        <Card className="internal-card internal-card--strong">
+          <CardBody className="gap-5 p-5 sm:p-6">
+            <div className="space-y-1">
+              <Chip color="primary" variant="flat">
+                Public profile
+              </Chip>
+              <p className="text-sm text-default-600">
+                Keep your profile minimal. Your username is the only public
+                identity other members need.
+              </p>
+            </div>
 
-              <div className="grid gap-4 sm:grid-cols-2">
-                <FloatingInput
-                  label="Display name"
-                  value={form.name}
-                  onValueChange={(value) => updateField("name", value)}
-                />
-                <div className="flex flex-col gap-2 sm:flex-row sm:items-start">
-                  <div className="flex-1">
-                    <FloatingInput
-                      label="Username"
-                      value={form.username}
-                      onValueChange={(value) => updateField("username", value)}
-                      isRequired
-                    />
-                  </div>
-                  <Button
-                    className="h-14 shrink-0 sm:min-w-[120px]"
-                    isDisabled={isGeneratingUsername || isSaving}
-                    startContent={<Dices className="h-4 w-4" />}
-                    variant="flat"
-                    onPress={() => void handleGenerateUsername()}
-                  >
-                    {isGeneratingUsername ? "Generating..." : "Generate"}
-                  </Button>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="flex flex-col gap-2 sm:flex-row sm:items-start">
+                <div className="flex-1">
+                  <FloatingInput
+                    label="Username"
+                    value={form.username}
+                    onValueChange={(value) => updateField("username", value)}
+                    isRequired
+                  />
                 </div>
-                <FloatingInput
-                  label="Image URL"
-                  value={form.image}
-                  onValueChange={(value) => updateField("image", value)}
-                />
-                <FloatingInput
-                  label="Given name"
-                  value={form.givenName}
-                  onValueChange={(value) => updateField("givenName", value)}
-                />
-                <FloatingInput
-                  label="Surname"
-                  value={form.surname}
-                  onValueChange={(value) => updateField("surname", value)}
-                />
-                <FloatingInput
-                  label="Job title"
-                  value={form.jobTitle}
-                  onValueChange={(value) => updateField("jobTitle", value)}
-                />
-                <FloatingInput
-                  label="Department"
-                  value={form.department}
-                  onValueChange={(value) => updateField("department", value)}
-                />
-                <FloatingInput
-                  label="Company"
-                  value={form.companyName}
-                  onValueChange={(value) => updateField("companyName", value)}
-                />
-                <FloatingInput
-                  label="Office location"
-                  value={form.officeLocation}
-                  onValueChange={(value) => updateField("officeLocation", value)}
-                />
-                <FloatingInput
-                  label="Mobile phone"
-                  value={form.mobilePhone}
-                  onValueChange={(value) => updateField("mobilePhone", value)}
-                />
-              </div>
-
-              <div className="flex flex-wrap items-center gap-3 border-t border-divider/70 pt-2">
                 <Button
-                  color="primary"
-                  isLoading={isSaving}
-                  startContent={<Save className="h-4 w-4" />}
-                  onPress={() => void handleSaveProfile()}
+                  className="h-14 shrink-0 sm:min-w-[120px]"
+                  isDisabled={isGeneratingUsername || isSaving}
+                  startContent={<Dices className="h-4 w-4" />}
+                  variant="flat"
+                  onPress={() => void handleGenerateUsername()}
                 >
-                  Save profile
+                  {isGeneratingUsername ? "Generating..." : "Generate"}
                 </Button>
-                <Chip variant="flat">
-                  {profile.user.email || "Demo profile"}
-                </Chip>
               </div>
-            </CardBody>
-          </Card>
-        </motion.section>
+              <FloatingInput
+                label="Image URL"
+                value={form.image}
+                onValueChange={(value) => updateField("image", value)}
+              />
+            </div>
 
-        <motion.section
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.24, delay: 0.1 }}
-        >
+            <div className="flex flex-wrap items-center gap-3 border-t border-divider/70 pt-2">
+              <Button
+                color="primary"
+                isLoading={isSaving}
+                startContent={<Save className="h-4 w-4" />}
+                onPress={() => void handleSaveProfile()}
+              >
+                Save profile
+              </Button>
+              <Chip variant="flat">
+                {profile.user.email || "Demo profile"}
+              </Chip>
+            </div>
+          </CardBody>
+        </Card>
+      </motion.section>
+
+      <motion.section
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.24, delay: 0.1 }}
+        className="space-y-4"
+      >
+        <div className="space-y-1">
+          <Chip color="secondary" variant="flat">
+            Subscriptions
+          </Chip>
+          <p className="text-sm text-default-600">
+            Search and manage the topics and subtopics you follow.
+          </p>
+        </div>
+
+        <div className="grid gap-4 xl:grid-cols-2">
           <Card className="internal-card internal-card--strong">
             <CardBody className="gap-5 p-5 sm:p-6">
-              <div className="space-y-1">
-                <Chip color="secondary" variant="flat">
-                  Subscriptions
-                </Chip>
-                <p className="text-sm text-default-600">
-                  Search and manage the topics and subtopics you follow.
-                </p>
-              </div>
-
               <SubscriptionListSection
                 title="Topics"
                 activeCountLabel={`${filteredTopicSubscriptions.length} active`}
@@ -921,9 +802,11 @@ export function ProfilePageContent() {
                   </div>
                 )}
               />
+            </CardBody>
+          </Card>
 
-              <Divider />
-
+          <Card className="internal-card internal-card--strong">
+            <CardBody className="gap-5 p-5 sm:p-6">
               <SubscriptionListSection
                 title="Subtopics"
                 activeCountLabel={`${filteredSubtopicSubscriptions.length} active`}
@@ -978,8 +861,8 @@ export function ProfilePageContent() {
               />
             </CardBody>
           </Card>
-        </motion.section>
-      </div>
+        </div>
+      </motion.section>
     </div>
   );
 }

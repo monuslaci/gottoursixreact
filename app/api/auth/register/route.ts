@@ -68,7 +68,6 @@ export async function POST(request: NextRequest) {
     const passwordRecord = hashPassword(password);
     const user = await prisma.user.create({
       data: {
-        name: null,
         username,
         email,
         passwordHash: passwordRecord.hash,
@@ -93,17 +92,9 @@ export async function POST(request: NextRequest) {
       },
       select: {
         id: true,
-        name: true,
         username: true,
         email: true,
         image: true,
-        givenName: true,
-        surname: true,
-        jobTitle: true,
-        department: true,
-        companyName: true,
-        officeLocation: true,
-        mobilePhone: true,
         createdAt: true,
         updatedAt: true,
         lastLoginAt: true,

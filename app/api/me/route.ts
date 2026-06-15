@@ -48,16 +48,8 @@ export async function PATCH(request: NextRequest) {
 
     const profile = await updateProfilePayload({
       userId: sessionUser.id,
-      name: body.name,
       username: body.username,
       image: body.image,
-      givenName: body.givenName,
-      surname: body.surname,
-      jobTitle: body.jobTitle,
-      department: body.department,
-      companyName: body.companyName,
-      officeLocation: body.officeLocation,
-      mobilePhone: body.mobilePhone,
     });
 
     return NextResponse.json(profile);

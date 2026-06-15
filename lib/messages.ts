@@ -4,7 +4,6 @@ import { prisma } from "@/lib/prisma";
 
 export type MessageUser = {
   id: string;
-  name: string | null;
   username: string;
   image: string | null;
 };
@@ -118,12 +117,9 @@ async function resolveConversationUser(input: IdentityInput) {
 
   return prisma.user.create({
     data: {
-      name: "Miles Parker",
       username: "miles-parker",
       email: DEFAULT_PROFILE_EMAIL,
       businessPhones: [],
-      givenName: "Miles",
-      surname: "Parker",
     },
     select: {
       id: true,
@@ -138,13 +134,11 @@ async function resolveConversationParticipant(input: IdentityInput) {
 
 function mapUser(user: {
   id: string;
-  name: string | null;
   username: string;
   image: string | null;
 }): MessageUser {
   return {
     id: user.id,
-    name: user.name,
     username: user.username,
     image: user.image,
   };
@@ -159,18 +153,14 @@ function formatConversationTitle(
 ) {
   if (conversation.isGroup) {
     const names = conversation.members
-      .map(({ user }) => user.username || user.name || "Member")
+      .map(({ user }) => user.username || "Member")
       .filter(Boolean);
 
     return names.length > 0 ? names.join(", ") : "Group conversation";
   }
 
   const otherMember = conversation.members.find(({ user }) => user.id !== viewerId);
-  return (
-    otherMember?.user.username ||
-    otherMember?.user.name ||
-    "Conversation"
-  );
+  return otherMember?.user.username || "Conversation";
 }
 
 function countUnreadMessages(
@@ -268,7 +258,6 @@ async function getConversationMembers(conversationId: string) {
         user: {
           select: {
             id: true,
-            name: true,
             username: true,
             image: true,
           },
@@ -337,7 +326,6 @@ export async function listConversations(identity: IdentityInput) {
               user: {
                 select: {
                   id: true,
-                  name: true,
                   username: true,
                   image: true,
                 },
@@ -353,7 +341,6 @@ export async function listConversations(identity: IdentityInput) {
               sender: {
                 select: {
                   id: true,
-                  name: true,
                   username: true,
                   image: true,
                 },
@@ -496,7 +483,6 @@ export async function createOrOpenConversation(input: {
       sender: {
         select: {
           id: true,
-          name: true,
           username: true,
           image: true,
         },
@@ -548,10 +534,9 @@ export async function getConversationMessages(
         include: {
           user: {
             select: {
-              id: true,
-              name: true,
-              username: true,
-              image: true,
+            id: true,
+            username: true,
+            image: true,
             },
           },
         },
@@ -563,10 +548,9 @@ export async function getConversationMessages(
         include: {
           sender: {
             select: {
-              id: true,
-              name: true,
-              username: true,
-              image: true,
+            id: true,
+            username: true,
+            image: true,
             },
           },
         },
@@ -640,7 +624,6 @@ export async function sendConversationMessage(
       sender: {
         select: {
           id: true,
-          name: true,
           username: true,
           image: true,
         },

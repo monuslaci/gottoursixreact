@@ -4,17 +4,9 @@ import { useCallback, useEffect, useState } from "react";
 
 type AuthSessionUser = {
   id: string;
-  name: string | null;
   username: string;
   email: string | null;
   image: string | null;
-  givenName: string | null;
-  surname: string | null;
-  jobTitle: string | null;
-  department: string | null;
-  companyName: string | null;
-  officeLocation: string | null;
-  mobilePhone: string | null;
   createdAt: string;
   updatedAt: string;
   lastLoginAt: string | null;

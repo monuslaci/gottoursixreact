@@ -21,17 +21,9 @@ const SESSION_DURATION_DAYS = readSessionDurationDays(
 
 export type PublicSessionUser = {
   id: string;
-  name: string | null;
   username: string;
   email: string | null;
   image: string | null;
-  givenName: string | null;
-  surname: string | null;
-  jobTitle: string | null;
-  department: string | null;
-  companyName: string | null;
-  officeLocation: string | null;
-  mobilePhone: string | null;
   createdAt: string;
   updatedAt: string;
   lastLoginAt: string | null;
@@ -65,32 +57,12 @@ function readSessionDurationDays(value: string | undefined) {
   return Math.max(MINIMUM_SESSION_DAYS, Math.floor(parsed));
 }
 
-function splitNameParts(name: string | null) {
-  if (!name) {
-    return {
-      givenName: null,
-      surname: null,
-    };
-  }
-
-  const parts = name.split(/\s+/).filter(Boolean);
-
-  if (parts.length === 0) {
-    return {
-      givenName: null,
-      surname: null,
-    };
-  }
-
-  return {
-    givenName: parts[0] ?? null,
-    surname: parts.length > 1 ? parts.slice(1).join(" ") : null,
-  };
-}
-
-async function buildDevUsername(email: string, name: string | null) {
+async function buildDevUsername(email: string, fallbackLabel: string | null) {
   const emailLocalPart = email.split("@")[0] ?? "";
-  const candidates = [normalizeUsername(emailLocalPart), normalizeUsername(name)];
+  const candidates = [
+    normalizeUsername(emailLocalPart),
+    normalizeUsername(fallbackLabel),
+  ];
 
   for (const candidate of candidates) {
     if (!candidate) {
@@ -126,17 +98,9 @@ async function getDevSessionUser() {
     },
     select: {
       id: true,
-      name: true,
       username: true,
       email: true,
       image: true,
-      givenName: true,
-      surname: true,
-      jobTitle: true,
-      department: true,
-      companyName: true,
-      officeLocation: true,
-      mobilePhone: true,
       createdAt: true,
       updatedAt: true,
       lastLoginAt: true,
@@ -148,30 +112,18 @@ async function getDevSessionUser() {
   }
 
   const username = await buildDevUsername(DEV_USER_EMAIL, DEV_USER_NAME);
-  const nameParts = splitNameParts(DEV_USER_NAME);
   const createdUser = await prisma.user.create({
     data: {
       email: DEV_USER_EMAIL,
-      name: DEV_USER_NAME,
       username,
-      givenName: nameParts.givenName,
-      surname: nameParts.surname,
       businessPhones: [],
       lastLoginAt: new Date(),
     },
     select: {
       id: true,
-      name: true,
       username: true,
       email: true,
       image: true,
-      givenName: true,
-      surname: true,
-      jobTitle: true,
-      department: true,
-      companyName: true,
-      officeLocation: true,
-      mobilePhone: true,
       createdAt: true,
       updatedAt: true,
       lastLoginAt: true,
@@ -253,34 +205,18 @@ export function buildExpiredSessionCookieOptions(): ResponseCookie {
 
 export function mapPublicSessionUser(user: {
   id: string;
-  name: string | null;
   username: string;
   email: string | null;
   image: string | null;
-  givenName: string | null;
-  surname: string | null;
-  jobTitle: string | null;
-  department: string | null;
-  companyName: string | null;
-  officeLocation: string | null;
-  mobilePhone: string | null;
   createdAt: Date;
   updatedAt: Date;
   lastLoginAt: Date | null;
 }): PublicSessionUser {
   return {
     id: user.id,
-    name: user.name,
     username: user.username,
     email: user.email,
     image: user.image,
-    givenName: user.givenName,
-    surname: user.surname,
-    jobTitle: user.jobTitle,
-    department: user.department,
-    companyName: user.companyName,
-    officeLocation: user.officeLocation,
-    mobilePhone: user.mobilePhone,
     createdAt: user.createdAt.toISOString(),
     updatedAt: user.updatedAt.toISOString(),
     lastLoginAt: user.lastLoginAt?.toISOString() ?? null,
@@ -296,17 +232,9 @@ async function loadSessionByToken(token: string) {
       user: {
         select: {
           id: true,
-          name: true,
           username: true,
           email: true,
           image: true,
-          givenName: true,
-          surname: true,
-          jobTitle: true,
-          department: true,
-          companyName: true,
-          officeLocation: true,
-          mobilePhone: true,
           createdAt: true,
           updatedAt: true,
           lastLoginAt: true,
@@ -426,8 +354,4 @@ export function normalizeAuthIdentifier(value: string | null | undefined) {
     email: null,
     username: normalizeUsername(value),
   };
-}
-
-export function normalizeAuthName(value: string | null | undefined) {
-  return normalizeText(value);
 }

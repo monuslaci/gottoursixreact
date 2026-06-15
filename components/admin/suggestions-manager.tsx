@@ -248,7 +248,9 @@ export function SuggestionsManager() {
                     </p>
 
                     <div className="flex flex-wrap gap-2 text-xs text-default-500">
-                      <span>By {suggestion.suggestedBy?.name || suggestion.suggestedBy?.email || "Unknown"}</span>
+                      <span>
+                        By {suggestion.suggestedBy?.username || suggestion.suggestedBy?.email || "Unknown"}
+                      </span>
                       <span>{new Date(suggestion.createdAt).toLocaleDateString()}</span>
                     </div>
 

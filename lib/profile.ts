@@ -53,17 +53,9 @@ const USERNAME_SECOND_WORDS = [
 
 export type ProfileUser = {
   id: string;
-  name: string | null;
   username: string;
   email: string | null;
   image: string | null;
-  givenName: string | null;
-  surname: string | null;
-  jobTitle: string | null;
-  department: string | null;
-  companyName: string | null;
-  officeLocation: string | null;
-  mobilePhone: string | null;
   createdAt: string;
   updatedAt: string;
   lastLoginAt: string | null;
@@ -107,16 +99,8 @@ export type ProfilePayload = {
 
 export type UpdateProfileInput = {
   userId?: string | null;
-  name?: string | null;
   username?: string | null;
   image?: string | null;
-  givenName?: string | null;
-  surname?: string | null;
-  jobTitle?: string | null;
-  department?: string | null;
-  companyName?: string | null;
-  officeLocation?: string | null;
-  mobilePhone?: string | null;
 };
 
 function normalizeText(value: string | null | undefined) {
@@ -179,34 +163,18 @@ export async function generateUniqueUsername(maxAttempts = 50) {
 
 function mapUser(user: {
   id: string;
-  name: string | null;
   username: string;
   email: string | null;
   image: string | null;
-  givenName: string | null;
-  surname: string | null;
-  jobTitle: string | null;
-  department: string | null;
-  companyName: string | null;
-  officeLocation: string | null;
-  mobilePhone: string | null;
   createdAt: Date;
   updatedAt: Date;
   lastLoginAt: Date | null;
 }): ProfileUser {
   return {
     id: user.id,
-    name: user.name,
     username: user.username,
     email: user.email,
     image: user.image,
-    givenName: user.givenName,
-    surname: user.surname,
-    jobTitle: user.jobTitle,
-    department: user.department,
-    companyName: user.companyName,
-    officeLocation: user.officeLocation,
-    mobilePhone: user.mobilePhone,
     createdAt: user.createdAt.toISOString(),
     updatedAt: user.updatedAt.toISOString(),
     lastLoginAt: user.lastLoginAt?.toISOString() ?? null,
@@ -238,12 +206,9 @@ async function resolveDemoProfileUser(userId?: string | null) {
 
   return prisma.user.create({
     data: {
-      name: "Miles Parker",
       username: "miles-parker",
       email: DEFAULT_PROFILE_EMAIL,
       businessPhones: [],
-      givenName: "Miles",
-      surname: "Parker",
     },
   });
 }
@@ -364,16 +329,8 @@ export async function updateProfilePayload(input: UpdateProfileInput) {
   }
 
   const data: Prisma.UserUpdateInput = {
-    name: normalizeText(input.name),
     username,
     image: normalizeText(input.image),
-    givenName: normalizeText(input.givenName),
-    surname: normalizeText(input.surname),
-    jobTitle: normalizeText(input.jobTitle),
-    department: normalizeText(input.department),
-    companyName: normalizeText(input.companyName),
-    officeLocation: normalizeText(input.officeLocation),
-    mobilePhone: normalizeText(input.mobilePhone),
   };
 
   try {

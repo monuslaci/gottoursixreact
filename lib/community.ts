@@ -23,7 +23,6 @@ export type TopicPostItem = {
   updatedAt: string;
   author: {
     id: string;
-    name: string | null;
     username: string;
     image: string | null;
   } | null;
@@ -43,7 +42,6 @@ export type RecentConversationItem = {
   replyCount: number;
   author: {
     id: string;
-    name: string | null;
     username: string;
     image: string | null;
   } | null;
@@ -119,12 +117,12 @@ export type SuggestionListItem = {
   } | null;
   suggestedBy: {
     id: string;
-    name: string | null;
+    username: string;
     email: string | null;
   } | null;
   reviewedBy: {
     id: string;
-    name: string | null;
+    username: string;
     email: string | null;
   } | null;
 };
@@ -217,12 +215,12 @@ function toSuggestionListItem(suggestion: {
   } | null;
   suggestedBy: {
     id: string;
-    name: string | null;
+    username: string;
     email: string | null;
   } | null;
   reviewedBy: {
     id: string;
-    name: string | null;
+    username: string;
     email: string | null;
   } | null;
 }): SuggestionListItem {
@@ -302,7 +300,6 @@ function toTopicPostItem(post: {
   updatedAt: Date;
   author: {
     id: string;
-    name: string | null;
     username: string;
     image: string | null;
   } | null;
@@ -683,7 +680,6 @@ export async function listTopicPosts(topicId: string) {
       author: {
         select: {
           id: true,
-          name: true,
           username: true,
           image: true,
         },
@@ -730,7 +726,6 @@ export async function listSubtopicPosts(subtopicId: string) {
       author: {
         select: {
           id: true,
-          name: true,
           username: true,
           image: true,
         },
@@ -770,7 +765,6 @@ export async function listRecentCommunityPosts(limit = 4) {
       author: {
         select: {
           id: true,
-          name: true,
           username: true,
           image: true,
         },
@@ -898,7 +892,6 @@ export async function createTopicPost(
       author: {
         select: {
           id: true,
-          name: true,
           username: true,
           image: true,
         },
@@ -1177,14 +1170,14 @@ export async function listSuggestions() {
       suggestedBy: {
         select: {
           id: true,
-          name: true,
+          username: true,
           email: true,
         },
       },
       reviewedBy: {
         select: {
           id: true,
-          name: true,
+          username: true,
           email: true,
         },
       },
@@ -1252,14 +1245,14 @@ export async function createSuggestion(input: {
       suggestedBy: {
         select: {
           id: true,
-          name: true,
+          username: true,
           email: true,
         },
       },
       reviewedBy: {
         select: {
           id: true,
-          name: true,
+          username: true,
           email: true,
         },
       },
@@ -1315,14 +1308,14 @@ export async function updateSuggestionStatus(
       suggestedBy: {
         select: {
           id: true,
-          name: true,
+          username: true,
           email: true,
         },
       },
       reviewedBy: {
         select: {
           id: true,
-          name: true,
+          username: true,
           email: true,
         },
       },
