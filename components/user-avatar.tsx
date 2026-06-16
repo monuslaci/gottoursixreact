@@ -2,6 +2,7 @@
 
 import { Avatar, Skeleton } from "@heroui/react";
 import { useUserProfile } from "@/lib/hooks/useUserProfile";
+import { resolveAvatarPath } from "@/lib/avatars";
 
 interface UserAvatarProps {
  size?: "sm" | "md" | "lg";
@@ -24,6 +25,8 @@ export function UserAvatar({ size = "md", showName = false, className }: UserAva
  if (!user) {
   return null;
  }
+
+ const avatarSrc = resolveAvatarPath(user.image, user.username, user.id);
 
  const getInitials = (username: string | null): string => {
   if (username) {
@@ -60,10 +63,10 @@ export function UserAvatar({ size = "md", showName = false, className }: UserAva
   <div className={`flex items-center gap-3 ${className}`}>
    <Avatar
     size={size}
-    src={user.image || undefined}
+    src={avatarSrc}
     name={getInitials(user.username)}
     showFallback
-    className={!user.image ? getAvatarColor(user.username) : undefined}
+    className={!avatarSrc ? getAvatarColor(user.username) : undefined}
    />
    {showName && (
     <div className="flex flex-col">

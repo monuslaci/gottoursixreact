@@ -1,6 +1,7 @@
 import { Prisma } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 
+import { getDefaultAvatarPath } from "@/lib/avatars";
 import { CommunityError } from "@/lib/community";
 import {
   buildSessionCookieOptions,
@@ -70,6 +71,7 @@ export async function POST(request: NextRequest) {
       data: {
         username,
         email,
+        image: getDefaultAvatarPath(username, email),
         passwordHash: passwordRecord.hash,
         passwordSalt: passwordRecord.salt,
         businessPhones: [],

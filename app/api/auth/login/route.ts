@@ -1,6 +1,7 @@
 import { Prisma } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 
+import { resolveAvatarPath } from "@/lib/avatars";
 import { CommunityError } from "@/lib/community";
 import {
   buildSessionCookieOptions,
@@ -55,12 +56,15 @@ export async function POST(request: NextRequest) {
       throw new CommunityError("Invalid username/email or password.", 401);
     }
 
+    const image = resolveAvatarPath(user.image, user.username, user.email, user.id);
+
     await prisma.user.update({
       where: {
         id: user.id,
       },
       data: {
         lastLoginAt: new Date(),
+        image,
       },
     });
 

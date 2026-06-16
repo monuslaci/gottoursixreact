@@ -1,12 +1,10 @@
 "use client";
 
 import {
-  Avatar,
   Button,
   Card,
   CardBody,
   Chip,
-  Divider,
   Skeleton,
 } from "@heroui/react";
 import { motion } from "framer-motion";
@@ -19,9 +17,11 @@ import {
   ChevronRight,
   Dices,
 } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useMemo, useState, type ReactNode } from "react";
 
+import { resolveAvatarPath } from "@/lib/avatars";
 import type {
   ProfilePayload,
   ProfileSubtopicSubscription,
@@ -407,6 +407,17 @@ export function ProfilePageContent() {
     });
   }, [profile, subtopicSearch]);
 
+  const profileAvatarSrc = useMemo(
+    () =>
+      resolveAvatarPath(
+        profile?.user.image,
+        profile?.user.username,
+        profile?.user.email,
+        profile?.user.id
+      ),
+    [profile]
+  );
+
   function updateField<K extends keyof ProfileFormState>(field: K, value: string) {
     setForm((current) => ({
       ...current,
@@ -618,13 +629,15 @@ export function ProfilePageContent() {
         <Card className="internal-card internal-card--strong">
           <CardBody className="gap-5 p-5 sm:p-6">
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
-              <Avatar
-                size="lg"
-                src={profile.user.image || undefined}
-                name={initialsFromName(profile.user.username)}
-                showFallback
-                className="h-20 w-20 rounded-2xl"
-              />
+              <div className="relative h-20 w-20 overflow-hidden rounded-2xl border border-divider/70 bg-content2 shadow-sm">
+                <Image
+                  src={profileAvatarSrc}
+                  alt={`Avatar for @${profile.user.username}`}
+                  fill
+                  sizes="80px"
+                  className="object-cover"
+                />
+              </div>
 
               <div className="space-y-3">
                 <div className="flex flex-wrap items-center gap-2">

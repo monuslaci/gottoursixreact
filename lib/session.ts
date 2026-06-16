@@ -4,6 +4,7 @@ import { cookies } from "next/headers";
 import type { NextRequest } from "next/server";
 import type { ResponseCookie } from "next/dist/compiled/@edge-runtime/cookies";
 
+import { getDefaultAvatarPath, resolveAvatarPath } from "@/lib/avatars";
 import { prisma } from "@/lib/prisma";
 import { generateUniqueUsername, normalizeUsername } from "@/lib/profile";
 
@@ -116,6 +117,7 @@ async function getDevSessionUser() {
     data: {
       email: DEV_USER_EMAIL,
       username,
+      image: getDefaultAvatarPath(username, DEV_USER_EMAIL),
       businessPhones: [],
       lastLoginAt: new Date(),
     },
@@ -216,7 +218,7 @@ export function mapPublicSessionUser(user: {
     id: user.id,
     username: user.username,
     email: user.email,
-    image: user.image,
+    image: resolveAvatarPath(user.image, user.username, user.email, user.id),
     createdAt: user.createdAt.toISOString(),
     updatedAt: user.updatedAt.toISOString(),
     lastLoginAt: user.lastLoginAt?.toISOString() ?? null,

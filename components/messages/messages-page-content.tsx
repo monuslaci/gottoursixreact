@@ -552,6 +552,7 @@ export function MessagesPageContent() {
                       >
                         <div className="flex w-full items-start gap-3">
                           <Avatar
+                            src={otherMember?.image || undefined}
                             name={initialsFromName(
                               otherMember?.username ?? null,
                               conversation.title
@@ -675,19 +676,32 @@ export function MessagesPageContent() {
                           className={`flex ${isMine ? "justify-end" : "justify-start"}`}
                         >
                           <div
-                            className={`max-w-[82%] rounded-2xl px-4 py-3 shadow-sm ${
-                              isMine
-                                ? "bg-primary text-primary-foreground"
-                                : "border border-divider bg-content1/90"
+                            className={`flex max-w-[88%] items-end gap-3 ${
+                              isMine ? "flex-row-reverse" : "flex-row"
                             }`}
                           >
-                            <div className="mb-1 flex items-center justify-between gap-3 text-[11px] uppercase tracking-[0.14em] opacity-80">
-                              <span>
-                                {message.sender?.username || "Member"}
-                              </span>
-                              <span>{formatTime(message.createdAt)}</span>
+                            <Avatar
+                              size="sm"
+                              src={message.sender?.image || undefined}
+                              name={initialsFromName(message.sender?.username ?? null)}
+                              showFallback
+                              className="mb-1 shrink-0"
+                            />
+                            <div
+                              className={`max-w-full rounded-2xl px-4 py-3 shadow-sm ${
+                                isMine
+                                  ? "bg-primary text-primary-foreground"
+                                  : "border border-divider bg-content1/90"
+                              }`}
+                            >
+                              <div className="mb-1 flex items-center justify-between gap-3 text-[11px] uppercase tracking-[0.14em] opacity-80">
+                                <span>
+                                  {message.sender?.username || "Member"}
+                                </span>
+                                <span>{formatTime(message.createdAt)}</span>
+                              </div>
+                              <p className="text-sm leading-6">{message.body}</p>
                             </div>
-                            <p className="text-sm leading-6">{message.body}</p>
                           </div>
                         </div>
                       );

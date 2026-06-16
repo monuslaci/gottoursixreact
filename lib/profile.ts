@@ -1,5 +1,6 @@
 import { Prisma } from "@prisma/client";
 
+import { getDefaultAvatarPath, resolveAvatarPath } from "@/lib/avatars";
 import { CommunityError } from "@/lib/community";
 import { prisma } from "@/lib/prisma";
 
@@ -174,7 +175,7 @@ function mapUser(user: {
     id: user.id,
     username: user.username,
     email: user.email,
-    image: user.image,
+    image: resolveAvatarPath(user.image, user.username, user.email, user.id),
     createdAt: user.createdAt.toISOString(),
     updatedAt: user.updatedAt.toISOString(),
     lastLoginAt: user.lastLoginAt?.toISOString() ?? null,
@@ -208,6 +209,7 @@ async function resolveDemoProfileUser(userId?: string | null) {
     data: {
       username: "miles-parker",
       email: DEFAULT_PROFILE_EMAIL,
+      image: getDefaultAvatarPath("miles-parker", DEFAULT_PROFILE_EMAIL),
       businessPhones: [],
     },
   });
@@ -330,7 +332,7 @@ export async function updateProfilePayload(input: UpdateProfileInput) {
 
   const data: Prisma.UserUpdateInput = {
     username,
-    image: normalizeText(input.image),
+    image: resolveAvatarPath(normalizeText(input.image), username, user.email, user.id),
   };
 
   try {

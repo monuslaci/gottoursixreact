@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, Card, CardBody, Chip, Textarea } from "@heroui/react";
+import { Avatar, Button, Card, CardBody, Chip, Textarea } from "@heroui/react";
 import {
   ArrowLeft,
   ChevronRight,
@@ -623,34 +623,46 @@ export function TopicDetailPageContent({
             visiblePosts.map((post) => (
               <Card key={post.id} className="internal-card">
                 <CardBody className="gap-3 p-4">
-                  <div className="flex flex-wrap items-center gap-2 text-xs text-default-500">
-                    {post.author?.username ? (
-                      <Link
-                        className="font-medium text-foreground transition hover:text-primary hover:underline"
-                        href={`/messages?recipientUsername=${encodeURIComponent(
-                          post.author.username
-                        )}`}
-                      >
-                        {post.author.username}
-                      </Link>
-                    ) : (
-                      <span className="font-medium text-foreground">
-                        Unknown member
-                      </span>
-                    )}
-                    {post.subtopic ? (
-                      <Chip size="sm" variant="flat">
-                        {post.subtopic.title}
-                      </Chip>
-                    ) : null}
-                    <span>{new Date(post.createdAt).toLocaleDateString()}</span>
-                  </div>
+                  <div className="flex items-start gap-3">
+                    <Avatar
+                      size="sm"
+                      src={post.author?.image || undefined}
+                      name={post.author?.username?.slice(0, 1).toUpperCase() || "U"}
+                      showFallback
+                      className="mt-0.5 shrink-0"
+                    />
 
-                  <p className="text-sm leading-6 text-default-700">{post.body}</p>
+                    <div className="min-w-0 flex-1">
+                      <div className="flex flex-wrap items-center gap-2 text-xs text-default-500">
+                        {post.author?.username ? (
+                          <Link
+                            className="font-medium text-foreground transition hover:text-primary hover:underline"
+                            href={`/messages?recipientUsername=${encodeURIComponent(
+                              post.author.username
+                            )}`}
+                          >
+                            {post.author.username}
+                          </Link>
+                        ) : (
+                          <span className="font-medium text-foreground">
+                            Unknown member
+                          </span>
+                        )}
+                        {post.subtopic ? (
+                          <Chip size="sm" variant="flat">
+                            {post.subtopic.title}
+                          </Chip>
+                        ) : null}
+                        <span>{new Date(post.createdAt).toLocaleDateString()}</span>
+                      </div>
 
-                  <div className="flex items-center gap-2 text-xs text-default-500">
-                    <MessageSquareText className="h-4 w-4" />
-                    <span>{post.replyCount} replies</span>
+                      <p className="mt-3 text-sm leading-6 text-default-700">{post.body}</p>
+
+                      <div className="mt-3 flex items-center gap-2 text-xs text-default-500">
+                        <MessageSquareText className="h-4 w-4" />
+                        <span>{post.replyCount} replies</span>
+                      </div>
+                    </div>
                   </div>
                 </CardBody>
               </Card>

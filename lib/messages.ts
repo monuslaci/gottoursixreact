@@ -1,3 +1,4 @@
+import { getDefaultAvatarPath, resolveAvatarPath } from "@/lib/avatars";
 import { CommunityError } from "@/lib/community";
 import { DEFAULT_PROFILE_EMAIL, normalizeUsername } from "@/lib/profile";
 import { prisma } from "@/lib/prisma";
@@ -119,6 +120,7 @@ async function resolveConversationUser(input: IdentityInput) {
     data: {
       username: "miles-parker",
       email: DEFAULT_PROFILE_EMAIL,
+      image: getDefaultAvatarPath("miles-parker", DEFAULT_PROFILE_EMAIL),
       businessPhones: [],
     },
     select: {
@@ -140,7 +142,7 @@ function mapUser(user: {
   return {
     id: user.id,
     username: user.username,
-    image: user.image,
+    image: resolveAvatarPath(user.image, user.username, user.id),
   };
 }
 
@@ -222,12 +224,12 @@ function mapConversationListItem(
     lastMessageAt: conversation.lastMessageAt?.toISOString() ?? null,
     updatedAt: conversation.updatedAt.toISOString(),
     unreadCount: countUnreadMessages(conversation.messages, viewerId, lastReadAt),
-    members: conversation.members.map(({ user }) => user),
+    members: conversation.members.map(({ user }) => mapUser(user)),
     lastMessage: lastMessage
       ? {
           body: lastMessage.body,
           createdAt: lastMessage.createdAt.toISOString(),
-          sender: lastMessage.sender,
+          sender: lastMessage.sender ? mapUser(lastMessage.sender) : null,
         }
       : null,
   };
@@ -245,7 +247,7 @@ function mapConversationMessageItem(message: {
     body: message.body,
     createdAt: message.createdAt.toISOString(),
     updatedAt: message.updatedAt.toISOString(),
-    sender: message.sender,
+    sender: message.sender ? mapUser(message.sender) : null,
   };
 }
 

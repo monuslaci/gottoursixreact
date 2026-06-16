@@ -1,3 +1,4 @@
+import { resolveAvatarPath } from "@/lib/avatars";
 import { prisma } from "@/lib/prisma";
 
 export type TopicListItem = {
@@ -318,7 +319,12 @@ function toTopicPostItem(post: {
     body: post.body,
     createdAt: post.createdAt.toISOString(),
     updatedAt: post.updatedAt.toISOString(),
-    author: post.author,
+    author: post.author
+      ? {
+          ...post.author,
+          image: resolveAvatarPath(post.author.image, post.author.username, post.author.id),
+        }
+      : null,
     subtopic: post.subtopic,
     parentPostId: post.parentPostId,
     replyCount: post._count.replies,
@@ -796,7 +802,12 @@ export async function listRecentCommunityPosts(limit = 4) {
     body: post.body,
     createdAt: post.createdAt.toISOString(),
     replyCount: post._count.replies,
-    author: post.author,
+    author: post.author
+      ? {
+          ...post.author,
+          image: resolveAvatarPath(post.author.image, post.author.username, post.author.id),
+        }
+      : null,
     topic: post.topic,
     subtopic: post.subtopic,
   }));

@@ -16,7 +16,6 @@ import {
   LogOut,
   Menu,
   MessageSquareMore,
-  UserRound,
   X,
 } from "lucide-react";
 import NextLink from "next/link";
@@ -27,6 +26,7 @@ import { useState } from "react";
 import { NavbarIconButton } from "@/components/navbar-icon-button";
 import { siteConfig } from "@/config/site";
 import { ThemeSwitch } from "@/components/theme-switch";
+import { resolveAvatarPath } from "@/lib/avatars";
 import { cn } from "@/lib/client-utils";
 import { useAuthSession, type InitialAuthSession } from "@/lib/hooks/useAuthSession";
 import { useUnreadMessageCount } from "@/lib/hooks/useUnreadMessageCount";
@@ -40,6 +40,12 @@ export function AppNavbar({ initialAuthSession }: AppNavbarProps) {
   const [menuOpen, setMenuOpen] = useState(false);
   const { isAuthenticated, user, refresh } = useAuthSession(initialAuthSession);
   const { unreadCount: unreadMessageCount } = useUnreadMessageCount();
+  const profileAvatarSrc = resolveAvatarPath(
+    user?.image,
+    user?.username,
+    user?.email,
+    user?.id
+  );
 
   const isActive = (href: string) => pathname === href;
   const isProfileActive = isActive("/profile");
@@ -122,7 +128,17 @@ export function AppNavbar({ initialAuthSession }: AppNavbarProps) {
                     href="/profile"
                     ariaLabel={user ? `Profile for @${user.username}` : "Profile"}
                     isActive={isProfileActive}
-                    icon={<UserRound className="h-5 w-5" />}
+                    icon={
+                      <div className="relative h-8 w-8 overflow-hidden rounded-full border border-white/20 bg-content2/80">
+                        <Image
+                          src={profileAvatarSrc}
+                          alt={user?.username ? `Avatar for @${user.username}` : "Profile"}
+                          fill
+                          sizes="32px"
+                          className="object-cover"
+                        />
+                      </div>
+                    }
                   />
                 </div>
               </Tooltip>
