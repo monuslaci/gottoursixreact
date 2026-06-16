@@ -62,6 +62,38 @@ export type RecentConversationItem = {
   } | null;
 };
 
+export type MyPostActivityItem = {
+  id: string;
+  body: string;
+  createdAt: string;
+  updatedAt: string;
+  isEdited: boolean;
+  topic: {
+    id: string;
+    title: string;
+    slug: string;
+  } | null;
+  subtopic: {
+    id: string;
+    title: string;
+    slug: string;
+  } | null;
+  parentPost: {
+    id: string;
+    body: string;
+    author: {
+      id: string;
+      username: string;
+      image: string | null;
+    } | null;
+  } | null;
+};
+
+export type MyPostActivityPayload = {
+  posts: MyPostActivityItem[];
+  comments: MyPostActivityItem[];
+};
+
 export type TopicDetailItem = {
   id: string;
   title: string;
@@ -364,6 +396,58 @@ function buildTopicPostTree(posts: TopicPostRecord[]) {
   }
 
   return roots;
+}
+
+function mapMyPostActivityItem(post: {
+  id: string;
+  body: string;
+  createdAt: Date;
+  updatedAt: Date;
+  topic: {
+    id: string;
+    title: string;
+    slug: string;
+  } | null;
+  subtopic: {
+    id: string;
+    title: string;
+    slug: string;
+  } | null;
+  parentPost: {
+    id: string;
+    body: string;
+    author: {
+      id: string;
+      username: string;
+      image: string | null;
+    } | null;
+  } | null;
+}): MyPostActivityItem {
+  return {
+    id: post.id,
+    body: post.body,
+    createdAt: post.createdAt.toISOString(),
+    updatedAt: post.updatedAt.toISOString(),
+    isEdited: post.updatedAt.getTime() > post.createdAt.getTime(),
+    topic: post.topic,
+    subtopic: post.subtopic,
+    parentPost: post.parentPost
+      ? {
+          id: post.parentPost.id,
+          body: post.parentPost.body,
+          author: post.parentPost.author
+            ? {
+                ...post.parentPost.author,
+                image: resolveAvatarPath(
+                  post.parentPost.author.image,
+                  post.parentPost.author.username,
+                  post.parentPost.author.id
+                ),
+              }
+            : null,
+        }
+      : null,
+  };
 }
 
 async function generateUniqueTopicSlug(title: string, excludeTopicId?: string) {
@@ -1013,6 +1097,99 @@ export async function updatePost(
   });
 
   return toTopicPostItem(post);
+}
+
+export async function listMyPostActivity(userId: string): Promise<MyPostActivityPayload> {
+  const [posts, comments] = await Promise.all([
+    prisma.discussionPost.findMany({
+      where: {
+        authorId: userId,
+        parentPostId: null,
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+      include: {
+        topic: {
+          select: {
+            id: true,
+            title: true,
+            slug: true,
+          },
+        },
+        subtopic: {
+          select: {
+            id: true,
+            title: true,
+            slug: true,
+          },
+        },
+        parentPost: {
+          select: {
+            id: true,
+            body: true,
+            author: {
+              select: {
+                id: true,
+                username: true,
+                image: true,
+              },
+            },
+          },
+        },
+      },
+    }),
+    prisma.discussionPost.findMany({
+      where: {
+        authorId: userId,
+        parentPostId: {
+          not: null,
+        },
+        parentPost: {
+          authorId: {
+            not: userId,
+          },
+        },
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+      include: {
+        topic: {
+          select: {
+            id: true,
+            title: true,
+            slug: true,
+          },
+        },
+        subtopic: {
+          select: {
+            id: true,
+            title: true,
+            slug: true,
+          },
+        },
+        parentPost: {
+          select: {
+            id: true,
+            body: true,
+            author: {
+              select: {
+                id: true,
+                username: true,
+                image: true,
+              },
+            },
+          },
+        },
+      },
+    }),
+  ]);
+
+  return {
+    posts: posts.map(mapMyPostActivityItem),
+    comments: comments.map(mapMyPostActivityItem),
+  };
 }
 
 export async function likePost(

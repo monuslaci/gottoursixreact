@@ -662,7 +662,8 @@ export function TopicDetailPageContent({
     return (
       <div
         key={post.id}
-        className={depth > 0 ? "border-l border-divider/70 pl-4 sm:pl-5" : ""}
+        id={`post-${post.id}`}
+        className={depth > 0 ? "scroll-mt-24 border-l border-divider/70 pl-4 sm:pl-5" : "scroll-mt-24"}
       >
         <Card className="internal-card">
           <CardBody className="gap-4 p-4">
