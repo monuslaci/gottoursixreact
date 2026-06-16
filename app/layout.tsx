@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 
 import { AppFooter } from "@/components/footer";
 import { AppNavbar } from "@/components/navbar";
+import { buildMetadata, siteUrl } from "@/lib/seo";
 import { getCurrentSessionUser } from "@/lib/session";
 
 import "./globals.css";
@@ -15,8 +16,26 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Got Your Six",
-  description: "A mobile-first community base for topics and private support.",
+  metadataBase: siteUrl,
+  applicationName: "Got Your Six",
+  category: "community",
+  creator: "Got Your Six",
+  publisher: "Got Your Six",
+  title: {
+    default: "Got Your Six",
+    template: "%s",
+  },
+  ...buildMetadata({
+    description:
+      "A support community for men to find practical guidance, join topic-based discussions, and build trusted connections.",
+    keywords: [
+      "mens support community",
+      "mens discussion forum",
+      "peer support for men",
+      "community topics",
+      "private support network",
+    ],
+  }),
   icons: {
     icon: "/favicon.png",
   },

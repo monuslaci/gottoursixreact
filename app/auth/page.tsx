@@ -1,9 +1,17 @@
+import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 
 import { AuthPageContent } from "@/components/auth/auth-page-content";
+import { buildMetadata } from "@/lib/seo";
 import { getCurrentSessionUser } from "@/lib/session";
 
 export const dynamic = "force-dynamic";
+export const metadata: Metadata = buildMetadata({
+  title: "Sign In",
+  description: "Sign in or create an account to join the Got Your Six community.",
+  path: "/auth",
+  noIndex: true,
+});
 
 type AuthPageProps = {
   searchParams?: {

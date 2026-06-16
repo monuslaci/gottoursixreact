@@ -1,9 +1,11 @@
+import type { Metadata } from "next";
 import { Avatar, Button, Card, CardBody, Chip } from "@heroui/react";
 import { ArrowLeft, MessageSquareMore } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { getPublicProfilePayload } from "@/lib/profile";
+import { buildMetadata } from "@/lib/seo";
 import { getCurrentSessionUser } from "@/lib/session";
 
 export const dynamic = "force-dynamic";
@@ -13,6 +15,28 @@ type MemberProfilePageProps = {
     username: string;
   };
 };
+
+export async function generateMetadata({
+  params,
+}: MemberProfilePageProps): Promise<Metadata> {
+  const profile = await getPublicProfilePayload(params.username);
+
+  if (!profile) {
+    return buildMetadata({
+      title: "Member not found",
+      description: "This member profile could not be found.",
+      path: `/members/${params.username}`,
+      noIndex: true,
+    });
+  }
+
+  return buildMetadata({
+    title: `@${profile.user.username}`,
+    description: `View @${profile.user.username}'s public community profile on Got Your Six.`,
+    path: `/members/${params.username}`,
+    noIndex: true,
+  });
+}
 
 export default async function MemberProfilePage({
   params,
