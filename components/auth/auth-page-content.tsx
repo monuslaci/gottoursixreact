@@ -9,7 +9,6 @@ import {
   Users,
 } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 import type { ReactNode } from "react";
 
@@ -73,7 +72,6 @@ function FeaturePill({
 }
 
 export function AuthPageContent({ initialMode, nextPath }: AuthPageContentProps) {
-  const router = useRouter();
   const [mode, setMode] = useState<AuthMode>(initialMode);
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
@@ -153,8 +151,7 @@ export function AuthPageContent({ initialMode, nextPath }: AuthPageContentProps)
         throw new Error(payload.error || "Unable to complete authentication.");
       }
 
-      router.replace(nextPath || "/");
-      router.refresh();
+      window.location.href = nextPath || "/";
     } catch (err) {
       setError(err instanceof Error ? err.message : "Unable to complete authentication.");
     } finally {

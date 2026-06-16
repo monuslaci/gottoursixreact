@@ -1,6 +1,8 @@
+import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
 import { CommunityError, createTopicPost, listTopicPosts } from "@/lib/community";
+import { getCurrentSessionUserFromRequest } from "@/lib/session";
 
 type RouteContext = {
   params: {
@@ -8,12 +10,10 @@ type RouteContext = {
   };
 };
 
-export async function GET(
-  _request: Request,
-  { params }: RouteContext
-) {
+export async function GET(request: NextRequest, { params }: RouteContext) {
   try {
-    const posts = await listTopicPosts(params.topicId);
+    const currentUser = await getCurrentSessionUserFromRequest(request);
+    const posts = await listTopicPosts(params.topicId, currentUser?.id);
     return NextResponse.json({ posts });
   } catch (error) {
     return NextResponse.json(

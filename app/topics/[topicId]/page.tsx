@@ -2,6 +2,7 @@ import nextDynamic from "next/dynamic";
 import { notFound } from "next/navigation";
 
 import { getTopicById, listTopicPosts } from "@/lib/community";
+import { getCurrentSessionUser } from "@/lib/session";
 
 export const dynamic = "force-dynamic";
 
@@ -22,13 +23,14 @@ type TopicDetailPageProps = {
 export default async function TopicDetailPage({
   params,
 }: TopicDetailPageProps) {
+  const currentUser = await getCurrentSessionUser();
   const topic = await getTopicById(params.topicId);
 
   if (!topic) {
     notFound();
   }
 
-  const posts = await listTopicPosts(params.topicId);
+  const posts = await listTopicPosts(params.topicId, currentUser?.id);
 
   return <TopicDetailPageContent topic={topic} posts={posts} />;
 }

@@ -46,8 +46,8 @@ export function NavbarIconButton({
           "group relative h-11 w-11 overflow-hidden border shadow-[0_12px_28px_rgba(27,54,93,0.12)] transition-all duration-200",
           isActive
             ? "border-primary/25 bg-[linear-gradient(135deg,rgba(var(--heroui-colors-primary-500),1),rgba(var(--heroui-colors-primary-700),1))] text-white"
-            : "border-primary/12 bg-[linear-gradient(135deg,rgba(var(--content1),0.94),rgba(var(--content2),0.9))] text-primary hover:border-brotherhood-bronze/35 hover:bg-[linear-gradient(135deg,rgba(var(--content1),1),rgba(var(--heroui-colors-primary-50),0.95))]",
-          "dark:border-white/12 dark:bg-[linear-gradient(135deg,rgba(255,255,255,0.08),rgba(var(--content2),0.86))] dark:text-white dark:hover:border-white/20 dark:hover:bg-[linear-gradient(135deg,rgba(255,255,255,0.12),rgba(var(--content2),0.92))]",
+            : "border-primary/12 bg-[linear-gradient(135deg,rgba(var(--content1),0.94),rgba(var(--content2),0.9))] text-foreground hover:border-brotherhood-bronze/35 hover:bg-[linear-gradient(135deg,rgba(var(--content1),1),rgba(var(--heroui-colors-primary-50),0.95))]",
+          "dark:border-white/12 dark:bg-[linear-gradient(135deg,rgba(255,255,255,0.08),rgba(var(--content2),0.86))] dark:text-default-100 dark:hover:border-white/20 dark:hover:bg-[linear-gradient(135deg,rgba(255,255,255,0.12),rgba(var(--content2),0.92))]",
           className
         )}
       >

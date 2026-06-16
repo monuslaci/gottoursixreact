@@ -8,7 +8,6 @@ import {
   Chip,
   Divider,
   Skeleton,
-  Textarea,
 } from "@heroui/react";
 import { motion } from "framer-motion";
 import {
@@ -17,12 +16,13 @@ import {
   MessageSquarePlus,
   Send,
   Search,
-  Sparkles,
 } from "lucide-react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 
+import { EmojiComposer } from "@/components/common/emoji-composer";
+import { PROFILE_UPDATED_EVENT } from "@/lib/client-events";
 import { useUserProfile } from "@/lib/hooks/useUserProfile";
 import type { ConversationDetails, ConversationListItem } from "@/lib/messages";
 
@@ -65,30 +65,6 @@ function truncateWords(value: string, limit: number) {
   return `${words.slice(0, limit).join(" ")}...`;
 }
 
-function FloatingInput({
-  label,
-  value,
-  onValueChange,
-}: {
-  label: string;
-  value: string;
-  onValueChange: (value: string) => void;
-}) {
-  return (
-    <label className="group relative block w-full">
-      <input
-        className="peer internal-field h-14 w-full px-4 pb-2 pt-6 text-sm text-foreground outline-none transition-colors placeholder:text-transparent focus:border-primary/40 focus:shadow-[0_0_0_4px_rgb(var(--heroui-colors-primary-500)/0.08)]"
-        placeholder=" "
-        value={value}
-        onChange={(event) => onValueChange(event.target.value)}
-      />
-      <span className="pointer-events-none absolute left-4 top-2 text-xs font-medium text-default-600 transition-all peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:text-sm peer-placeholder-shown:font-normal peer-placeholder-shown:text-default-500 peer-focus:top-2 peer-focus:translate-y-0 peer-focus:text-xs peer-focus:font-medium peer-focus:text-default-700">
-        {label}
-      </span>
-    </label>
-  );
-}
-
 function MessageThreadSkeleton() {
   return (
     <Card className="internal-card">
@@ -108,6 +84,7 @@ function MessageThreadSkeleton() {
 
 export function MessagesPageContent() {
   const { user, isLoading: isLoadingProfile } = useUserProfile();
+  const router = useRouter();
   const searchParams = useSearchParams();
   const recipientUsernameParam =
     searchParams.get("recipientUsername") || searchParams.get("recipientEmail");
@@ -120,7 +97,6 @@ export function MessagesPageContent() {
   const [isLoadingConversations, setIsLoadingConversations] = useState(true);
   const [isLoadingMessages, setIsLoadingMessages] = useState(false);
   const [messageBody, setMessageBody] = useState("");
-  const [recipientEmail, setRecipientEmail] = useState("");
   const [starterBody, setStarterBody] = useState("");
   const [search, setSearch] = useState("");
   const [inboxPage, setInboxPage] = useState(1);
@@ -128,6 +104,8 @@ export function MessagesPageContent() {
   const [sendingConversationId, setSendingConversationId] = useState<
     string | null
   >(null);
+  const currentUserId = user?.id ?? null;
+  const pendingRecipientUsername = recipientUsernameParam?.trim() ?? "";
 
   const filteredConversations = useMemo(() => {
     const query = search.trim().toLowerCase();
@@ -158,20 +136,30 @@ export function MessagesPageContent() {
     [conversations, selectedConversationId]
   );
 
+  const targetedConversation = useMemo(() => {
+    if (!pendingRecipientUsername) {
+      return null;
+    }
+
+    const normalizedRecipient = pendingRecipientUsername.toLowerCase();
+
+    return (
+      conversations.find((conversation) =>
+        conversation.members.some(
+          (member) =>
+            member.id !== currentUserId &&
+            member.username?.toLowerCase() === normalizedRecipient
+        )
+      ) ?? null
+    );
+  }, [conversations, currentUserId, pendingRecipientUsername]);
+
   const totalInboxPages = Math.max(1, Math.ceil(filteredConversations.length / PAGE_SIZE));
   const safeInboxPage = Math.min(inboxPage, totalInboxPages);
   const inboxConversations = filteredConversations.slice(
     (safeInboxPage - 1) * PAGE_SIZE,
     safeInboxPage * PAGE_SIZE
   );
-
-  const currentUserId = user?.id ?? null;
-
-  useEffect(() => {
-    if (recipientUsernameParam) {
-      setRecipientEmail(recipientUsernameParam);
-    }
-  }, [recipientUsernameParam]);
 
   function emitMessageChange() {
     window.dispatchEvent(new Event("messages-changed"));
@@ -281,14 +269,45 @@ export function MessagesPageContent() {
   }, [selectedConversationId, user?.email]);
 
   useEffect(() => {
+    if (targetedConversation?.id && selectedConversationId !== targetedConversation.id) {
+      setSelectedConversationId(targetedConversation.id);
+      return;
+    }
+
+    if (pendingRecipientUsername && !targetedConversation) {
+      setSelectedConversationId(null);
+    }
+  }, [pendingRecipientUsername, selectedConversationId, targetedConversation]);
+
+  useEffect(() => {
+    if (pendingRecipientUsername && !targetedConversation) {
+      return;
+    }
+
     if (!selectedConversationId && filteredConversations.length > 0) {
       setSelectedConversationId(filteredConversations[0].id);
     }
-  }, [filteredConversations, selectedConversationId]);
+  }, [filteredConversations, pendingRecipientUsername, selectedConversationId, targetedConversation]);
 
   useEffect(() => {
     setInboxPage(1);
   }, [search]);
+
+  useEffect(() => {
+    function handleProfileUpdated() {
+      void loadConversations().then(async () => {
+        if (selectedConversationId) {
+          await loadMessages(selectedConversationId);
+        }
+      });
+    }
+
+    window.addEventListener(PROFILE_UPDATED_EVENT, handleProfileUpdated);
+
+    return () => {
+      window.removeEventListener(PROFILE_UPDATED_EVENT, handleProfileUpdated);
+    };
+  }, [selectedConversationId, user?.email]);
 
   async function handleCreateConversation() {
     const email = user?.email;
@@ -298,7 +317,7 @@ export function MessagesPageContent() {
       return;
     }
 
-    const trimmedRecipient = recipientEmail.trim();
+    const trimmedRecipient = pendingRecipientUsername.trim();
     const trimmedBody = starterBody.trim();
 
     if (!trimmedRecipient) {
@@ -338,8 +357,8 @@ export function MessagesPageContent() {
         await loadMessages(payload.conversation.id);
       }
 
-      setRecipientEmail("");
       setStarterBody("");
+      router.replace("/messages");
       emitMessageChange();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Unable to start conversation.");
@@ -400,6 +419,8 @@ export function MessagesPageContent() {
   }
 
   const threadMessages = conversationDetails?.messages ?? [];
+  const selectedOtherMember =
+    selectedConversation?.members.find((member) => member.id !== currentUserId) ?? null;
 
   return (
     <div className="space-y-6">
@@ -427,9 +448,9 @@ export function MessagesPageContent() {
                 Message another member directly.
               </h1>
               <p className="max-w-2xl text-sm leading-6 text-default-600 sm:text-base">
-                Start a conversation by username, then keep the thread going with a
-                simple editor. The navbar message icon updates when unread messages are
-                present.
+                Visit a member profile to start a conversation, then keep the thread
+                going here with the editor. The navbar message icon updates when unread
+                messages are present.
               </p>
             </div>
           </CardBody>
@@ -443,55 +464,6 @@ export function MessagesPageContent() {
           transition={{ duration: 0.24, delay: 0.05 }}
           className="space-y-4"
         >
-          <Card className="internal-card internal-card--strong">
-            <CardBody className="gap-5 p-5 sm:p-6">
-              <div className="space-y-2">
-                <Chip color="primary" variant="flat">
-                  Start conversation
-                </Chip>
-                <p className="max-w-md text-sm leading-6 text-default-600">
-                  Send a first message to another member by their public username.
-                </p>
-              </div>
-
-              <FloatingInput
-                label="Recipient username"
-                value={recipientEmail}
-                onValueChange={setRecipientEmail}
-              />
-
-              <div className="space-y-4">
-                <Textarea
-                  label="First message"
-                  minRows={6}
-                  placeholder=" "
-                  value={starterBody}
-                  onValueChange={setStarterBody}
-                  classNames={{
-                    inputWrapper:
-                      "min-h-[170px] border border-divider/70 bg-content1/90 shadow-sm",
-                    input: "pt-2",
-                  }}
-                />
-                <div className="flex flex-col gap-3 border-t border-divider/60 pt-3 sm:flex-row sm:items-center sm:justify-between">
-                  <p className="max-w-xl text-xs leading-5 text-default-500">
-                    Your first message opens the thread immediately and helps get the
-                    conversation started.
-                  </p>
-                  <Button
-                    color="primary"
-                    isLoading={sendingConversationId === "new"}
-                    startContent={<MessageSquarePlus className="h-4 w-4" />}
-                    className="h-auto w-full whitespace-normal px-4 py-3 text-center leading-5 sm:w-auto"
-                    onPress={() => void handleCreateConversation()}
-                  >
-                    Start conversation
-                  </Button>
-                </div>
-              </div>
-            </CardBody>
-          </Card>
-
           <Card className="internal-card">
             <CardBody className="gap-4 p-5 sm:p-6">
               <div className="flex items-center justify-between gap-3">
@@ -551,20 +523,47 @@ export function MessagesPageContent() {
                         onPress={() => setSelectedConversationId(conversation.id)}
                       >
                         <div className="flex w-full items-start gap-3">
-                          <Avatar
-                            src={otherMember?.image || undefined}
-                            name={initialsFromName(
-                              otherMember?.username ?? null,
-                              conversation.title
-                            )}
-                            size="sm"
-                            showFallback
-                          />
+                          {otherMember?.username ? (
+                            <Link
+                              href={`/members/${encodeURIComponent(otherMember.username)}`}
+                              onClick={(event) => event.stopPropagation()}
+                            >
+                              <Avatar
+                                src={otherMember.image || undefined}
+                                name={initialsFromName(
+                                  otherMember.username,
+                                  conversation.title
+                                )}
+                                size="sm"
+                                showFallback
+                              />
+                            </Link>
+                          ) : (
+                            <Avatar
+                              src={otherMember?.image || undefined}
+                              name={initialsFromName(
+                                otherMember?.username ?? null,
+                                conversation.title
+                              )}
+                              size="sm"
+                              showFallback
+                            />
+                          )}
                           <div className="min-w-0 flex-1 space-y-1">
                             <div className="flex items-center justify-between gap-2">
-                              <p className="truncate text-sm font-semibold text-foreground">
-                                {displayName}
-                              </p>
+                              {otherMember?.username ? (
+                                <Link
+                                  className="truncate text-sm font-semibold text-foreground transition hover:text-primary hover:underline"
+                                  href={`/members/${encodeURIComponent(otherMember.username)}`}
+                                  onClick={(event) => event.stopPropagation()}
+                                >
+                                  {displayName}
+                                </Link>
+                              ) : (
+                                <p className="truncate text-sm font-semibold text-foreground">
+                                  {displayName}
+                                </p>
+                              )}
                               {unreadCount > 0 ? (
                                 <Chip color="primary" size="sm" variant="flat">
                                   {unreadCount}
@@ -586,7 +585,7 @@ export function MessagesPageContent() {
                   <div className="internal-empty p-4">
                     <p className="text-sm font-medium text-foreground">No conversations yet.</p>
                     <p className="mt-1 text-sm text-default-500">
-                      Send a first message to start your inbox.
+                      Open a member profile and use the message button to start your inbox.
                     </p>
                   </div>
                 )}
@@ -655,7 +654,11 @@ export function MessagesPageContent() {
                   </div>
                   <Button
                     as={Link}
-                    href="/profile"
+                    href={
+                      selectedOtherMember?.username
+                        ? `/members/${encodeURIComponent(selectedOtherMember.username)}`
+                        : "/profile"
+                    }
                     variant="flat"
                     endContent={<ArrowUpRight className="h-4 w-4" />}
                   >
@@ -680,13 +683,27 @@ export function MessagesPageContent() {
                               isMine ? "flex-row-reverse" : "flex-row"
                             }`}
                           >
-                            <Avatar
-                              size="sm"
-                              src={message.sender?.image || undefined}
-                              name={initialsFromName(message.sender?.username ?? null)}
-                              showFallback
-                              className="mb-1 shrink-0"
-                            />
+                            {!isMine && message.sender?.username ? (
+                              <Link
+                                href={`/members/${encodeURIComponent(message.sender.username)}`}
+                              >
+                                <Avatar
+                                  size="sm"
+                                  src={message.sender.image || undefined}
+                                  name={initialsFromName(message.sender.username)}
+                                  showFallback
+                                  className="mb-1 shrink-0"
+                                />
+                              </Link>
+                            ) : (
+                              <Avatar
+                                size="sm"
+                                src={message.sender?.image || undefined}
+                                name={initialsFromName(message.sender?.username ?? null)}
+                                showFallback
+                                className="mb-1 shrink-0"
+                              />
+                            )}
                             <div
                               className={`max-w-full rounded-2xl px-4 py-3 shadow-sm ${
                                 isMine
@@ -720,34 +737,45 @@ export function MessagesPageContent() {
 
                 <Divider />
 
-                <div className="space-y-4">
-                <Textarea
-                  label="Write a message"
-                  minRows={5}
-                  placeholder=" "
+                <EmojiComposer
+                  actionLabel="Send"
+                  actionIcon={<Send className="h-4 w-4" />}
                   value={messageBody}
                   onValueChange={setMessageBody}
-                  classNames={{
-                    inputWrapper:
-                      "min-h-[150px] border border-divider/70 bg-content1/90 shadow-sm",
-                    input: "pt-2",
-                  }}
+                  onAction={handleSendMessage}
+                  isActionLoading={sendingConversationId === selectedConversation.id}
+                  label="Write a message"
+                  minRows={5}
+                  helperText="Messages are delivered immediately and marked as read when the thread is opened."
                 />
-                  <div className="flex flex-col gap-3 border-t border-divider/60 pt-3 sm:flex-row sm:items-center sm:justify-between">
-                    <p className="max-w-xl text-xs leading-5 text-default-500">
-                      Messages are delivered immediately and marked as read when you open
-                      the thread.
-                    </p>
-                    <Button
-                      color="primary"
-                      isLoading={sendingConversationId === selectedConversation.id}
-                      startContent={<Send className="h-4 w-4" />}
-                      onPress={() => void handleSendMessage()}
-                    >
-                      Send
-                    </Button>
-                  </div>
+              </CardBody>
+            </Card>
+          ) : pendingRecipientUsername ? (
+            <Card className="internal-card internal-card--strong">
+              <CardBody className="gap-5 p-5 sm:p-6">
+                <div className="space-y-2">
+                  <Chip color="primary" variant="flat">
+                    New conversation
+                  </Chip>
+                  <h2 className="text-xl font-semibold tracking-tight">
+                    Message @{pendingRecipientUsername}
+                  </h2>
+                  <p className="text-sm leading-6 text-default-500">
+                    Your first message will open the thread here right away.
+                  </p>
                 </div>
+
+                <EmojiComposer
+                  actionLabel="Start conversation"
+                  actionIcon={<MessageSquarePlus className="h-4 w-4" />}
+                  value={starterBody}
+                  onValueChange={setStarterBody}
+                  onAction={handleCreateConversation}
+                  isActionLoading={sendingConversationId === "new"}
+                  label="First message"
+                  minRows={6}
+                  helperText="Use the quick emoji bar if you want a warm, low-pressure opener."
+                />
               </CardBody>
             </Card>
           ) : (
@@ -755,7 +783,7 @@ export function MessagesPageContent() {
               <CardBody className="gap-3 p-5">
                 <p className="text-sm font-medium text-foreground">Select a conversation</p>
                 <p className="text-sm text-default-500">
-                  Choose an inbox item or start a new conversation to begin messaging.
+                  Choose an inbox item or open a member profile to begin messaging.
                 </p>
               </CardBody>
             </Card>

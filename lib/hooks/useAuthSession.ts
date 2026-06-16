@@ -2,6 +2,8 @@
 
 import { useCallback, useEffect, useState } from "react";
 
+import { PROFILE_UPDATED_EVENT } from "@/lib/client-events";
+
 type AuthSessionUser = {
   id: string;
   username: string;
@@ -63,6 +65,18 @@ export function useAuthSession(initialSession?: InitialAuthSession) {
 
   useEffect(() => {
     void refresh();
+  }, [refresh]);
+
+  useEffect(() => {
+    function handleProfileUpdated() {
+      void refresh();
+    }
+
+    window.addEventListener(PROFILE_UPDATED_EVENT, handleProfileUpdated);
+
+    return () => {
+      window.removeEventListener(PROFILE_UPDATED_EVENT, handleProfileUpdated);
+    };
   }, [refresh]);
 
   return {

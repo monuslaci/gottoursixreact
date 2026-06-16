@@ -66,6 +66,49 @@ const DEFAULT_AVATAR_PATHS = [
 ] as const;
 
 const DEFAULT_AVATAR_PATH_SET = new Set<string>(DEFAULT_AVATAR_PATHS);
+const AVATAR_LABEL_OVERRIDES: Record<string, string> = {
+  arcticfox: "Arctic Fox",
+  blackbear: "Black Bear",
+  bordercollie: "Border Collie",
+  goldeneagle: "Golden Eagle",
+  greathornedowl: "Great Horned Owl",
+  grizzlybear: "Grizzly Bear",
+  hammerheadshark: "Hammerhead Shark",
+  polarbear: "Polar Bear",
+  redpanda: "Red Panda",
+  shepherdog: "Shepherd Dog",
+  snowleopard: "Snow Leopard",
+  timberwolf: "Timber Wolf",
+  wiseturtle: "Wise Turtle",
+};
+
+export type AvatarOption = {
+  path: string;
+  label: string;
+};
+
+function humanizeAvatarFileName(path: string) {
+  const fileName = path.split("/").pop()?.replace(/\.[^.]+$/, "") ?? path;
+  const normalizedFileName = fileName.toLowerCase();
+  const override = AVATAR_LABEL_OVERRIDES[normalizedFileName];
+
+  if (override) {
+    return override;
+  }
+
+  return normalizedFileName
+    .replace(/(\d+)/g, " $1 ")
+    .replace(/([a-z])([A-Z])/g, "$1 $2")
+    .split(/[\s_-]+/)
+    .filter(Boolean)
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(" ");
+}
+
+export const AVATAR_OPTIONS: AvatarOption[] = DEFAULT_AVATAR_PATHS.map((path) => ({
+  path,
+  label: humanizeAvatarFileName(path),
+}));
 
 export function getDefaultAvatarPath(...seedParts: Array<string | null | undefined>) {
   const seed = seedParts

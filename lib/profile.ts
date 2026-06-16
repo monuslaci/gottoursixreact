@@ -98,6 +98,22 @@ export type ProfilePayload = {
   };
 };
 
+export type PublicProfilePayload = {
+  user: {
+    id: string;
+    username: string;
+    image: string | null;
+    createdAt: string;
+    updatedAt: string;
+    lastLoginAt: string | null;
+  };
+  counts: {
+    topics: number;
+    subtopics: number;
+    posts: number;
+  };
+};
+
 export type UpdateProfileInput = {
   userId?: string | null;
   username?: string | null;
@@ -307,6 +323,56 @@ export async function getProfilePayload(userId?: string | null) {
       subtopics,
     },
   } satisfies ProfilePayload;
+}
+
+export async function getPublicProfilePayload(username: string) {
+  const normalizedUsername = normalizeUsername(username);
+
+  if (!normalizedUsername) {
+    return null;
+  }
+
+  const user = await prisma.user.findUnique({
+    where: {
+      username: normalizedUsername,
+    },
+    select: {
+      id: true,
+      username: true,
+      email: true,
+      image: true,
+      createdAt: true,
+      updatedAt: true,
+      lastLoginAt: true,
+      _count: {
+        select: {
+          topicSubscriptions: true,
+          subtopicSubscriptions: true,
+          discussionPosts: true,
+        },
+      },
+    },
+  });
+
+  if (!user) {
+    return null;
+  }
+
+  return {
+    user: {
+      id: user.id,
+      username: user.username,
+      image: resolveAvatarPath(user.image, user.username, user.email, user.id),
+      createdAt: user.createdAt.toISOString(),
+      updatedAt: user.updatedAt.toISOString(),
+      lastLoginAt: user.lastLoginAt?.toISOString() ?? null,
+    },
+    counts: {
+      topics: user._count.topicSubscriptions,
+      subtopics: user._count.subtopicSubscriptions,
+      posts: user._count.discussionPosts,
+    },
+  } satisfies PublicProfilePayload;
 }
 
 export async function updateProfilePayload(input: UpdateProfileInput) {

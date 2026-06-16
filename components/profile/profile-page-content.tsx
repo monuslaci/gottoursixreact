@@ -5,23 +5,33 @@ import {
   Card,
   CardBody,
   Chip,
+  Input,
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalHeader,
   Skeleton,
+  useDisclosure,
 } from "@heroui/react";
 import { motion } from "framer-motion";
 import {
   ArrowUpRight,
+  Check,
   Search,
   Save,
   Trash2,
   ChevronLeft,
   ChevronRight,
   Dices,
+  Images,
+  X,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useMemo, useState, type ReactNode } from "react";
 
-import { resolveAvatarPath } from "@/lib/avatars";
+import { AVATAR_OPTIONS, resolveAvatarPath } from "@/lib/avatars";
+import { dispatchProfileUpdatedEvent } from "@/lib/client-events";
 import type {
   ProfilePayload,
   ProfileSubtopicSubscription,
@@ -299,6 +309,12 @@ function ProfileSkeleton() {
 }
 
 export function ProfilePageContent() {
+  const {
+    isOpen: isAvatarModalOpen,
+    onOpen: openAvatarModal,
+    onClose: closeAvatarModal,
+    onOpenChange: onAvatarModalOpenChange,
+  } = useDisclosure();
   const [profile, setProfile] = useState<ProfilePayload | null>(null);
   const [form, setForm] = useState<ProfileFormState>(EMPTY_FORM);
   const [isLoading, setIsLoading] = useState(true);
@@ -309,6 +325,7 @@ export function ProfilePageContent() {
   const [unsubscribingId, setUnsubscribingId] = useState<string | null>(null);
   const [topicSearch, setTopicSearch] = useState("");
   const [subtopicSearch, setSubtopicSearch] = useState("");
+  const [avatarSearch, setAvatarSearch] = useState("");
 
   useEffect(() => {
     let isMounted = true;
@@ -417,12 +434,37 @@ export function ProfilePageContent() {
       ),
     [profile]
   );
+  const selectedAvatarLabel = useMemo(
+    () =>
+      AVATAR_OPTIONS.find((avatar) => avatar.path === form.image)?.label ?? "Selected avatar",
+    [form.image]
+  );
+  const availableAvatarOptions = useMemo(() => {
+    const query = avatarSearch.trim().toLowerCase();
+
+    return AVATAR_OPTIONS.filter((avatar) => avatar.path !== form.image).filter((avatar) => {
+      if (!query) {
+        return true;
+      }
+
+      return [avatar.label, avatar.path.replace("/avatars/", "")]
+        .join(" ")
+        .toLowerCase()
+        .includes(query);
+    });
+  }, [avatarSearch, form.image]);
 
   function updateField<K extends keyof ProfileFormState>(field: K, value: string) {
     setForm((current) => ({
       ...current,
       [field]: value,
     }));
+  }
+
+  function handleAvatarSelect(path: string) {
+    updateField("image", path);
+    setAvatarSearch("");
+    closeAvatarModal();
   }
 
   async function handleGenerateUsername() {
@@ -486,6 +528,7 @@ export function ProfilePageContent() {
       setProfile(payload);
       setForm(buildFormState(payload));
       setStatusMessage("Profile updated.");
+      dispatchProfileUpdatedEvent();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Unable to save profile.");
     } finally {
@@ -677,7 +720,9 @@ export function ProfilePageContent() {
             </div>
 
             {statusMessage ? (
-              <p className="text-sm text-emerald-600">{statusMessage}</p>
+              <div className="rounded-2xl border border-emerald-500/20 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-700 dark:text-emerald-300">
+                {statusMessage}
+              </div>
             ) : null}
             {error ? <p className="text-sm text-danger-500">{error}</p> : null}
           </CardBody>
@@ -701,7 +746,7 @@ export function ProfilePageContent() {
               </p>
             </div>
 
-            <div className="grid gap-4 sm:grid-cols-2">
+            <div className="grid gap-5">
               <div className="flex flex-col gap-2 sm:flex-row sm:items-start">
                 <div className="flex-1">
                   <FloatingInput
@@ -721,11 +766,38 @@ export function ProfilePageContent() {
                   {isGeneratingUsername ? "Generating..." : "Generate"}
                 </Button>
               </div>
-              <FloatingInput
-                label="Image URL"
-                value={form.image}
-                onValueChange={(value) => updateField("image", value)}
-              />
+
+              <div className="space-y-4">
+                <div className="flex flex-col gap-3 rounded-2xl border border-divider/70 bg-content1/70 p-4 sm:flex-row sm:items-center">
+                  <div className="relative h-16 w-16 overflow-hidden rounded-2xl border border-divider/70 bg-content2 shadow-sm">
+                    <Image
+                      src={resolveAvatarPath(form.image, form.username, profile.user.email, profile.user.id)}
+                      alt={`Avatar preview for @${form.username || profile.user.username}`}
+                      fill
+                      sizes="64px"
+                      className="object-cover"
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <p className="text-xs font-semibold uppercase tracking-[0.14em] text-default-500">
+                      Avatar
+                    </p>
+                    <p className="text-sm font-semibold text-foreground">{selectedAvatarLabel}</p>
+                    <p className="text-sm text-default-500">
+                      Choose the animal other members will see across posts and messages.
+                    </p>
+                  </div>
+                  <div className="sm:ml-auto">
+                    <Button
+                      variant="flat"
+                      startContent={<Images className="h-4 w-4" />}
+                      onPress={openAvatarModal}
+                    >
+                      Change avatar
+                    </Button>
+                  </div>
+                </div>
+              </div>
             </div>
 
             <div className="flex flex-wrap items-center gap-3 border-t border-divider/70 pt-2">
@@ -876,6 +948,98 @@ export function ProfilePageContent() {
           </Card>
         </div>
       </motion.section>
+
+      <Modal
+        isOpen={isAvatarModalOpen}
+        onOpenChange={onAvatarModalOpenChange}
+        placement="center"
+        size="3xl"
+        scrollBehavior="inside"
+        onClose={() => {
+          setAvatarSearch("");
+          closeAvatarModal();
+        }}
+      >
+        <ModalContent className="max-h-[85vh] overflow-hidden border border-primary/15 bg-content1 shadow-[0_24px_64px_rgb(var(--heroui-colors-primary-500)/0.16)]">
+          {(onClose) => (
+            <>
+              <ModalHeader className="sticky top-0 z-20 flex flex-col gap-3 border-b border-divider/70 bg-gradient-to-br from-primary/8 via-content1 to-content1 px-5 pb-4 pt-5 sm:px-6">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="space-y-1">
+                    <Chip color="primary" variant="flat">
+                      Change avatar
+                    </Chip>
+                    <p className="text-sm text-default-600">
+                      Search the available animals and pick a new public avatar.
+                    </p>
+                  </div>
+                  <Button isIconOnly variant="light" aria-label="Close avatar chooser" onPress={onClose}>
+                    <X className="h-4 w-4" />
+                  </Button>
+                </div>
+                <Input
+                  aria-label="Search avatars"
+                  placeholder="Search avatars"
+                  value={avatarSearch}
+                  onValueChange={setAvatarSearch}
+                  startContent={<Search className="h-4 w-4 text-default-400" />}
+                  classNames={{
+                    inputWrapper:
+                      "border border-divider/70 bg-content1/90 shadow-sm",
+                  }}
+                />
+              </ModalHeader>
+
+              <ModalBody className="max-h-[calc(85vh-132px)] gap-4 overflow-y-auto px-5 py-4 sm:px-6">
+                {availableAvatarOptions.length > 0 ? (
+                  <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                    {availableAvatarOptions.map((avatar) => (
+                      <button
+                        key={avatar.path}
+                        type="button"
+                        onClick={() => handleAvatarSelect(avatar.path)}
+                        className="group rounded-2xl border border-divider/70 bg-content1/80 p-3 text-left transition hover:border-primary/25 hover:bg-content2/80"
+                      >
+                        <div className="flex items-start gap-3">
+                          <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-xl border border-divider/70 bg-content2">
+                            <Image
+                              src={avatar.path}
+                              alt={avatar.label}
+                              fill
+                              sizes="56px"
+                              className="object-cover"
+                            />
+                          </div>
+                          <div className="min-w-0 flex-1 space-y-1">
+                            <div className="flex items-center justify-between gap-2">
+                              <p className="truncate text-sm font-semibold text-foreground">
+                                {avatar.label}
+                              </p>
+                              <span className="opacity-0 transition-opacity group-hover:opacity-100">
+                                <Check className="h-3.5 w-3.5 text-primary" />
+                              </span>
+                            </div>
+                            <p className="truncate text-xs text-default-500">
+                              {avatar.path.replace("/avatars/", "")}
+                            </p>
+                          </div>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="rounded-2xl border border-dashed border-divider bg-content1/70 p-6 text-center">
+                    <p className="text-sm font-medium text-foreground">No avatars match that search.</p>
+                    <p className="mt-1 text-sm text-default-500">
+                      Try a different animal name or clear the search.
+                    </p>
+                  </div>
+                )}
+              </ModalBody>
+            </>
+          )}
+        </ModalContent>
+      </Modal>
     </div>
   );
 }

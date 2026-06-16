@@ -62,6 +62,7 @@ model User {
   createdSuggestions Suggestion[] @relation("SuggestionCreatedBy")
   reviewedSuggestions Suggestion[] @relation("SuggestionReviewedBy")
   discussionPosts   DiscussionPost[]
+  postLikes         PostLike[]
   createdConversations Conversation[] @relation("ConversationCreatedBy")
   conversationMemberships ConversationMember[]
   sentMessages      Message[]
@@ -203,12 +204,27 @@ model DiscussionPost {
   subtopic    Subtopic?       @relation(fields: [subtopicId], references: [id], onDelete: Cascade)
   parentPost  DiscussionPost? @relation("PostReplies", fields: [parentPostId], references: [id], onDelete: Cascade)
   replies     DiscussionPost[] @relation("PostReplies")
+  likes       PostLike[]
 
   @@index([authorId])
   @@index([topicId])
   @@index([subtopicId])
   @@index([parentPostId])
   @@map("posts")
+}
+
+model PostLike {
+  id        String   @id @default(cuid())
+  postId    String
+  userId    String
+  createdAt DateTime @default(now())
+
+  post      DiscussionPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user      User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([postId, userId])
+  @@index([userId])
+  @@map("post_likes")
 }
 
 model Conversation {

@@ -22,6 +22,7 @@ export type TopicPostItem = {
   body: string;
   createdAt: string;
   updatedAt: string;
+  isEdited: boolean;
   author: {
     id: string;
     username: string;
@@ -34,6 +35,9 @@ export type TopicPostItem = {
   } | null;
   parentPostId: string | null;
   replyCount: number;
+  likeCount: number;
+  likedByMe: boolean;
+  replies: TopicPostItem[];
 };
 
 export type RecentConversationItem = {
@@ -294,7 +298,7 @@ function toTopicListItem(topic: {
   return buildTopicListItem(topic);
 }
 
-function toTopicPostItem(post: {
+type TopicPostRecord = {
   id: string;
   body: string;
   createdAt: Date;
@@ -312,13 +316,20 @@ function toTopicPostItem(post: {
   parentPostId: string | null;
   _count: {
     replies: number;
+    likes: number;
   };
-}): TopicPostItem {
+  likes?: Array<{
+    userId: string;
+  }>;
+};
+
+function toTopicPostItem(post: TopicPostRecord): TopicPostItem {
   return {
     id: post.id,
     body: post.body,
     createdAt: post.createdAt.toISOString(),
     updatedAt: post.updatedAt.toISOString(),
+    isEdited: post.updatedAt.getTime() > post.createdAt.getTime(),
     author: post.author
       ? {
           ...post.author,
@@ -328,7 +339,31 @@ function toTopicPostItem(post: {
     subtopic: post.subtopic,
     parentPostId: post.parentPostId,
     replyCount: post._count.replies,
+    likeCount: post._count.likes,
+    likedByMe: Boolean(post.likes?.length),
+    replies: [],
   };
+}
+
+function buildTopicPostTree(posts: TopicPostRecord[]) {
+  const items = posts.map(toTopicPostItem);
+  const postMap = new Map(items.map((item) => [item.id, item]));
+  const roots: TopicPostItem[] = [];
+
+  for (const item of items) {
+    if (item.parentPostId) {
+      const parent = postMap.get(item.parentPostId);
+
+      if (parent) {
+        parent.replies.push(item);
+        continue;
+      }
+    }
+
+    roots.push(item);
+  }
+
+  return roots;
 }
 
 async function generateUniqueTopicSlug(title: string, excludeTopicId?: string) {
@@ -676,39 +711,54 @@ export async function softDeleteTopic(topicId: string) {
   return buildTopicListItem(topic, activeSubtopicCount);
 }
 
-export async function listTopicPosts(topicId: string) {
+function buildPostInclude(viewerId?: string | null) {
+  return {
+    author: {
+      select: {
+        id: true,
+        username: true,
+        image: true,
+      },
+    },
+    subtopic: {
+      select: {
+        id: true,
+        title: true,
+        slug: true,
+      },
+    },
+    likes: viewerId
+      ? {
+          where: {
+            userId: viewerId,
+          },
+          select: {
+            userId: true,
+          },
+        }
+      : false,
+    _count: {
+      select: {
+        replies: true,
+        likes: true,
+      },
+    },
+  } as const;
+}
+
+export async function listTopicPosts(topicId: string, viewerId?: string | null) {
   const posts = await prisma.discussionPost.findMany({
     where: {
       topicId,
     },
     orderBy: [{ createdAt: "desc" }],
-    include: {
-      author: {
-        select: {
-          id: true,
-          username: true,
-          image: true,
-        },
-      },
-      subtopic: {
-        select: {
-          id: true,
-          title: true,
-          slug: true,
-        },
-      },
-      _count: {
-        select: {
-          replies: true,
-        },
-      },
-    },
+    include: buildPostInclude(viewerId),
   });
 
-  return posts.map(toTopicPostItem);
+  return buildTopicPostTree(posts);
 }
 
-export async function listSubtopicPosts(subtopicId: string) {
+export async function listSubtopicPosts(subtopicId: string, viewerId?: string | null) {
   const subtopic = await prisma.subtopic.findUnique({
     where: {
       id: subtopicId,
@@ -728,30 +778,10 @@ export async function listSubtopicPosts(subtopicId: string) {
       subtopicId,
     },
     orderBy: [{ createdAt: "desc" }],
-    include: {
-      author: {
-        select: {
-          id: true,
-          username: true,
-          image: true,
-        },
-      },
-      subtopic: {
-        select: {
-          id: true,
-          title: true,
-          slug: true,
-        },
-      },
-      _count: {
-        select: {
-          replies: true,
-        },
-      },
-    },
+    include: buildPostInclude(viewerId),
   });
 
-  return posts.map(toTopicPostItem);
+  return buildTopicPostTree(posts);
 }
 
 export async function listRecentCommunityPosts(limit = 4) {
@@ -899,27 +929,7 @@ export async function createTopicPost(
       parentPostId: input.parentPostId ?? null,
       body,
     },
-    include: {
-      author: {
-        select: {
-          id: true,
-          username: true,
-          image: true,
-        },
-      },
-      subtopic: {
-        select: {
-          id: true,
-          title: true,
-          slug: true,
-        },
-      },
-      _count: {
-        select: {
-          replies: true,
-        },
-      },
-    },
+    include: buildPostInclude(input.authorId),
   });
 
   return toTopicPostItem(post);
@@ -954,6 +964,138 @@ export async function createSubtopicPost(
     subtopicId,
     parentPostId: input.parentPostId ?? null,
   });
+}
+
+export async function updatePost(
+  postId: string,
+  input: {
+    body: string;
+    userId?: string | null;
+    userEmail?: string | null;
+  }
+) {
+  const user = await resolveUserFromIdentity({
+    userId: input.userId ?? null,
+    userEmail: input.userEmail ?? null,
+  });
+  const body = input.body.trim();
+
+  if (!body) {
+    throw new CommunityError("Post body is required.", 400);
+  }
+
+  const existingPost = await prisma.discussionPost.findUnique({
+    where: {
+      id: postId,
+    },
+    select: {
+      id: true,
+      authorId: true,
+    },
+  });
+
+  if (!existingPost) {
+    throw new CommunityError("Post not found.", 404);
+  }
+
+  if (existingPost.authorId !== user.id) {
+    throw new CommunityError("You can only edit your own posts.", 403);
+  }
+
+  const post = await prisma.discussionPost.update({
+    where: {
+      id: postId,
+    },
+    data: {
+      body,
+    },
+    include: buildPostInclude(user.id),
+  });
+
+  return toTopicPostItem(post);
+}
+
+export async function likePost(
+  postId: string,
+  input: UserIdentityInput
+) {
+  const user = await resolveUserFromIdentity(input);
+
+  const post = await prisma.discussionPost.findUnique({
+    where: {
+      id: postId,
+    },
+    select: {
+      id: true,
+    },
+  });
+
+  if (!post) {
+    throw new CommunityError("Post not found.", 404);
+  }
+
+  await prisma.postLike.upsert({
+    where: {
+      postId_userId: {
+        postId,
+        userId: user.id,
+      },
+    },
+    update: {},
+    create: {
+      postId,
+      userId: user.id,
+    },
+  });
+
+  const likeCount = await prisma.postLike.count({
+    where: {
+      postId,
+    },
+  });
+
+  return {
+    liked: true,
+    likeCount,
+  };
+}
+
+export async function unlikePost(
+  postId: string,
+  input: UserIdentityInput
+) {
+  const user = await resolveUserFromIdentity(input);
+
+  const post = await prisma.discussionPost.findUnique({
+    where: {
+      id: postId,
+    },
+    select: {
+      id: true,
+    },
+  });
+
+  if (!post) {
+    throw new CommunityError("Post not found.", 404);
+  }
+
+  await prisma.postLike.deleteMany({
+    where: {
+      postId,
+      userId: user.id,
+    },
+  });
+
+  const likeCount = await prisma.postLike.count({
+    where: {
+      postId,
+    },
+  });
+
+  return {
+    liked: false,
+    likeCount,
+  };
 }
 
 export async function listAdminSubtopics() {
