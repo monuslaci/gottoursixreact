@@ -10,6 +10,7 @@ export const siteConfig = {
   navMenuItems: [
     { label: "Home", href: "/" },
     { label: "Topics", href: "/topics" },
+    { label: "Activity", href: "/activity" },
     { label: "Profile", href: "/profile" },
     { label: "Admin", href: "/admin" },
     { label: "Messages", href: "/messages" },

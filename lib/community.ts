@@ -1145,11 +1145,6 @@ export async function listMyPostActivity(userId: string): Promise<MyPostActivity
         parentPostId: {
           not: null,
         },
-        parentPost: {
-          authorId: {
-            not: userId,
-          },
-        },
       },
       orderBy: {
         createdAt: "desc",

@@ -12,6 +12,7 @@ import {
 } from "@heroui/react";
 import { AnimatePresence, motion } from "framer-motion";
 import {
+  FileText,
   LogIn,
   LogOut,
   Menu,
@@ -48,6 +49,7 @@ export function AppNavbar({ initialAuthSession }: AppNavbarProps) {
   );
 
   const isActive = (href: string) => pathname === href;
+  const isActivityActive = isActive("/activity");
   const isProfileActive = isActive("/profile");
   const desktopNavItems = siteConfig.navItems.filter((item) => {
     if (isAuthenticated) {
@@ -139,6 +141,19 @@ export function AppNavbar({ initialAuthSession }: AppNavbarProps) {
                         />
                       </div>
                     }
+                  />
+                </div>
+              </Tooltip>
+              <Tooltip
+                content="Activity"
+                showArrow
+              >
+                <div>
+                  <NavbarIconButton
+                    href="/activity"
+                    ariaLabel="Activity"
+                    isActive={isActivityActive}
+                    icon={<FileText className="h-5 w-5" />}
                   />
                 </div>
               </Tooltip>
@@ -240,6 +255,7 @@ export function AppNavbar({ initialAuthSession }: AppNavbarProps) {
                     if (
                       !isAuthenticated &&
                       (item.href === "/topics" ||
+                        item.href === "/activity" ||
                         item.href === "/messages" ||
                         item.href === "/profile" ||
                         item.href === "/admin")

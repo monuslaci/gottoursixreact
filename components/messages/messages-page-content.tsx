@@ -12,10 +12,8 @@ import {
 import { motion } from "framer-motion";
 import {
   ArrowUpRight,
-  FileText,
   Inbox,
   MessageSquarePlus,
-  MessageSquareText,
   Send,
   Search,
 } from "lucide-react";
@@ -25,12 +23,10 @@ import { useEffect, useMemo, useState } from "react";
 
 import { EmojiComposer } from "@/components/common/emoji-composer";
 import { PROFILE_UPDATED_EVENT } from "@/lib/client-events";
-import type { MyPostActivityItem, MyPostActivityPayload } from "@/lib/community";
 import { useUserProfile } from "@/lib/hooks/useUserProfile";
 import type { ConversationDetails, ConversationListItem } from "@/lib/messages";
 
 const PAGE_SIZE = 15;
-const ACTIVITY_PAGE_SIZE = 10;
 
 function initialsFromName(username: string | null, fallback = "Member") {
   const source = username || fallback;
@@ -69,14 +65,6 @@ function truncateWords(value: string, limit: number) {
   return `${words.slice(0, limit).join(" ")}...`;
 }
 
-function buildPostActivityHref(item: MyPostActivityItem) {
-  if (!item.topic?.id) {
-    return "/messages";
-  }
-
-  return `/topics/${item.topic.id}#post-${item.id}`;
-}
-
 function MessageThreadSkeleton() {
   return (
     <Card className="internal-card">
@@ -106,21 +94,12 @@ export function MessagesPageContent() {
   >(null);
   const [conversationDetails, setConversationDetails] =
     useState<ConversationDetails | null>(null);
-  const [activity, setActivity] = useState<MyPostActivityPayload>({
-    posts: [],
-    comments: [],
-  });
-  const [activeTab, setActiveTab] = useState<"inbox" | "activity">("inbox");
   const [isLoadingConversations, setIsLoadingConversations] = useState(true);
   const [isLoadingMessages, setIsLoadingMessages] = useState(false);
-  const [isLoadingActivity, setIsLoadingActivity] = useState(true);
   const [messageBody, setMessageBody] = useState("");
   const [starterBody, setStarterBody] = useState("");
   const [search, setSearch] = useState("");
-  const [activitySearch, setActivitySearch] = useState("");
   const [inboxPage, setInboxPage] = useState(1);
-  const [postsPage, setPostsPage] = useState(1);
-  const [commentsPage, setCommentsPage] = useState(1);
   const [error, setError] = useState<string | null>(null);
   const [sendingConversationId, setSendingConversationId] = useState<
     string | null
@@ -149,35 +128,6 @@ export function MessagesPageContent() {
       return searchable.includes(query);
     });
   }, [conversations, search]);
-
-  const filteredActivity = useMemo(() => {
-    const query = activitySearch.trim().toLowerCase();
-
-    if (!query) {
-      return activity;
-    }
-
-    function matches(item: MyPostActivityItem) {
-      const searchable = [
-        item.body,
-        item.topic?.title ?? "",
-        item.topic?.slug ?? "",
-        item.subtopic?.title ?? "",
-        item.subtopic?.slug ?? "",
-        item.parentPost?.body ?? "",
-        item.parentPost?.author?.username ?? "",
-      ]
-        .join(" ")
-        .toLowerCase();
-
-      return searchable.includes(query);
-    }
-
-    return {
-      posts: activity.posts.filter(matches),
-      comments: activity.comments.filter(matches),
-    };
-  }, [activity, activitySearch]);
 
   const selectedConversation = useMemo(
     () =>
@@ -209,24 +159,6 @@ export function MessagesPageContent() {
   const inboxConversations = filteredConversations.slice(
     (safeInboxPage - 1) * PAGE_SIZE,
     safeInboxPage * PAGE_SIZE
-  );
-  const totalPostsPages = Math.max(
-    1,
-    Math.ceil(filteredActivity.posts.length / ACTIVITY_PAGE_SIZE)
-  );
-  const totalCommentsPages = Math.max(
-    1,
-    Math.ceil(filteredActivity.comments.length / ACTIVITY_PAGE_SIZE)
-  );
-  const safePostsPage = Math.min(postsPage, totalPostsPages);
-  const safeCommentsPage = Math.min(commentsPage, totalCommentsPages);
-  const visiblePosts = filteredActivity.posts.slice(
-    (safePostsPage - 1) * ACTIVITY_PAGE_SIZE,
-    safePostsPage * ACTIVITY_PAGE_SIZE
-  );
-  const visibleComments = filteredActivity.comments.slice(
-    (safeCommentsPage - 1) * ACTIVITY_PAGE_SIZE,
-    safeCommentsPage * ACTIVITY_PAGE_SIZE
   );
 
   function emitMessageChange() {
@@ -308,44 +240,6 @@ export function MessagesPageContent() {
     }
   }
 
-  async function loadActivity() {
-    if (!user?.id) {
-      setActivity({
-        posts: [],
-        comments: [],
-      });
-      setIsLoadingActivity(false);
-      return;
-    }
-
-    setIsLoadingActivity(true);
-
-    try {
-      const response = await fetch("/api/me/post-activity", {
-        cache: "no-store",
-      });
-
-      const payload = (await response.json()) as MyPostActivityPayload & {
-        error?: string;
-      };
-
-      if (!response.ok) {
-        throw new Error(payload.error || "Unable to load your post activity.");
-      }
-
-      setActivity({
-        posts: payload.posts ?? [],
-        comments: payload.comments ?? [],
-      });
-    } catch (err) {
-      setError(
-        err instanceof Error ? err.message : "Unable to load your post activity."
-      );
-    } finally {
-      setIsLoadingActivity(false);
-    }
-  }
-
   useEffect(() => {
     let isMounted = true;
 
@@ -355,7 +249,6 @@ export function MessagesPageContent() {
       }
 
       await loadConversations();
-      await loadActivity();
     }
 
     void bootstrap();
@@ -364,7 +257,7 @@ export function MessagesPageContent() {
       isMounted = false;
     };
     // loadConversations depends on user email and selectedConversationId
-  }, [isLoadingProfile, user?.email, user?.id]);
+  }, [isLoadingProfile, user?.email]);
 
   useEffect(() => {
     if (selectedConversationId) {
@@ -401,13 +294,8 @@ export function MessagesPageContent() {
   }, [search]);
 
   useEffect(() => {
-    setPostsPage(1);
-    setCommentsPage(1);
-  }, [activitySearch]);
-
-  useEffect(() => {
     function handleProfileUpdated() {
-      void Promise.all([loadConversations(), loadActivity()]).then(async () => {
+      void loadConversations().then(async () => {
         if (selectedConversationId) {
           await loadMessages(selectedConversationId);
         }
@@ -419,7 +307,7 @@ export function MessagesPageContent() {
     return () => {
       window.removeEventListener(PROFILE_UPDATED_EVENT, handleProfileUpdated);
     };
-  }, [selectedConversationId, user?.email, user?.id]);
+  }, [selectedConversationId, user?.email]);
 
   async function handleCreateConversation() {
     const email = user?.email;
@@ -543,40 +431,12 @@ export function MessagesPageContent() {
       >
         <Card className="internal-card internal-card--strong">
           <CardBody className="gap-5 p-5 sm:p-6">
-            <div className="flex flex-wrap items-center justify-between gap-4">
-              <div className="inline-flex rounded-2xl border border-primary/15 bg-content2/65 p-1 shadow-[0_10px_24px_rgba(27,54,93,0.08)]">
-                <Button
-                  color={activeTab === "inbox" ? "primary" : "default"}
-                  variant={activeTab === "inbox" ? "solid" : "light"}
-                  startContent={<Inbox className="h-4 w-4" />}
-                  className={`rounded-xl px-4 ${
-                    activeTab === "inbox"
-                      ? "bg-[linear-gradient(135deg,rgba(var(--heroui-colors-primary-500),1),rgba(var(--heroui-colors-primary-700),1))] text-primary-foreground shadow-sm"
-                      : "text-default-600"
-                  }`}
-                  onPress={() => setActiveTab("inbox")}
-                >
-                  Inbox
-                </Button>
-                <Button
-                  color={activeTab === "activity" ? "primary" : "default"}
-                  variant={activeTab === "activity" ? "solid" : "light"}
-                  startContent={<FileText className="h-4 w-4" />}
-                  className={`rounded-xl px-4 ${
-                    activeTab === "activity"
-                      ? "bg-[linear-gradient(135deg,rgba(var(--heroui-colors-primary-500),1),rgba(var(--heroui-colors-primary-700),1))] text-primary-foreground shadow-sm"
-                      : "text-default-600"
-                  }`}
-                  onPress={() => setActiveTab("activity")}
-                >
-                  My posts
-                </Button>
-              </div>
-
-              <Chip variant="flat" className="bg-brotherhood-bronze/12 text-brotherhood-bronze">
-                {activeTab === "inbox" ? "Direct messages" : "Personal activity"}
-              </Chip>
-            </div>
+            <Chip
+              variant="flat"
+              className="w-fit bg-brotherhood-bronze/12 text-brotherhood-bronze"
+            >
+              Direct messages
+            </Chip>
 
             <div className="space-y-3">
               <h1 className="text-2xl font-semibold sm:text-3xl">
@@ -592,7 +452,6 @@ export function MessagesPageContent() {
         </Card>
       </motion.section>
 
-      {activeTab === "inbox" ? (
       <div className="grid gap-4 lg:grid-cols-[360px_1fr]">
         <motion.section
           initial={{ opacity: 0, x: -8 }}
@@ -926,225 +785,6 @@ export function MessagesPageContent() {
           )}
         </motion.section>
       </div>
-      ) : (
-        <motion.section
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.24, delay: 0.05 }}
-        >
-          <Card className="internal-card internal-card--strong">
-            <CardBody className="gap-5 p-5 sm:p-6">
-              <div className="flex flex-wrap items-center justify-between gap-3">
-                <div className="space-y-1">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <Chip color="primary" variant="flat">
-                      My posts
-                    </Chip>
-                    <Chip color="secondary" variant="flat">
-                      Newest first
-                    </Chip>
-                  </div>
-                  <p className="text-sm text-default-500">
-                    Review your latest posts and your comments on other members&apos; posts.
-                  </p>
-                </div>
-              </div>
-
-              <label className="group relative block w-full">
-                <Search className="pointer-events-none absolute left-4 top-1/2 z-10 h-4 w-4 -translate-y-1/2 text-default-400" />
-                <input
-                  aria-label="Search your post activity"
-                  className="internal-field h-12 w-full pl-11 pr-4 text-sm text-foreground outline-none transition-colors placeholder:text-transparent focus:border-primary/40"
-                  placeholder=" "
-                  value={activitySearch}
-                  onChange={(event) => setActivitySearch(event.target.value)}
-                />
-                <span className="pointer-events-none absolute left-11 top-2 text-xs font-medium text-default-600 transition-all">
-                  Search your posts and comments
-                </span>
-              </label>
-
-              <div className="grid gap-4 xl:grid-cols-2">
-                <Card className="internal-card">
-                  <CardBody className="gap-4 p-5">
-                    <div className="flex items-center justify-between gap-3">
-                      <div className="flex items-center gap-2">
-                        <FileText className="h-5 w-5 text-secondary" />
-                        <h2 className="text-lg font-semibold">My posts</h2>
-                      </div>
-                      <Chip variant="flat">{filteredActivity.posts.length}</Chip>
-                    </div>
-
-                    <div className="grid gap-3">
-                      {isLoadingActivity ? (
-                        Array.from({ length: 3 }).map((_, index) => (
-                          <Skeleton key={index} className="h-28 rounded-2xl" />
-                        ))
-                      ) : visiblePosts.length > 0 ? (
-                        visiblePosts.map((post) => (
-                          <button
-                            key={post.id}
-                            type="button"
-                            className="rounded-2xl border border-divider/70 bg-content1/80 p-4 text-left transition hover:border-primary/30 hover:bg-primary/5"
-                            onClick={() => router.push(buildPostActivityHref(post))}
-                          >
-                            <div className="flex flex-wrap items-center gap-2 text-xs text-default-500">
-                              {post.topic ? (
-                                <span className="font-medium text-foreground">
-                                  {post.topic.title}
-                                </span>
-                              ) : null}
-                              {post.subtopic ? (
-                                <Chip size="sm" variant="flat">
-                                  {post.subtopic.title}
-                                </Chip>
-                              ) : null}
-                              <span>{formatDateTime(post.createdAt)}</span>
-                              {post.isEdited ? <span>Edited</span> : null}
-                            </div>
-                            <p className="mt-3 whitespace-pre-wrap text-sm leading-6 text-default-700">
-                              {truncateWords(post.body, 40)}
-                            </p>
-                          </button>
-                        ))
-                      ) : (
-                        <div className="internal-empty p-4">
-                          <p className="text-sm font-medium text-foreground">No posts yet.</p>
-                          <p className="mt-1 text-sm text-default-500">
-                            Your topic posts will appear here.
-                          </p>
-                        </div>
-                      )}
-                    </div>
-
-                    {!isLoadingActivity && filteredActivity.posts.length > ACTIVITY_PAGE_SIZE ? (
-                      <div className="flex items-center justify-between gap-3 border-t border-divider/70 pt-3">
-                        <p className="text-xs text-default-500">
-                          Page {safePostsPage} of {totalPostsPages}
-                        </p>
-                        <div className="flex items-center gap-2">
-                          <Button
-                            isDisabled={safePostsPage <= 1}
-                            variant="flat"
-                            onPress={() =>
-                              setPostsPage((current) => Math.max(1, current - 1))
-                            }
-                          >
-                            Previous
-                          </Button>
-                          <Button
-                            isDisabled={safePostsPage >= totalPostsPages}
-                            variant="flat"
-                            onPress={() =>
-                              setPostsPage((current) =>
-                                Math.min(totalPostsPages, current + 1)
-                              )
-                            }
-                          >
-                            Next
-                          </Button>
-                        </div>
-                      </div>
-                    ) : null}
-                  </CardBody>
-                </Card>
-
-                <Card className="internal-card">
-                  <CardBody className="gap-4 p-5">
-                    <div className="flex items-center justify-between gap-3">
-                      <div className="flex items-center gap-2">
-                        <MessageSquareText className="h-5 w-5 text-secondary" />
-                        <h2 className="text-lg font-semibold">My comments</h2>
-                      </div>
-                      <Chip variant="flat">{filteredActivity.comments.length}</Chip>
-                    </div>
-
-                    <div className="grid gap-3">
-                      {isLoadingActivity ? (
-                        Array.from({ length: 3 }).map((_, index) => (
-                          <Skeleton key={index} className="h-32 rounded-2xl" />
-                        ))
-                      ) : visibleComments.length > 0 ? (
-                        visibleComments.map((comment) => (
-                          <button
-                            key={comment.id}
-                            type="button"
-                            className="rounded-2xl border border-divider/70 bg-content1/80 p-4 text-left transition hover:border-primary/30 hover:bg-primary/5"
-                            onClick={() => router.push(buildPostActivityHref(comment))}
-                          >
-                            <div className="flex flex-wrap items-center gap-2 text-xs text-default-500">
-                              {comment.topic ? (
-                                <span className="font-medium text-foreground">
-                                  {comment.topic.title}
-                                </span>
-                              ) : null}
-                              {comment.subtopic ? (
-                                <Chip size="sm" variant="flat">
-                                  {comment.subtopic.title}
-                                </Chip>
-                              ) : null}
-                              <span>{formatDateTime(comment.createdAt)}</span>
-                              {comment.isEdited ? <span>Edited</span> : null}
-                            </div>
-                            {comment.parentPost ? (
-                              <p className="mt-2 text-xs leading-5 text-default-500">
-                                In reply to {comment.parentPost.author?.username ?? "member"}:{" "}
-                                {truncateWords(comment.parentPost.body, 18)}
-                              </p>
-                            ) : null}
-                            <p className="mt-3 whitespace-pre-wrap text-sm leading-6 text-default-700">
-                              {truncateWords(comment.body, 40)}
-                            </p>
-                          </button>
-                        ))
-                      ) : (
-                        <div className="internal-empty p-4">
-                          <p className="text-sm font-medium text-foreground">
-                            No comments on other posts yet.
-                          </p>
-                          <p className="mt-1 text-sm text-default-500">
-                            Your replies to other members will appear here.
-                          </p>
-                        </div>
-                      )}
-                    </div>
-
-                    {!isLoadingActivity && filteredActivity.comments.length > ACTIVITY_PAGE_SIZE ? (
-                      <div className="flex items-center justify-between gap-3 border-t border-divider/70 pt-3">
-                        <p className="text-xs text-default-500">
-                          Page {safeCommentsPage} of {totalCommentsPages}
-                        </p>
-                        <div className="flex items-center gap-2">
-                          <Button
-                            isDisabled={safeCommentsPage <= 1}
-                            variant="flat"
-                            onPress={() =>
-                              setCommentsPage((current) => Math.max(1, current - 1))
-                            }
-                          >
-                            Previous
-                          </Button>
-                          <Button
-                            isDisabled={safeCommentsPage >= totalCommentsPages}
-                            variant="flat"
-                            onPress={() =>
-                              setCommentsPage((current) =>
-                                Math.min(totalCommentsPages, current + 1)
-                              )
-                            }
-                          >
-                            Next
-                          </Button>
-                        </div>
-                      </div>
-                    ) : null}
-                  </CardBody>
-                </Card>
-              </div>
-            </CardBody>
-          </Card>
-        </motion.section>
-      )}
 
       {error ? <p className="text-sm text-danger-500">{error}</p> : null}
     </div>
