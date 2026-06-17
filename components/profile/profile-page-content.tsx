@@ -683,18 +683,6 @@ export function ProfilePageContent() {
               </div>
 
               <div className="space-y-3">
-                <div className="flex flex-wrap items-center gap-2">
-                  <Chip color="primary" variant="flat">
-                    Profile
-                  </Chip>
-                  <Chip color="secondary" variant="flat">
-                    Subscriptions
-                  </Chip>
-                  <Chip variant="flat">
-                    Updated {new Date(profile.user.updatedAt).toLocaleDateString()}
-                  </Chip>
-                </div>
-
                 <div className="space-y-1">
                   <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">
                     @{profile.user.username}

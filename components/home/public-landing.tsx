@@ -41,20 +41,33 @@ const topics = [
   ],
 ];
 
-const reasons = [
-  "Because they realize they aren't the only one.",
-  "Because they find men who have lived through the same fears and setbacks.",
-  "Because sometimes the most valuable thing isn't advice.",
-  "It's hearing someone say: \"I've been there.\"",
+const experienceSources = [
+  "From fathers.",
+  "From husbands.",
+  "From divorced men.",
+  "From men who rebuilt their careers.",
+  "From men who fought through anxiety.",
+  "From men who have been where you are now.",
 ];
 
-const values = [
-  "Men support each other.",
-  "Questions are welcomed.",
-  "Vulnerability is not weakness.",
-  "Respect comes first.",
-  "Personal attacks have no place.",
-  "Growth matters more than ego.",
+const outcomes = [
+  "Navigate divorce",
+  "Improve relationships",
+  "Find new careers",
+  "Become better fathers",
+  "Build confidence",
+  "Recover from burnout",
+  "Make it through difficult times",
+];
+
+const simpleRules = [
+  "Be respectful.",
+  "Be honest.",
+  "Help when you can.",
+  "Ask when you need help.",
+  "No personal attacks.",
+  "No hate.",
+  "No shaming.",
 ];
 
 export function PublicLanding() {
@@ -160,24 +173,26 @@ export function PublicLanding() {
             <h2>
               The thing weighing on you already has a place here.
             </h2>
+            <p>
+              This page should feel familiar before it feels informative. Most men
+              arrive here carrying something they have not said out loud yet.
+            </p>
           </div>
-          <p>
-            This page should feel familiar before it feels informative. Most men
-            arrive here carrying something they have not said out loud yet.
-          </p>
         </div>
 
-        <div className="public-topic-grid">
+        <div className="public-emotion-list">
           {whyYouMightBeHere.map((reason, index) => (
-            <div key={reason} className="public-card">
-              <div className="public-card-number">
+            <div key={reason} className="public-emotion-row">
+              <span className="public-emotion-row__index">
                 {String(index + 1).padStart(2, "0")}
+              </span>
+              <div className="public-emotion-row__content">
+                <h3>{reason}</h3>
+                <p>
+                  Honest conversation starts faster when someone else has already
+                  put the feeling into words.
+                </p>
               </div>
-              <h3 className="public-card-copy-lg">{reason}</h3>
-              <p>
-                Honest conversation starts faster when someone else has already
-                put the feeling into words.
-              </p>
             </div>
           ))}
         </div>
@@ -193,26 +208,67 @@ export function PublicLanding() {
         <div className="public-section-head">
           <div>
             <p className="public-kicker">
-              What brings men here?
+              No matter where you are in life
             </p>
             <h2>
-              The conversations usually begin in these parts of life.
+              Someone here has probably been there before.
+            </h2>
+            <p>
+              Start with the part of life that feels heaviest right now. The room
+              matters less than finding the first honest conversation.
+            </p>
+          </div>
+        </div>
+
+        <div className="public-topic-rail">
+          {topics.map(([title, description], index) => (
+            <div key={title} className="public-topic-rail__row">
+              <div className="public-topic-rail__number">
+                {String(index + 1).padStart(2, "0")}
+              </div>
+              <div className="public-topic-rail__content">
+                <h3>{title}</h3>
+                <p>{description}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </motion.section>
+
+      <motion.section
+        className="public-section"
+        initial={{ opacity: 0, y: 24 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, amount: 0.2 }}
+        transition={{ duration: 0.4, ease: "easeOut" }}
+      >
+        <div className="public-section-head">
+          <div>
+            <p className="public-kicker">
+              What&apos;s possible?
+            </p>
+            <h2>
+              You don&apos;t need to have everything figured out.
             </h2>
           </div>
           <p>
-            The categories matter, but only after a new visitor feels understood
-            enough to take the first step.
+            Men come here to get through real situations, make better decisions,
+            and find a place to start.
           </p>
         </div>
 
-        <div className="public-topic-grid">
-          {topics.map(([title, description], index) => (
-            <div key={title} className="public-card">
-              <div className="public-card-number">
+        <div className="public-outcome-band">
+          {outcomes.map((outcome, index) => (
+            <div key={outcome} className="public-outcome-chip">
+              <span className="public-outcome-chip__index">
                 {String(index + 1).padStart(2, "0")}
+              </span>
+              <div className="public-outcome-chip__content">
+                <h3>{outcome}</h3>
+                <p>
+                  One honest conversation can make the next step easier to see.
+                </p>
               </div>
-              <h3>{title}</h3>
-              <p>{description}</p>
             </div>
           ))}
         </div>
@@ -226,52 +282,40 @@ export function PublicLanding() {
         transition={{ duration: 0.4, ease: "easeOut" }}
       >
         <div className="public-info-card">
-          <p className="public-kicker">
-            Why men stay
+          <p className="public-kicker">Why men stay</p>
+          <h2>Because the advice comes from experience.</h2>
+          <p>
+            Not from influencers. Not from people trying to sell a course.
           </p>
-          <h2>
-            Because they realize they aren&apos;t the only one.
-          </h2>
 
           <div className="public-story-list">
-            {reasons.map((reason) => (
-              <div key={reason} className="public-story-item">
-                <p>{reason}</p>
+            {experienceSources.map((source, index) => (
+              <div key={source} className="public-story-item">
+                <span>{String(index + 1).padStart(2, "0")}</span>
+                <p>{source}</p>
               </div>
             ))}
           </div>
 
           <p>
-            They discover that other men have faced the same fears, made similar
-            mistakes, survived difficult situations, and found ways forward.
+            Sometimes one honest conversation can save months of struggle.
           </p>
         </div>
 
         <div className="public-steps-card">
-          <p className="public-steps-kicker">
-            The kind of community we&apos;re building
-          </p>
-          <h2>
-            This isn&apos;t social media. This is a brotherhood built around
-            helping each other navigate life.
-          </h2>
+          <p className="public-steps-kicker">The rules are simple</p>
+          <h2>Be useful. Be honest. Keep it respectful.</h2>
 
           <div className="public-values-grid">
-            {values.map((value) => (
-              <div key={value} className="public-value-pill">
-                {value}
+            {simpleRules.map((rule) => (
+              <div key={rule} className="public-value-pill">
+                {rule}
               </div>
             ))}
           </div>
 
           <p className="public-steps-card__quote">
-            You don&apos;t need to have the answers. You just need to take the
-            first step.
-          </p>
-
-          <p className="public-steps-card__quote">
-            Create your account, introduce yourself, and join a community that
-            believes no man should face life&apos;s challenges alone.
+            Just men helping men.
           </p>
 
           <div className="public-actions public-actions--compact">
@@ -293,10 +337,6 @@ export function PublicLanding() {
               Sign in
             </AnimatedCtaLink>
           </div>
-
-          <p className="public-steps-card__quote">
-            Because when things get difficult, we&apos;ve got your six.
-          </p>
         </div>
       </motion.section>
     </div>

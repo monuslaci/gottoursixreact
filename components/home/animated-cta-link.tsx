@@ -3,10 +3,9 @@
 import type { LucideIcon } from "lucide-react";
 import type { ReactNode } from "react";
 
-import { Button } from "@heroui/react";
+import { Link } from "@heroui/link";
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
-import Link from "next/link";
 
 import { cn } from "@/lib/client-utils";
 
@@ -59,28 +58,21 @@ export function AnimatedCtaLink({
       }}
       className={cn("inline-flex", className)}
     >
-      <Button
-        as={Link}
+      <Link
         href={href}
-        radius="lg"
-        size="lg"
         className={cn(
-          "group min-h-12 rounded-[1.15rem] px-5 font-semibold tracking-[0.01em] transition-transform duration-200",
+          "group inline-flex min-h-12 items-center justify-center gap-2 rounded-[1.15rem] px-5 text-sm font-semibold tracking-[0.01em] transition-transform duration-200",
           variantClasses[variant]
         )}
-        startContent={
-          Icon ? (
-            <Icon className="h-[18px] w-[18px] transition-transform duration-200 group-hover:-translate-y-0.5" />
-          ) : undefined
-        }
-        endContent={
-          showArrow ? (
-            <ArrowRight className="h-[18px] w-[18px] transition-transform duration-200 group-hover:translate-x-0.5" />
-          ) : undefined
-        }
       >
+        {Icon ? (
+          <Icon className="h-[18px] w-[18px] transition-transform duration-200 group-hover:-translate-y-0.5" />
+        ) : null}
         {children}
-      </Button>
+        {showArrow ? (
+          <ArrowRight className="h-[18px] w-[18px] transition-transform duration-200 group-hover:translate-x-0.5" />
+        ) : null}
+      </Link>
     </motion.div>
   );
 }

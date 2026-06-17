@@ -7,81 +7,179 @@
   - Environments: .env.local, .env
 
  ✓ Starting...
- ✓ Ready in 2.7s
+ ✓ Ready in 1476ms
  ○ Compiling / ...
- ✓ Compiled / in 5.1s (3972 modules)
- GET / 500 in 5775ms
- GET / 500 in 104ms
- ✓ Compiled /middleware in 151ms (72 modules)
- ○ Compiling /auth ...
- ✓ Compiled /auth in 1260ms (3996 modules)
- GET /auth?next=%2Ftopics 500 in 1520ms
- GET /auth?next=%2Ftopics 500 in 1524ms
- ✓ Compiled in 495ms (1993 modules)
- ✓ Compiled in 359ms (1993 modules)
- ✓ Compiled in 482ms (2051 modules)
- ✓ Compiled in 443ms (1993 modules)
- ✓ Compiled in 411ms (1993 modules)
- ✓ Compiled in 320ms (1993 modules)
- ✓ Compiled in 274ms (1993 modules)
- ✓ Compiled in 302ms (1993 modules)
- ✓ Compiled in 390ms (1993 modules)
- ✓ Compiled in 275ms (1993 modules)
- ✓ Compiled in 349ms (1993 modules)
- ✓ Compiled in 333ms (1993 modules)
- ✓ Compiled in 412ms (1993 modules)
- ✓ Compiled in 367ms (1993 modules)
- ✓ Compiled in 277ms (1993 modules)
- ✓ Compiled in 366ms (1993 modules)
- ✓ Compiled in 325ms (1993 modules)
- ✓ Compiled in 528ms (1993 modules)
- ✓ Compiled in 398ms (1993 modules)
- ✓ Compiled in 322ms (1993 modules)
+ ✓ Compiled / in 4.1s (2165 modules)
+ GET / 500 in 4316ms
+ ✓ Compiled in 500ms (1076 modules)
+ ✓ Compiled / in 292ms (1080 modules)
  ○ Compiling /_error ...
- ✓ Compiled /_error in 2.7s (2214 modules)
- GET /messages 404 in 19ms
+ ✓ Compiled /_error in 1131ms (2369 modules)
+ GET / 500 in 1709ms
+ GET / 500 in 133ms
+ ✓ Compiled /_not-found in 225ms (2372 modules)
+ GET /_next/static/chunks/app-pages-internals.js 404 in 322ms
+ GET /_next/static/chunks/main-app.js 404 in 327ms
+ GET / 500 in 94ms
+ ✓ Compiled /api/auth/session in 382ms (1148 modules)
+ GET /api/auth/session 200 in 508ms
+ GET /api/auth/session 200 in 506ms
+ GET /api/auth/session 200 in 504ms
+ GET /api/auth/session 200 in 509ms
+ ○ Compiling /auth ...
+ ✓ Compiled /auth in 846ms (2435 modules)
+ GET /auth?mode=login 200 in 865ms
+ GET / 500 in 170ms
+ ✓ Compiled /_not-found in 346ms (2424 modules)
+ GET /api/auth/session 200 in 31ms
+ GET /api/auth/session 200 in 35ms
+ GET /api/auth/session 200 in 36ms
+ GET /api/auth/session 200 in 38ms
+ GET /auth?mode=login 500 in 96ms
+ GET /api/auth/session 200 in 19ms
+ GET /api/auth/session 200 in 26ms
+ GET /api/auth/session 200 in 26ms
+ GET /api/auth/session 200 in 26ms
+ ✓ Compiled /api/auth/google in 182ms (1169 modules)
+ GET /api/auth/google?next=%2F 307 in 218ms
+ ✓ Compiled /api/auth/google/callback in 111ms (1171 modules)
+ GET /api/auth/google/callback?state=73454aa9c5bc8fcd47d1c21c79b97d026fcffd83e66cd90c&iss=https%3A%2F%2Faccounts.google.com&code=4%2F0AdkVLPxqcpjz5ZuP6wEy3u29wsVKiRm9LWP6HRAGTrw3HyCp_h1io_mXhgY9DEr0Lm2RaQ&scope=email+profile+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.profile+openid+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.email&authuser=0&prompt=none 307 in 2580ms
+ GET / 500 in 2112ms
+ GET /api/auth/session 200 in 36ms
+ GET /api/auth/session 200 in 32ms
+ GET /api/auth/session 200 in 59ms
+ GET /api/auth/session 200 in 55ms
+ ✓ Compiled /api/conversations in 244ms (1173 modules)
+ GET /api/conversations?userEmail=monuslaci%40gmail.com 200 in 296ms
+ ✓ Compiled /middleware in 284ms (72 modules)
+ ○ Compiling /messages ...
+ ✓ Compiled /messages in 4s (4289 modules)
+ GET /messages 500 in 4167ms
+ GET /api/auth/session 200 in 123ms
+ GET /api/auth/session 200 in 126ms
+ GET /api/auth/session 200 in 121ms
+ GET /api/auth/session 200 in 155ms
+ ○ Compiling /api/me ...
+ ✓ Compiled /api/me in 1040ms (2108 modules)
+ GET /api/conversations?userEmail=monuslaci%40gmail.com 200 in 1191ms
+ GET /api/me 200 in 1367ms
+ GET /api/me 200 in 1340ms
+ GET /api/conversations?userEmail=monuslaci%40gmail.com 200 in 11ms
+ ○ Compiling /activity ...
+ ✓ Compiled /activity in 894ms (4300 modules)
+ GET /activity 500 in 1099ms
+ GET /api/auth/session 200 in 37ms
+ GET /api/auth/session 200 in 41ms
+ GET /api/auth/session 200 in 46ms
+ GET /api/auth/session 200 in 45ms
+ GET /api/me 200 in 49ms
+ GET /api/me 200 in 52ms
+ ✓ Compiled /api/me/post-activity in 307ms (2110 modules)
+ GET /api/conversations?userEmail=monuslaci%40gmail.com 200 in 533ms
+ GET /api/me/post-activity 200 in 537ms
+ ○ Compiling /topics/[topicId] ...
+ ✓ Compiled /topics/[topicId] in 1062ms (4321 modules)
+ GET /api/auth/session 200 in 28ms
+ GET /api/auth/session 200 in 29ms
+ GET /api/conversations?userEmail=monuslaci%40gmail.com 200 in 13ms
+ GET /api/me 200 in 46ms
+ ✓ Compiled /api/topics/[topicId]/subscribe in 301ms (2127 modules)
+ ✓ Compiled (2129 modules)
+ GET /api/me 200 in 630ms
+ GET /api/me 200 in 583ms
+ GET /api/me 200 in 19ms
+ GET /api/topics/cmqakooge000tv1s9dq7fe8f8/subscribe?userEmail=miles.parker%40gotyoursix.local 404 in 845ms
+ GET /api/topics/cmqakooge000tv1s9dq7fe8f8/subscribe?userEmail=miles.parker%40gotyoursix.local 404 in 215ms
+ GET /api/subtopics/cmqaptk30000tcy5g9uz9gqv3/subscribe?userEmail=miles.parker%40gotyoursix.local 404 in 861ms
+ GET /api/subtopics/cmqaptro3000vcy5g959m8c1f/subscribe?userEmail=miles.parker%40gotyoursix.local 404 in 861ms
+ GET /api/subtopics/cmqaptz1c000xcy5gyvd8zqpt/subscribe?userEmail=miles.parker%40gotyoursix.local 404 in 861ms
+ GET /api/subtopics/cmqaptk30000tcy5g9uz9gqv3/subscribe?userEmail=miles.parker%40gotyoursix.local 404 in 211ms
+ GET /api/subtopics/cmqaptro3000vcy5g959m8c1f/subscribe?userEmail=miles.parker%40gotyoursix.local 404 in 33ms
+ GET /api/subtopics/cmqaptz1c000xcy5gyvd8zqpt/subscribe?userEmail=miles.parker%40gotyoursix.local 404 in 43ms
+ GET /api/subtopics/cmqaptk30000tcy5g9uz9gqv3/subscribe?userEmail=monuslaci%40gmail.com 200 in 34ms
+ GET /api/subtopics/cmqaptro3000vcy5g959m8c1f/subscribe?userEmail=monuslaci%40gmail.com 200 in 34ms
+ GET /api/subtopics/cmqaptz1c000xcy5gyvd8zqpt/subscribe?userEmail=monuslaci%40gmail.com 200 in 35ms
+ GET /api/topics/cmqakooge000tv1s9dq7fe8f8/subscribe?userEmail=monuslaci%40gmail.com 200 in 37ms
+ ✓ Compiled /api/subtopics/[subtopicId]/posts in 311ms (2129 modules)
+ POST /api/subtopics/cmqaptk30000tcy5g9uz9gqv3/posts 201 in 601ms
+ ✓ Compiled in 1275ms (4303 modules)
+ GET / 500 in 158ms
+ ✓ Compiled /api/auth/session in 392ms (2120 modules)
+ GET /api/auth/session 200 in 482ms
+ GET /api/auth/session 200 in 489ms
+ GET /api/auth/session 200 in 485ms
+ GET /api/auth/session 200 in 493ms
+ ✓ Compiled /api/conversations in 410ms (2122 modules)
+ GET /api/conversations?userEmail=monuslaci%40gmail.com 200 in 457ms
+ ✓ Compiled in 967ms (4333 modules)
+ GET / 500 in 4178ms
+ GET /api/auth/session 200 in 33ms
+ GET /api/auth/session 200 in 51ms
+ GET /api/auth/session 200 in 65ms
+ GET /api/auth/session 200 in 86ms
+ GET /api/conversations?userEmail=monuslaci%40gmail.com 200 in 17ms
+ ○ Compiling /api/auth/logout ...
+ ✓ Compiled /api/auth/logout in 1031ms (4320 modules)
+ ✓ Compiled in 1ms (2121 modules)
+ ✓ Compiled in 561ms (4320 modules)
+ POST /api/auth/logout 200 in 2051ms
+ GET /_next/static/chunks/_app-pages-browser_node_modules_heroui_dom-animation_dist_index_mjs-_383a0.js 404 in 2116ms
+ ○ Compiling /api/auth/session ...
+ ✓ Compiled /api/auth/session in 527ms (4324 modules)
+ GET /api/auth/session 200 in 775ms
+ GET / 500 in 1799ms
+ GET / 500 in 1216ms
+ GET / 500 in 163ms
+ ✓ Compiled in 811ms (4305 modules)
+ ✓ Compiled in 586ms (4307 modules)
+ ✓ Compiled in 464ms (4307 modules)
+ GET / 500 in 189ms
+ GET / 500 in 97ms
+ ○ Compiling /api/auth/session ...
+ ✓ Compiled /api/auth/session in 575ms (2122 modules)
+ GET /api/auth/session 500 in 631ms
+ GET /api/auth/session 500 in 633ms
+ GET /auth?mode=login 500 in 25ms
  ○ Compiling /_not-found ...
- ✓ Compiled /_not-found in 4.5s (4179 modules)
- GET /messages 404 in 3ms
- ○ Compiling / ...
- ✓ Compiled / in 650ms (2029 modules)
- GET /messages 404 in 1ms
- GET / 200 in 840ms
- ✓ Compiled in 940ms (2179 modules)
- ✓ Compiled in 886ms (2228 modules)
- ✓ Compiled in 580ms (2179 modules)
- ✓ Compiled in 1306ms (2300 modules)
- ✓ Compiled in 477ms (2179 modules)
- ✓ Compiled in 697ms (2179 modules)
- ✓ Compiled in 431ms (2179 modules)
- ✓ Compiled in 413ms (2179 modules)
- ✓ Compiled in 587ms (2179 modules)
- ✓ Compiled in 558ms (2179 modules)
- ✓ Compiled in 464ms (2179 modules)
- ✓ Compiled in 434ms (2179 modules)
- ✓ Compiled in 340ms (2179 modules)
- ✓ Compiled in 300ms (2179 modules)
- ✓ Compiled in 326ms (2179 modules)
- ✓ Compiled in 711ms (2286 modules)
- ✓ Compiled in 321ms (2179 modules)
- ✓ Compiled in 422ms (2180 modules)
- ✓ Compiled in 432ms (2180 modules)
- ✓ Compiled in 398ms (2180 modules)
- ✓ Compiled in 399ms (2180 modules)
-prisma:error Error in PostgreSQL connection: Error { kind: Db, cause: Some(DbError { severity: "FATAL", parsed_severity: Some(Fatal), code: SqlState(E57P01), message: "terminating connection due to administrator command", detail: None, hint: None, position: None, where_: None, schema: None, table: None, column: None, datatype: None, constraint: None, file: Some("postgres.c"), line: Some(3286), routine: Some("ProcessInterrupts") }) }
-prisma:error Error in PostgreSQL connection: Error { kind: Db, cause: Some(DbError { severity: "FATAL", parsed_severity: Some(Fatal), code: SqlState(E57P01), message: "terminating connection due to administrator command", detail: None, hint: None, position: None, where_: None, schema: None, table: None, column: None, datatype: None, constraint: None, file: Some("postgres.c"), line: Some(3286), routine: Some("ProcessInterrupts") }) }
-prisma:error Error in PostgreSQL connection: Error { kind: Db, cause: Some(DbError { severity: "FATAL", parsed_severity: Some(Fatal), code: SqlState(E57P01), message: "terminating connection due to administrator command", detail: None, hint: None, position: None, where_: None, schema: None, table: None, column: None, datatype: None, constraint: None, file: Some("postgres.c"), line: Some(3286), routine: Some("ProcessInterrupts") }) }
-prisma:error Error in PostgreSQL connection: Error { kind: Db, cause: Some(DbError { severity: "FATAL", parsed_severity: Some(Fatal), code: SqlState(E57P01), message: "terminating connection due to administrator command", detail: None, hint: None, position: None, where_: None, schema: None, table: None, column: None, datatype: None, constraint: None, file: Some("postgres.c"), line: Some(3286), routine: Some("ProcessInterrupts") }) }
-prisma:error Error in PostgreSQL connection: Error { kind: Db, cause: Some(DbError { severity: "FATAL", parsed_severity: Some(Fatal), code: SqlState(E57P01), message: "terminating connection due to administrator command", detail: None, hint: None, position: None, where_: None, schema: None, table: None, column: None, datatype: None, constraint: None, file: Some("postgres.c"), line: Some(3286), routine: Some("ProcessInterrupts") }) }
-prisma:error Error in PostgreSQL connection: Error { kind: Db, cause: Some(DbError { severity: "FATAL", parsed_severity: Some(Fatal), code: SqlState(E57P01), message: "terminating connection due to administrator command", detail: None, hint: None, position: None, where_: None, schema: None, table: None, column: None, datatype: None, constraint: None, file: Some("postgres.c"), line: Some(3286), routine: Some("ProcessInterrupts") }) }
-prisma:error Error in PostgreSQL connection: Error { kind: Db, cause: Some(DbError { severity: "FATAL", parsed_severity: Some(Fatal), code: SqlState(E57P01), message: "terminating connection due to administrator command", detail: None, hint: None, position: None, where_: None, schema: None, table: None, column: None, datatype: None, constraint: None, file: Some("postgres.c"), line: Some(3286), routine: Some("ProcessInterrupts") }) }
-prisma:error Error in PostgreSQL connection: Error { kind: Db, cause: Some(DbError { severity: "FATAL", parsed_severity: Some(Fatal), code: SqlState(E57P01), message: "terminating connection due to administrator command", detail: None, hint: None, position: None, where_: None, schema: None, table: None, column: None, datatype: None, constraint: None, file: Some("postgres.c"), line: Some(3286), routine: Some("ProcessInterrupts") }) }
-prisma:error Error in PostgreSQL connection: Error { kind: Db, cause: Some(DbError { severity: "FATAL", parsed_severity: Some(Fatal), code: SqlState(E57P01), message: "terminating connection due to administrator command", detail: None, hint: None, position: None, where_: None, schema: None, table: None, column: None, datatype: None, constraint: None, file: Some("postgres.c"), line: Some(3286), routine: Some("ProcessInterrupts") }) }
-prisma:error Error in PostgreSQL connection: Error { kind: Db, cause: Some(DbError { severity: "FATAL", parsed_severity: Some(Fatal), code: SqlState(E57P01), message: "terminating connection due to administrator command", detail: None, hint: None, position: None, where_: None, schema: None, table: None, column: None, datatype: None, constraint: None, file: Some("postgres.c"), line: Some(3286), routine: Some("ProcessInterrupts") }) }
-prisma:error Error in PostgreSQL connection: Error { kind: Db, cause: Some(DbError { severity: "FATAL", parsed_severity: Some(Fatal), code: SqlState(E57P01), message: "terminating connection due to administrator command", detail: None, hint: None, position: None, where_: None, schema: None, table: None, column: None, datatype: None, constraint: None, file: Some("postgres.c"), line: Some(3286), routine: Some("ProcessInterrupts") }) }
-prisma:error Error in PostgreSQL connection: Error { kind: Db, cause: Some(DbError { severity: "FATAL", parsed_severity: Some(Fatal), code: SqlState(E57P01), message: "terminating connection due to administrator command", detail: None, hint: None, position: None, where_: None, schema: None, table: None, column: None, datatype: None, constraint: None, file: Some("postgres.c"), line: Some(3286), routine: Some("ProcessInterrupts") }) }
-prisma:error Error in PostgreSQL connection: Error { kind: Db, cause: Some(DbError { severity: "FATAL", parsed_severity: Some(Fatal), code: SqlState(E57P01), message: "terminating connection due to administrator command", detail: None, hint: None, position: None, where_: None, schema: None, table: None, column: None, datatype: None, constraint: None, file: Some("postgres.c"), line: Some(3286), routine: Some("ProcessInterrupts") }) }
-prisma:error Error in PostgreSQL connection: Error { kind: Db, cause: Some(DbError { severity: "FATAL", parsed_severity: Some(Fatal), code: SqlState(E57P01), message: "terminating connection due to administrator command", detail: None, hint: None, position: None, where_: None, schema: None, table: None, column: None, datatype: None, constraint: None, file: Some("postgres.c"), line: Some(3286), routine: Some("ProcessInterrupts") }) }
-prisma:error Error in PostgreSQL connection: Error { kind: Db, cause: Some(DbError { severity: "FATAL", parsed_severity: Some(Fatal), code: SqlState(E57P01), message: "terminating connection due to administrator command", detail: None, hint: None, position: None, where_: None, schema: None, table: None, column: None, datatype: None, constraint: None, file: Some("postgres.c"), line: Some(3286), routine: Some("ProcessInterrupts") }) }
-prisma:error Error in PostgreSQL connection: Error { kind: Db, cause: Some(DbError { severity: "FATAL", parsed_severity: Some(Fatal), code: SqlState(E57P01), message: "terminating connection due to administrator command", detail: None, hint: None, position: None, where_: None, schema: None, table: None, column: None, datatype: None, constraint: None, file: Some("postgres.c"), line: Some(3286), routine: Some("ProcessInterrupts") }) }
-prisma:error Error in PostgreSQL connection: Error { kind: Db, cause: Some(DbError { severity: "FATAL", parsed_severity: Some(Fatal), code: SqlState(E57P01), message: "terminating connection due to administrator command", detail: None, hint: None, position: None, where_: None, schema: None, table: None, column: None, datatype: None, constraint: None, file: Some("postgres.c"), line: Some(3286), routine: Some("ProcessInterrupts") }) }
+ ✓ Compiled /_not-found in 803ms (4324 modules)
+ GET /_next/static/chunks/fallback/webpack.js 500 in 867ms
+ GET /_next/static/chunks/fallback/main.js 500 in 866ms
+ GET /_next/static/chunks/fallback/react-refresh.js 500 in 866ms
+ GET /_next/static/chunks/fallback/pages/_app.js 500 in 866ms
+ GET /_next/static/chunks/fallback/pages/_error.js 500 in 865ms
+ ✓ Compiled in 544ms (4310 modules)
+ ✓ Compiled in 411ms (4307 modules)
+ ✓ Compiled in 466ms (4307 modules)
+ ✓ Compiled in 447ms (4307 modules)
+ GET / 500 in 100ms
+ GET / 500 in 82ms
+ ○ Compiling /api/auth/session ...
+ ✓ Compiled /api/auth/session in 610ms (2122 modules)
+ GET /api/auth/session 200 in 677ms
+ GET /api/auth/session 200 in 679ms
+ ✓ Compiled in 958ms (4307 modules)
+ ✓ Compiled in 304ms (2213 modules)
+ GET / 500 in 122ms
+ ✓ Compiled /api/auth/session in 472ms (2122 modules)
+ GET /api/auth/session 500 in 532ms
+ GET /api/auth/session 500 in 534ms
+ ✓ Compiled in 672ms (4307 modules)
+ GET / 500 in 80ms
+ ○ Compiling /api/auth/session ...
+ ✓ Compiled /api/auth/session in 560ms (2122 modules)
+ GET /api/auth/session 500 in 609ms
+ GET /api/auth/session 500 in 610ms
+ GET /auth?mode=login 500 in 25ms
+ ○ Compiling /_not-found ...
+ ✓ Compiled /_not-found in 673ms (4324 modules)
+ GET /_next/static/chunks/fallback/webpack.js 500 in 739ms
+ GET /_next/static/chunks/fallback/main.js 500 in 738ms
+ GET /_next/static/chunks/fallback/pages/_error.js 500 in 737ms
+ GET /_next/static/chunks/fallback/pages/_app.js 500 in 737ms
+ GET /_next/static/chunks/fallback/react-refresh.js 500 in 737ms
+ GET /auth?mode=login 500 in 21ms
+ GET /_next/static/chunks/fallback/webpack.js 500 in 28ms
+ GET /_next/static/chunks/fallback/main.js 500 in 29ms
+ GET /_next/static/chunks/fallback/react-refresh.js 500 in 29ms
+ GET /_next/static/chunks/fallback/pages/_app.js 500 in 28ms
+ GET /_next/static/chunks/fallback/pages/_error.js 500 in 28ms

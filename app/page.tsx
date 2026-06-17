@@ -1,6 +1,11 @@
 import { DashboardPageContent } from "@/components/home/dashboard-page-content";
 import { PublicLanding } from "@/components/home/public-landing";
-import { listRecentCommunityPosts, listTopics } from "@/lib/community";
+import {
+  listMyPostActivity,
+  listRecentCommunityPosts,
+  listTopics,
+} from "@/lib/community";
+import { getUnreadConversationCount } from "@/lib/messages";
 import { buildMetadata } from "@/lib/seo";
 import { getCurrentSessionUser } from "@/lib/session";
 
@@ -24,10 +29,20 @@ export default async function HomePage() {
     return <PublicLanding />;
   }
 
-  const [topics, recentPosts] = await Promise.all([
+  const [topics, recentPosts, postActivity, unreadMessageCount] = await Promise.all([
     listTopics(),
     listRecentCommunityPosts(4),
+    listMyPostActivity(user.id),
+    getUnreadConversationCount({ userId: user.id }),
   ]);
 
-  return <DashboardPageContent topics={topics} recentPosts={recentPosts} />;
+  return (
+    <DashboardPageContent
+      topics={topics}
+      recentPosts={recentPosts}
+      postActivity={postActivity}
+      unreadMessageCount={unreadMessageCount}
+      user={user}
+    />
+  );
 }
