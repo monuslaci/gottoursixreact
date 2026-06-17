@@ -2,6 +2,7 @@
 
 import {
   Dices,
+  ExternalLink,
   LockKeyhole,
   MessageSquareText,
   Shield,
@@ -17,6 +18,7 @@ type AuthMode = "login" | "register";
 type AuthPageContentProps = {
   initialMode: AuthMode;
   nextPath: string;
+  initialError?: string | null;
 };
 
 function FloatingField({
@@ -71,7 +73,11 @@ function FeaturePill({
   );
 }
 
-export function AuthPageContent({ initialMode, nextPath }: AuthPageContentProps) {
+export function AuthPageContent({
+  initialMode,
+  nextPath,
+  initialError = null,
+}: AuthPageContentProps) {
   const [mode, setMode] = useState<AuthMode>(initialMode);
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
@@ -79,12 +85,16 @@ export function AuthPageContent({ initialMode, nextPath }: AuthPageContentProps)
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isGeneratingUsername, setIsGeneratingUsername] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(initialError);
 
   const isRegister = mode === "register";
   const primaryLabel = useMemo(
     () => (isRegister ? "Create account" : "Open app"),
     [isRegister]
+  );
+  const googleAuthHref = useMemo(
+    () => `/api/auth/google?next=${encodeURIComponent(nextPath || "/")}`,
+    [nextPath]
   );
 
   async function handleGenerateUsername() {
@@ -274,6 +284,25 @@ export function AuthPageContent({ initialMode, nextPath }: AuthPageContentProps)
               </div>
 
               <div className="space-y-3">
+                <a
+                  className="inline-flex h-10 w-full items-center justify-center gap-2 rounded-xl border border-divider/70 bg-content1 px-4 text-sm font-semibold text-foreground transition-colors hover:bg-content2"
+                  href={googleAuthHref}
+                >
+                  <span className="grid h-5 w-5 place-items-center rounded-full bg-foreground text-[0.7rem] font-bold text-background">
+                    G
+                  </span>
+                  {isRegister ? "Register with Google" : "Continue with Google"}
+                  <ExternalLink className="h-3.5 w-3.5 text-default-500" />
+                </a>
+
+                <div className="flex items-center gap-3">
+                  <div className="h-px flex-1 bg-divider" />
+                  <span className="text-xs font-medium uppercase tracking-[0.16em] text-default-400">
+                    or
+                  </span>
+                  <div className="h-px flex-1 bg-divider" />
+                </div>
+
                 <button
                   type="button"
                   disabled={isSubmitting}

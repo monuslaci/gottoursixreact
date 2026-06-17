@@ -1,5 +1,5 @@
 export const authConfig = {
   enabled: true,
-  provider: "password",
+  provider: "password-google",
   sessionCookieName: "six_session",
 } as const;

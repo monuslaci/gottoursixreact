@@ -17,6 +17,7 @@ type AuthPageProps = {
   searchParams?: {
     mode?: string;
     next?: string;
+    error?: string;
   };
 };
 
@@ -31,6 +32,7 @@ export default async function AuthPage({ searchParams }: AuthPageProps) {
     <AuthPageContent
       initialMode={searchParams?.mode === "register" ? "register" : "login"}
       nextPath={searchParams?.next || "/"}
+      initialError={searchParams?.error || null}
     />
   );
 }
