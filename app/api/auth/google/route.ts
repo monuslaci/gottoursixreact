@@ -5,6 +5,7 @@ import {
   buildAuthRedirect,
   buildGoogleAuthorizationUrl,
   createGoogleOAuthState,
+  getGoogleOAuthOrigin,
   GOOGLE_OAUTH_NEXT_COOKIE,
   GOOGLE_OAUTH_STATE_COOKIE,
   sanitizeAuthNextPath,
@@ -16,7 +17,7 @@ export async function GET(request: NextRequest) {
 
   try {
     const authorizationUrl = buildGoogleAuthorizationUrl({
-      origin: request.nextUrl.origin,
+      origin: getGoogleOAuthOrigin(request.nextUrl.origin),
       state,
     });
 

@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { CommunityError } from "@/lib/community";
 import {
   buildAuthRedirect,
+  getGoogleOAuthOrigin,
   GOOGLE_OAUTH_NEXT_COOKIE,
   GOOGLE_OAUTH_STATE_COOKIE,
   sanitizeAuthNextPath,
@@ -51,7 +52,7 @@ export async function GET(request: NextRequest) {
 
     const userId = await signInWithGoogleCode({
       code,
-      origin: request.nextUrl.origin,
+      origin: getGoogleOAuthOrigin(request.nextUrl.origin),
     });
     const session = await createAuthSession(userId);
     const response = NextResponse.redirect(

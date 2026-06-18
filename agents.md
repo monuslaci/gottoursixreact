@@ -53,6 +53,26 @@ Recommended implementation priorities:
 ## Notes For Future Agents
 If a future task conflicts with these docs, treat the docs as the default reference and ask for clarification before changing scope.
 
+## Production Hosting Context
+Do not forget the production deployment ownership:
+- GoDaddy owns the domain registration.
+- Cloudflare manages DNS.
+- Railway hosts the Next.js app.
+- Production URL: `https://www.gotyoursix.club/`
+- Working Railway URL: `https://gottoursixreact-production.up.railway.app/`
+
+For production domain issues, check this path first:
+1. GoDaddy nameservers must point to Cloudflare.
+2. Cloudflare DNS must contain the Railway-provided records for `www.gotyoursix.club`.
+3. The Railway custom domain should be added and verified on the app service.
+4. During initial setup, the Cloudflare `www` CNAME should usually be DNS only, not proxied.
+5. The Railway custom domain target port must match the working Railway domain target port. The app currently works on Railway port `8080`, so `www.gotyoursix.club` should target port `8080`, not `3000`.
+6. If the Cloudflare `www` record is proxied, Cloudflare SSL/TLS mode should be `Full` and Universal SSL should be enabled.
+7. Railway variables should include `NEXTAUTH_URL=https://www.gotyoursix.club` and `NEXT_PUBLIC_SITE_URL=https://www.gotyoursix.club`.
+8. Google OAuth should allow `https://www.gotyoursix.club/api/auth/google/callback`.
+
+A Cloudflare 502 on the production URL usually points to an origin-side problem: Railway domain verification, service health, app crash, wrong DNS target, wrong Railway target port, Cloudflare proxy mode, or HTTPS/origin configuration.
+
 
 ## Project context
 - This repository is a web application built with **Next.js**, **TypeScript**, **HeroUI**, **PostgreSQL**, and **Prisma**.- The app uses the Next.js **App Router** with the `app/` directory.- New **API routes** should be created under `app/api/<route>/route.ts`.- New **pages** and **layouts** should follow the existing structure under `app/`.- Reusable React components live in the `components/` folder.- Services, utilities, and non-UI logic belong in the `lib/` folder.- Database models are defined in `prisma/schema.prisma`, with migrations in `prisma/migrations/`.

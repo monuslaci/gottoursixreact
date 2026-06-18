@@ -133,3 +133,47 @@ The first version should stay simple but leave room for:
 - Mobile-friendly UI and later native apps
 - Real-time messaging with WebSockets or SSE if needed
 
+## Production Hosting
+The production domain and hosting flow is:
+- Domain registrar: GoDaddy
+- DNS provider: Cloudflare
+- App host: Railway
+- Production domain: `https://www.gotyoursix.club/`
+- Working Railway domain: `https://gottoursixreact-production.up.railway.app/`
+
+The intended path is:
+1. GoDaddy owns the domain registration.
+2. GoDaddy nameservers point to the two Cloudflare nameservers for the domain.
+3. Cloudflare manages DNS records for `gotyoursix.club`.
+4. Railway hosts the Next.js app and owns the custom domain target.
+5. Cloudflare DNS points `www` to the Railway-provided custom domain target.
+
+Railway custom domain setup:
+- Add `www.gotyoursix.club` as a custom domain on the Railway Next.js app service.
+- Add the Railway-provided DNS records in Cloudflare exactly as Railway shows them.
+- For the initial setup, keep the Cloudflare proxy status as DNS only for the Railway CNAME.
+- Add the Railway TXT verification record exactly as Railway shows it.
+- After Railway verifies the custom domain and SSL works, Cloudflare proxying can be considered, but DNS only is the safer first state.
+- The custom domain target port in Railway must match the port where the deployed app is actually listening. The working Railway-provided domain currently uses port `8080`, so `www.gotyoursix.club` should also target port `8080`, not `3000`.
+
+Cloudflare SSL setup:
+- If the `www` record is proxied through Cloudflare, Cloudflare SSL/TLS mode should be `Full`.
+- Cloudflare Universal SSL should be enabled so Cloudflare can issue an edge certificate for `www.gotyoursix.club`.
+- If the site loads but the browser says it is not secure, check Cloudflare Edge Certificates first, then check for mixed-content warnings in the browser console.
+
+Production environment variables in Railway should include:
+- `NEXTAUTH_URL=https://www.gotyoursix.club`
+- `NEXT_PUBLIC_SITE_URL=https://www.gotyoursix.club`
+
+Google OAuth production setup:
+- Add this authorized redirect URI in Google Cloud Console:
+  - `https://www.gotyoursix.club/api/auth/google/callback`
+- Keep the Railway temporary redirect URI too if the temporary Railway domain is still used:
+  - `https://<railway-app-domain>/api/auth/google/callback`
+
+Troubleshooting notes:
+- A Cloudflare 502 for `www.gotyoursix.club` usually means Cloudflare can reach DNS but the origin path is failing, misconfigured, unavailable, or rejecting the request.
+- If Cloudflare proxying is enabled during setup, switch the `www` CNAME to DNS only until Railway verifies the domain and serves HTTPS successfully.
+- If the Railway-provided domain works but the custom domain returns 502, compare the target ports in Railway Public Networking first.
+- If the custom domain loads but HTTPS is marked unsafe, confirm Cloudflare Universal SSL is active for the hostname and that the page is not loading any `http://` assets.
+- Check Railway deployment logs, custom domain verification status, and service health before changing app code.
