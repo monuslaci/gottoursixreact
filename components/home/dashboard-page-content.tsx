@@ -7,7 +7,6 @@ import type {
 } from "@/lib/community";
 import type { PublicSessionUser } from "@/lib/session";
 import Link from "next/link";
-import { motion } from "framer-motion";
 import { useMemo, useState } from "react";
 import {
   ArrowRight,
@@ -163,12 +162,7 @@ export function DashboardPageContent({
 
   return (
     <div className="public-landing">
-      <motion.section
-        className="public-hero"
-        initial={{ opacity: 0, y: 18 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.36, ease: "easeOut" }}
-      >
+      <section className="public-hero">
         <div className="public-hero__copy public-hero__copy--dashboard">
           <div className="public-eyebrows">
             <span className="public-pill public-pill--bronze">Welcome back</span>
@@ -218,15 +212,9 @@ export function DashboardPageContent({
             useful step.
           </p>
         </div>
-      </motion.section>
+      </section>
 
-      <motion.section
-        className="public-section"
-        initial={{ opacity: 0, y: 18 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, amount: 0.2 }}
-        transition={{ duration: 0.34, ease: "easeOut" }}
-      >
+      <section className="public-section">
         <div className="public-section-head">
           <div>
             <p className="public-kicker">Continue where you left off</p>
@@ -304,15 +292,9 @@ export function DashboardPageContent({
             </p>
           </div>
         )}
-      </motion.section>
+      </section>
 
-      <motion.section
-        className="public-section"
-        initial={{ opacity: 0, y: 18 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, amount: 0.2 }}
-        transition={{ duration: 0.34, ease: "easeOut" }}
-      >
+      <section className="public-section">
         <div className="public-section-head">
           <div>
             <p className="public-kicker">Trending conversations</p>
@@ -374,15 +356,9 @@ export function DashboardPageContent({
             </button>
           </div>
         ) : null}
-      </motion.section>
+      </section>
 
-      <motion.section
-        className="public-split"
-        initial={{ opacity: 0, y: 18 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, amount: 0.2 }}
-        transition={{ duration: 0.34, ease: "easeOut" }}
-      >
+      <section className="public-split">
         <div className="public-info-card">
           <p className="public-kicker">Need support?</p>
           <h2>Ask a question anonymously and get advice from men who have been there.</h2>
@@ -424,15 +400,9 @@ export function DashboardPageContent({
             </AnimatedCtaLink>
           </div>
         </div>
-      </motion.section>
+      </section>
 
-      <motion.section
-        className="public-section"
-        initial={{ opacity: 0, y: 18 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, amount: 0.2 }}
-        transition={{ duration: 0.34, ease: "easeOut" }}
-      >
+      <section className="public-section">
         <div className="public-section-head">
           <div>
             <p className="public-kicker">Daily check-in</p>
@@ -456,16 +426,10 @@ export function DashboardPageContent({
             </button>
           ))}
         </div>
-      </motion.section>
+      </section>
 
       {suggestedTopics.length > 0 ? (
-        <motion.section
-          className="public-section"
-          initial={{ opacity: 0, y: 18 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.2 }}
-          transition={{ duration: 0.34, ease: "easeOut" }}
-        >
+        <section className="public-section">
           <div className="public-section-head">
             <div>
               <p className="public-kicker">Topic rooms</p>
@@ -494,7 +458,7 @@ export function DashboardPageContent({
               </Link>
             ))}
           </div>
-        </motion.section>
+        </section>
       ) : null}
 
       <div className="public-inline-links">
