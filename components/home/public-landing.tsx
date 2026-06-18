@@ -1,5 +1,3 @@
-"use client";
-
 import { LogIn, ShieldPlus, UserPlus } from "lucide-react";
 
 import { AnimatedCtaLink } from "@/components/home/animated-cta-link";
