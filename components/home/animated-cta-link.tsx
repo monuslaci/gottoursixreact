@@ -3,7 +3,6 @@
 import type { LucideIcon } from "lucide-react";
 import type { ReactNode } from "react";
 
-import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 
@@ -46,33 +45,22 @@ export function AnimatedCtaLink({
   showArrow = false,
 }: AnimatedCtaLinkProps) {
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 18 }}
-      animate={{ opacity: 1, y: 0 }}
-      whileHover={{ y: -3, scale: 1.01 }}
-      whileTap={{ scale: 0.98 }}
-      transition={{
-        duration: 0.24,
-        ease: "easeOut",
-        delay,
-      }}
-      className={cn("inline-flex", className)}
+    <Link
+      href={href}
+      style={{ transitionDelay: `${delay}s` }}
+      className={cn(
+        "group inline-flex min-h-12 items-center justify-center gap-2 rounded-[1.15rem] px-5 text-sm font-semibold tracking-[0.01em] transition duration-200 hover:-translate-y-0.5 hover:scale-[1.01] active:scale-[0.98]",
+        variantClasses[variant],
+        className
+      )}
     >
-      <Link
-        href={href}
-        className={cn(
-          "group inline-flex min-h-12 items-center justify-center gap-2 rounded-[1.15rem] px-5 text-sm font-semibold tracking-[0.01em] transition-transform duration-200",
-          variantClasses[variant]
-        )}
-      >
-        {Icon ? (
-          <Icon className="h-[18px] w-[18px] transition-transform duration-200 group-hover:-translate-y-0.5" />
-        ) : null}
-        {children}
-        {showArrow ? (
-          <ArrowRight className="h-[18px] w-[18px] transition-transform duration-200 group-hover:translate-x-0.5" />
-        ) : null}
-      </Link>
-    </motion.div>
+      {Icon ? (
+        <Icon className="h-[18px] w-[18px] transition-transform duration-200 group-hover:-translate-y-0.5" />
+      ) : null}
+      {children}
+      {showArrow ? (
+        <ArrowRight className="h-[18px] w-[18px] transition-transform duration-200 group-hover:translate-x-0.5" />
+      ) : null}
+    </Link>
   );
 }

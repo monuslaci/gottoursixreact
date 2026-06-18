@@ -1,6 +1,5 @@
 "use client";
 
-import { motion } from "framer-motion";
 import { LogIn, ShieldPlus, UserPlus } from "lucide-react";
 
 import { AnimatedCtaLink } from "@/components/home/animated-cta-link";
@@ -73,12 +72,7 @@ const simpleRules = [
 export function PublicLanding() {
   return (
     <div className="public-landing">
-      <motion.section
-        className="public-hero"
-        initial={{ opacity: 0, y: 24 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.45, ease: "easeOut" }}
-      >
+      <section className="public-hero">
         <div className="public-hero__copy">
           <div className="public-eyebrows">
             <span className="public-pill public-pill--bronze">
@@ -156,15 +150,9 @@ export function PublicLanding() {
                 will understand.
           </p>
         </div>
-      </motion.section>
+      </section>
 
-      <motion.section
-        className="public-section"
-        initial={{ opacity: 0, y: 24 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, amount: 0.2 }}
-        transition={{ duration: 0.4, ease: "easeOut" }}
-      >
+      <section className="public-section">
         <div className="public-section-head">
           <div>
             <p className="public-kicker">
@@ -196,15 +184,9 @@ export function PublicLanding() {
             </div>
           ))}
         </div>
-      </motion.section>
+      </section>
 
-      <motion.section
-        className="public-section"
-        initial={{ opacity: 0, y: 24 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, amount: 0.2 }}
-        transition={{ duration: 0.4, ease: "easeOut" }}
-      >
+      <section className="public-section">
         <div className="public-section-head">
           <div>
             <p className="public-kicker">
@@ -233,15 +215,9 @@ export function PublicLanding() {
             </div>
           ))}
         </div>
-      </motion.section>
+      </section>
 
-      <motion.section
-        className="public-section"
-        initial={{ opacity: 0, y: 24 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, amount: 0.2 }}
-        transition={{ duration: 0.4, ease: "easeOut" }}
-      >
+      <section className="public-section">
         <div className="public-section-head">
           <div>
             <p className="public-kicker">
@@ -272,15 +248,9 @@ export function PublicLanding() {
             </div>
           ))}
         </div>
-      </motion.section>
+      </section>
 
-      <motion.section
-        className="public-split"
-        initial={{ opacity: 0, y: 24 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, amount: 0.2 }}
-        transition={{ duration: 0.4, ease: "easeOut" }}
-      >
+      <section className="public-split">
         <div className="public-info-card">
           <p className="public-kicker">Why men stay</p>
           <h2>Because the advice comes from experience.</h2>
@@ -338,7 +308,7 @@ export function PublicLanding() {
             </AnimatedCtaLink>
           </div>
         </div>
-      </motion.section>
+      </section>
     </div>
   );
 }
