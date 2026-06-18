@@ -3,9 +3,9 @@
 import type { LucideIcon } from "lucide-react";
 import type { ReactNode } from "react";
 
-import { Link } from "@heroui/link";
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
+import Link from "next/link";
 
 import { cn } from "@/lib/client-utils";
 
