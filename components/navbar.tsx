@@ -166,7 +166,7 @@ export function AppNavbar({ initialAuthSession }: AppNavbarProps) {
                 </NextLink>
                 <NextLink
                   href="/auth?mode=register"
-                  className="hidden items-center rounded-full bg-[linear-gradient(135deg,rgba(var(--heroui-colors-primary-500),1),rgba(var(--heroui-colors-primary-700),1))] px-4 py-2 text-sm font-medium text-primary-foreground shadow-[0_16px_34px_rgba(27,54,93,0.2)] transition-all duration-200 hover:-translate-y-0.5 sm:inline-flex"
+                  className="hidden items-center rounded-full border border-brotherhood-bronze/35 bg-[linear-gradient(135deg,rgba(var(--heroui-colors-warning),0.96),rgba(227,162,74,0.96))] px-4 py-2 text-sm font-semibold text-slate-950 shadow-[0_16px_34px_rgba(197,138,58,0.24)] transition-all duration-200 hover:-translate-y-0.5 sm:inline-flex dark:text-slate-950"
                 >
                   Register
                 </NextLink>
@@ -244,7 +244,7 @@ export function AppNavbar({ initialAuthSession }: AppNavbarProps) {
                         </NextLink>
                         <NextLink
                           href="/auth?mode=register"
-                          className="inline-flex items-center justify-center rounded-full bg-[linear-gradient(135deg,rgba(var(--heroui-colors-primary-500),1),rgba(var(--heroui-colors-primary-700),1))] px-4 py-2 text-sm font-medium text-primary-foreground shadow-[0_16px_34px_rgba(27,54,93,0.18)] transition-all duration-200 hover:-translate-y-0.5"
+                          className="inline-flex items-center justify-center rounded-full border border-brotherhood-bronze/35 bg-[linear-gradient(135deg,rgba(var(--heroui-colors-warning),0.96),rgba(227,162,74,0.96))] px-4 py-2 text-sm font-semibold text-slate-950 shadow-[0_16px_34px_rgba(197,138,58,0.2)] transition-all duration-200 hover:-translate-y-0.5 dark:text-slate-950"
                         >
                           Register
                         </NextLink>
