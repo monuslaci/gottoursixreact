@@ -2,8 +2,7 @@
 
 import type { ReactNode } from "react";
 
-import { Button } from "@heroui/button";
-import { motion } from "framer-motion";
+import Link from "next/link";
 
 import { cn } from "@/lib/client-utils";
 
@@ -44,25 +43,28 @@ export function NavbarIconButton({
     </>
   );
 
-  return (
-    <motion.div
-      whileHover={{ y: -2, scale: 1.03 }}
-      whileTap={{ scale: 0.97 }}
-      transition={{ duration: 0.18, ease: "easeOut" }}
-      className="inline-flex"
-    >
-      <Button
-        {...(href ? { as: "a" as const, href } : {})}
-        isIconOnly
-        radius="full"
-        variant="flat"
+  if (href) {
+    return (
+      <Link
+        href={href}
         aria-label={ariaLabel}
-        className={classNames}
+        className={cn("inline-flex items-center justify-center rounded-full", classNames)}
         data-active={isActive ? "true" : "false"}
-        onPress={onPress}
       >
         {content}
-      </Button>
-    </motion.div>
+      </Link>
+    );
+  }
+
+  return (
+    <button
+      type="button"
+      aria-label={ariaLabel}
+      className={cn("inline-flex items-center justify-center rounded-full", classNames)}
+      data-active={isActive ? "true" : "false"}
+      onClick={onPress}
+    >
+      {content}
+    </button>
   );
 }

@@ -1,6 +1,5 @@
 "use client";
 
-import { motion } from "framer-motion";
 import { MoonStar, SunMedium } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
@@ -31,11 +30,7 @@ export function ThemeSwitch({ className }: ThemeSwitchProps) {
       )}
       onClick={() => setTheme(isDark ? "light" : "dark")}
     >
-      <motion.span
-        key={isDark ? "moon" : "sun"}
-        initial={{ opacity: 0, rotate: -24, scale: 0.75 }}
-        animate={{ opacity: 1, rotate: 0, scale: 1 }}
-        transition={{ duration: 0.22, ease: "easeOut" }}
+      <span
         className={cn(
           "relative flex h-8 w-8 items-center justify-center overflow-hidden rounded-full",
           isDark
@@ -49,7 +44,7 @@ export function ThemeSwitch({ className }: ThemeSwitchProps) {
         ) : (
           <SunMedium className="relative z-10 h-[18px] w-[18px]" />
         )}
-      </motion.span>
+      </span>
     </button>
   );
 }

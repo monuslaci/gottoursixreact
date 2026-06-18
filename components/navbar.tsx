@@ -1,9 +1,5 @@
 "use client";
 
-import { Button } from "@heroui/button";
-import { Card, CardBody } from "@heroui/card";
-import { Tooltip } from "@heroui/tooltip";
-import { AnimatePresence, motion } from "framer-motion";
 import {
   FileText,
   LogIn,
@@ -112,98 +108,68 @@ export function AppNavbar({ initialAuthSession }: AppNavbarProps) {
           <div className="flex items-center justify-end gap-2">
             {isAuthenticated ? (
               <>
-                <Tooltip content="Profile" showArrow>
-                  <div>
-                    <NavbarIconButton
-                      href="/profile"
-                      ariaLabel={user ? `Profile for @${user.username}` : "Profile"}
-                      isActive={isProfileActive}
-                      icon={
-                        <div className="relative h-8 w-8 overflow-hidden rounded-full border border-white/20 bg-content2/80">
-                          <Image
-                            src={profileAvatarSrc}
-                            alt={user?.username ? `Avatar for @${user.username}` : "Profile"}
-                            fill
-                            sizes="32px"
-                            className="object-cover"
-                          />
-                        </div>
-                      }
-                    />
-                  </div>
-                </Tooltip>
-                <Tooltip content="Activity" showArrow>
-                  <div>
-                    <NavbarIconButton
-                      href="/activity"
-                      ariaLabel="Activity"
-                      isActive={isActivityActive}
-                      icon={<FileText className="h-5 w-5" />}
-                    />
-                  </div>
-                </Tooltip>
-                <Tooltip
-                  content={
+                <NavbarIconButton
+                  href="/profile"
+                  ariaLabel={user ? `Profile for @${user.username}` : "Profile"}
+                  isActive={isProfileActive}
+                  icon={
+                    <div className="relative h-8 w-8 overflow-hidden rounded-full border border-white/20 bg-content2/80">
+                      <Image
+                        src={profileAvatarSrc}
+                        alt={user?.username ? `Avatar for @${user.username}` : "Profile"}
+                        fill
+                        sizes="32px"
+                        className="object-cover"
+                      />
+                    </div>
+                  }
+                />
+                <NavbarIconButton
+                  href="/activity"
+                  ariaLabel="Activity"
+                  isActive={isActivityActive}
+                  icon={<FileText className="h-5 w-5" />}
+                />
+                <NavbarIconButton
+                  href="/messages"
+                  ariaLabel={
                     unreadMessageCount > 0
                       ? `Messages, ${unreadMessageCount} unread`
                       : "Messages"
                   }
-                  showArrow
-                >
-                  <div>
-                    <NavbarIconButton
-                      href="/messages"
-                      ariaLabel={
-                        unreadMessageCount > 0
-                          ? `Messages, ${unreadMessageCount} unread`
-                          : "Messages"
-                      }
-                      isActive={isActive("/messages")}
-                      icon={<MessageSquareMore className="h-5 w-5" />}
-                      badge={
-                        unreadMessageCount > 0 ? (
-                          <motion.span
-                            aria-hidden="true"
-                            initial={{ scale: 0.85, opacity: 0.7 }}
-                            animate={{ scale: [0.9, 1.15, 1], opacity: 1 }}
-                            transition={{ duration: 0.45, ease: "easeOut" }}
-                            className="flex h-2.5 w-2.5 rounded-full bg-danger shadow-[0_0_0_4px_rgba(255,255,255,0.7)] dark:shadow-[0_0_0_4px_rgba(17,24,39,0.8)]"
-                          />
-                        ) : null
-                      }
-                    />
-                  </div>
-                </Tooltip>
-                <Tooltip content="Sign out" showArrow>
-                  <div className="hidden sm:inline-flex">
-                    <NavbarIconButton
-                      ariaLabel="Sign out"
-                      onPress={() => void handleLogout()}
-                      icon={<LogOut className="h-[18px] w-[18px]" />}
-                      className="hidden sm:inline-flex"
-                    />
-                  </div>
-                </Tooltip>
+                  isActive={isActive("/messages")}
+                  icon={<MessageSquareMore className="h-5 w-5" />}
+                  badge={
+                    unreadMessageCount > 0 ? (
+                      <span
+                        aria-hidden="true"
+                        className="flex h-2.5 w-2.5 rounded-full bg-danger shadow-[0_0_0_4px_rgba(255,255,255,0.7)] dark:shadow-[0_0_0_4px_rgba(17,24,39,0.8)]"
+                      />
+                    ) : null
+                  }
+                />
+                <NavbarIconButton
+                  ariaLabel="Sign out"
+                  onPress={() => void handleLogout()}
+                  icon={<LogOut className="h-[18px] w-[18px]" />}
+                  className="hidden sm:inline-flex"
+                />
               </>
             ) : (
               <>
-                <Button
-                  as="a"
+                <NextLink
                   href="/auth?mode=login"
-                  variant="flat"
-                  className="hidden rounded-full border border-primary/12 bg-[linear-gradient(135deg,rgba(var(--content1),0.94),rgba(var(--content2),0.9))] px-4 text-primary shadow-[0_12px_28px_rgba(27,54,93,0.1)] transition-all duration-200 hover:-translate-y-0.5 hover:border-brotherhood-bronze/35 hover:bg-[linear-gradient(135deg,rgba(var(--content1),1),rgba(var(--heroui-colors-primary-50),0.95))] sm:inline-flex dark:border-white/12 dark:bg-[linear-gradient(135deg,rgba(255,255,255,0.08),rgba(var(--content2),0.86))] dark:text-white"
-                  startContent={<LogIn className="h-4 w-4" />}
+                  className="hidden items-center gap-2 rounded-full border border-primary/12 bg-[linear-gradient(135deg,rgba(var(--content1),0.94),rgba(var(--content2),0.9))] px-4 py-2 text-sm font-medium text-primary shadow-[0_12px_28px_rgba(27,54,93,0.1)] transition-all duration-200 hover:-translate-y-0.5 hover:border-brotherhood-bronze/35 hover:bg-[linear-gradient(135deg,rgba(var(--content1),1),rgba(var(--heroui-colors-primary-50),0.95))] sm:inline-flex dark:border-white/12 dark:bg-[linear-gradient(135deg,rgba(255,255,255,0.08),rgba(var(--content2),0.86))] dark:text-white"
                 >
+                  <LogIn className="h-4 w-4" />
                   Sign in
-                </Button>
-                <Button
-                  as="a"
+                </NextLink>
+                <NextLink
                   href="/auth?mode=register"
-                  color="primary"
-                  className="hidden rounded-full bg-[linear-gradient(135deg,rgba(var(--heroui-colors-primary-500),1),rgba(var(--heroui-colors-primary-700),1))] px-4 shadow-[0_16px_34px_rgba(27,54,93,0.2)] transition-all duration-200 hover:-translate-y-0.5 sm:inline-flex"
+                  className="hidden items-center rounded-full bg-[linear-gradient(135deg,rgba(var(--heroui-colors-primary-500),1),rgba(var(--heroui-colors-primary-700),1))] px-4 py-2 text-sm font-medium text-primary-foreground shadow-[0_16px_34px_rgba(27,54,93,0.2)] transition-all duration-200 hover:-translate-y-0.5 sm:inline-flex"
                 >
                   Register
-                </Button>
+                </NextLink>
               </>
             )}
             <ThemeSwitch />
@@ -223,17 +189,9 @@ export function AppNavbar({ initialAuthSession }: AppNavbarProps) {
         </div>
       </header>
 
-      <AnimatePresence>
-        {menuOpen ? (
-          <motion.div
-            initial={{ opacity: 0, y: -8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            transition={{ duration: 0.18 }}
-            className="border-b border-primary/15 bg-content1/96 px-4 py-4 shadow-lg backdrop-blur-xl sm:px-6 md:hidden lg:px-8"
-          >
-            <Card className="border border-primary/15 bg-background/90 shadow-sm">
-              <CardBody className="gap-3 p-4">
+      {menuOpen ? (
+        <div className="border-b border-primary/15 bg-content1/96 px-4 py-4 shadow-lg backdrop-blur-xl sm:px-6 md:hidden lg:px-8">
+            <div className="rounded-2xl border border-primary/15 bg-background/90 p-4 shadow-sm">
                 <nav className="flex flex-col gap-2">
                   {siteConfig.navMenuItems.map((item) => {
                     const active = isActive(item.href);
@@ -267,42 +225,36 @@ export function AppNavbar({ initialAuthSession }: AppNavbarProps) {
                   })}
                   <div className="mt-2 flex flex-col gap-2 border-t border-divider/70 pt-3">
                     {isAuthenticated ? (
-                      <Button
-                        variant="flat"
-                        className="rounded-full border border-primary/12 bg-[linear-gradient(135deg,rgba(var(--content1),0.94),rgba(var(--content2),0.9))] text-primary transition-all duration-200 hover:-translate-y-0.5 hover:border-brotherhood-bronze/35 hover:bg-[linear-gradient(135deg,rgba(var(--content1),1),rgba(var(--heroui-colors-primary-50),0.95))] dark:border-white/12 dark:bg-[linear-gradient(135deg,rgba(255,255,255,0.08),rgba(var(--content2),0.86))] dark:text-white"
-                        startContent={<LogOut className="h-4 w-4" />}
-                        onPress={() => void handleLogout()}
+                      <button
+                        type="button"
+                        className="inline-flex items-center justify-center gap-2 rounded-full border border-primary/12 bg-[linear-gradient(135deg,rgba(var(--content1),0.94),rgba(var(--content2),0.9))] px-4 py-2 text-sm font-medium text-primary transition-all duration-200 hover:-translate-y-0.5 hover:border-brotherhood-bronze/35 hover:bg-[linear-gradient(135deg,rgba(var(--content1),1),rgba(var(--heroui-colors-primary-50),0.95))] dark:border-white/12 dark:bg-[linear-gradient(135deg,rgba(255,255,255,0.08),rgba(var(--content2),0.86))] dark:text-white"
+                        onClick={() => void handleLogout()}
                       >
+                        <LogOut className="h-4 w-4" />
                         Sign out
-                      </Button>
+                      </button>
                     ) : (
                       <>
-                        <Button
-                          as="a"
+                        <NextLink
                           href="/auth?mode=login"
-                          variant="flat"
-                          className="rounded-full border border-primary/12 bg-[linear-gradient(135deg,rgba(var(--content1),0.94),rgba(var(--content2),0.9))] text-primary transition-all duration-200 hover:-translate-y-0.5 hover:border-brotherhood-bronze/35 hover:bg-[linear-gradient(135deg,rgba(var(--content1),1),rgba(var(--heroui-colors-primary-50),0.95))] dark:border-white/12 dark:bg-[linear-gradient(135deg,rgba(255,255,255,0.08),rgba(var(--content2),0.86))] dark:text-white"
-                          startContent={<LogIn className="h-4 w-4" />}
+                          className="inline-flex items-center justify-center gap-2 rounded-full border border-primary/12 bg-[linear-gradient(135deg,rgba(var(--content1),0.94),rgba(var(--content2),0.9))] px-4 py-2 text-sm font-medium text-primary transition-all duration-200 hover:-translate-y-0.5 hover:border-brotherhood-bronze/35 hover:bg-[linear-gradient(135deg,rgba(var(--content1),1),rgba(var(--heroui-colors-primary-50),0.95))] dark:border-white/12 dark:bg-[linear-gradient(135deg,rgba(255,255,255,0.08),rgba(var(--content2),0.86))] dark:text-white"
                         >
+                          <LogIn className="h-4 w-4" />
                           Sign in
-                        </Button>
-                        <Button
-                          as="a"
+                        </NextLink>
+                        <NextLink
                           href="/auth?mode=register"
-                          color="primary"
-                          className="rounded-full bg-[linear-gradient(135deg,rgba(var(--heroui-colors-primary-500),1),rgba(var(--heroui-colors-primary-700),1))] shadow-[0_16px_34px_rgba(27,54,93,0.18)] transition-all duration-200 hover:-translate-y-0.5"
+                          className="inline-flex items-center justify-center rounded-full bg-[linear-gradient(135deg,rgba(var(--heroui-colors-primary-500),1),rgba(var(--heroui-colors-primary-700),1))] px-4 py-2 text-sm font-medium text-primary-foreground shadow-[0_16px_34px_rgba(27,54,93,0.18)] transition-all duration-200 hover:-translate-y-0.5"
                         >
                           Register
-                        </Button>
+                        </NextLink>
                       </>
                     )}
                   </div>
                 </nav>
-              </CardBody>
-            </Card>
-          </motion.div>
-        ) : null}
-      </AnimatePresence>
+            </div>
+        </div>
+      ) : null}
     </div>
   );
 }
