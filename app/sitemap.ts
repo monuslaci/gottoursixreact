@@ -20,6 +20,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "monthly",
       priority: 0.7,
     },
+    {
+      url: getCanonicalUrl("/terms"),
+      changeFrequency: "monthly",
+      priority: 0.7,
+    },
   ];
 
   try {

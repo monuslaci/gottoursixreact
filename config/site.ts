@@ -15,5 +15,8 @@ export const siteConfig = {
     { label: "Admin", href: "/admin" },
     { label: "Messages", href: "/messages" },
   ],
-  footerLinks: [{ label: "Rules", href: "/rules" }],
+  footerLinks: [
+    { label: "Rules", href: "/rules" },
+    { label: "Terms", href: "/terms" },
+  ],
 };
