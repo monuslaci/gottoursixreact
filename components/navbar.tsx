@@ -1,13 +1,19 @@
 "use client";
 
 import {
+  Compass,
   FileText,
+  Home,
+  LayoutDashboard,
   LogIn,
   LogOut,
   Menu,
   MessageSquareMore,
+  ShieldCheck,
+  UserCircle,
   X,
 } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import Image from "next/image";
 import NextLink from "next/link";
 import { usePathname } from "next/navigation";
@@ -16,7 +22,6 @@ import { useState } from "react";
 import { NavbarIconButton } from "@/components/navbar-icon-button";
 import { ThemeSwitch } from "@/components/theme-switch";
 import { siteConfig } from "@/config/site";
-import { resolveAvatarPath } from "@/lib/avatars";
 import { cn } from "@/lib/client-utils";
 import { useAuthSession, type InitialAuthSession } from "@/lib/hooks/useAuthSession";
 import { useUnreadMessageCount } from "@/lib/hooks/useUnreadMessageCount";
@@ -25,21 +30,22 @@ type AppNavbarProps = {
   initialAuthSession?: InitialAuthSession;
 };
 
+const navIcons: Record<string, LucideIcon> = {
+  "/": LayoutDashboard,
+  "/topics": Compass,
+  "/activity": FileText,
+  "/profile": UserCircle,
+  "/admin": ShieldCheck,
+  "/messages": MessageSquareMore,
+};
+
 export function AppNavbar({ initialAuthSession }: AppNavbarProps) {
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
-  const { isAuthenticated, user, refresh } = useAuthSession(initialAuthSession);
+  const { isAuthenticated, refresh } = useAuthSession(initialAuthSession);
   const { unreadCount: unreadMessageCount } = useUnreadMessageCount();
-  const profileAvatarSrc = resolveAvatarPath(
-    user?.image,
-    user?.username,
-    user?.email,
-    user?.id
-  );
 
   const isActive = (href: string) => pathname === href;
-  const isActivityActive = isActive("/activity");
-  const isProfileActive = isActive("/profile");
   const desktopNavItems = siteConfig.navItems.filter((item) => {
     if (isAuthenticated) {
       return true;
@@ -47,6 +53,34 @@ export function AppNavbar({ initialAuthSession }: AppNavbarProps) {
 
     return item.href !== "/admin" && item.href !== "/topics";
   });
+
+  function renderNavItem(
+    item: { label: string; href: string },
+    options: { mobile?: boolean; badge?: number } = {}
+  ) {
+    const active = isActive(item.href);
+    const Icon = navIcons[item.href] ?? Home;
+
+    return (
+      <NextLink
+        key={item.href}
+        href={item.href}
+        onClick={options.mobile ? () => setMenuOpen(false) : undefined}
+        aria-label={item.label}
+        aria-current={active ? "page" : undefined}
+        className={cn("nav-item", active && "nav-item--active", options.mobile && "nav-item--mobile")}
+      >
+        <span className="nav-item__icon" aria-hidden="true">
+          <Icon className="h-[18px] w-[18px]" />
+          {options.badge && options.badge > 0 ? (
+            <span className="nav-item__badge" />
+          ) : null}
+        </span>
+        <span className="nav-item__label">{item.label}</span>
+        <span className="nav-item__dot" aria-hidden="true" />
+      </NextLink>
+    );
+  }
 
   async function handleLogout() {
     await fetch("/api/auth/logout", {
@@ -84,70 +118,21 @@ export function AppNavbar({ initialAuthSession }: AppNavbarProps) {
             </NextLink>
 
             <nav className="hidden items-center gap-1 md:flex">
-              {desktopNavItems.map((item) => {
-                const active = isActive(item.href);
-
-                return (
-                  <NextLink
-                    key={item.href}
-                    href={item.href}
-                    className={cn(
-                      "rounded-xl px-3 py-2 text-sm font-medium transition-colors",
-                      active
-                        ? "bg-primary text-primary-foreground shadow-sm"
-                        : "text-default-700 hover:bg-secondary/12 hover:text-primary"
-                    )}
-                  >
-                    {item.label}
-                  </NextLink>
-                );
-              })}
+              {desktopNavItems.map((item) => renderNavItem(item))}
             </nav>
           </div>
 
           <div className="flex items-center justify-end gap-2">
             {isAuthenticated ? (
               <>
-                <NavbarIconButton
-                  href="/profile"
-                  ariaLabel={user ? `Profile for @${user.username}` : "Profile"}
-                  isActive={isProfileActive}
-                  icon={
-                    <div className="relative h-8 w-8 overflow-hidden rounded-full border border-white/20 bg-content2/80">
-                      <Image
-                        src={profileAvatarSrc}
-                        alt={user?.username ? `Avatar for @${user.username}` : "Profile"}
-                        fill
-                        sizes="32px"
-                        className="object-cover"
-                      />
-                    </div>
-                  }
-                />
-                <NavbarIconButton
-                  href="/activity"
-                  ariaLabel="Activity"
-                  isActive={isActivityActive}
-                  icon={<FileText className="h-5 w-5" />}
-                />
-                <NavbarIconButton
-                  href="/messages"
-                  ariaLabel={
-                    unreadMessageCount > 0
-                      ? `Messages, ${unreadMessageCount} unread`
-                      : "Messages"
-                  }
-                  isActive={isActive("/messages")}
-                  icon={<MessageSquareMore className="h-5 w-5" />}
-                  badge={
-                    unreadMessageCount > 0 ? (
-                      <span
-                        aria-hidden="true"
-                        className="flex h-2.5 w-2.5 rounded-full bg-danger shadow-[0_0_0_4px_rgba(255,255,255,0.7)] dark:shadow-[0_0_0_4px_rgba(17,24,39,0.8)]"
-                      />
-                    ) : null
-                  }
-                />
+                <div className="hidden items-center gap-1 md:flex">
+                  {renderNavItem({ label: "Profile", href: "/profile" })}
+                  {renderNavItem({ label: "Activity", href: "/activity" })}
+                  {renderNavItem(
+                    { label: "Messages", href: "/messages" },
+                    { badge: unreadMessageCount }
+                  )}
+                </div>
                 <NavbarIconButton
                   ariaLabel="Sign out"
                   onPress={() => void handleLogout()}
@@ -159,14 +144,14 @@ export function AppNavbar({ initialAuthSession }: AppNavbarProps) {
               <>
                 <NextLink
                   href="/auth?mode=login"
-                  className="hidden items-center gap-2 rounded-full border border-primary/12 bg-[linear-gradient(135deg,rgba(var(--content1),0.94),rgba(var(--content2),0.9))] px-4 py-2 text-sm font-medium text-primary shadow-[0_12px_28px_rgba(27,54,93,0.1)] transition-all duration-200 hover:-translate-y-0.5 hover:border-brotherhood-bronze/35 hover:bg-[linear-gradient(135deg,rgba(var(--content1),1),rgba(var(--heroui-colors-primary-50),0.95))] sm:inline-flex dark:border-white/12 dark:bg-[linear-gradient(135deg,rgba(255,255,255,0.08),rgba(var(--content2),0.86))] dark:text-white"
+                  className="nav-auth-link hidden sm:inline-flex"
                 >
                   <LogIn className="h-4 w-4" />
                   Sign in
                 </NextLink>
                 <NextLink
                   href="/auth?mode=register"
-                  className="hidden items-center rounded-full border border-brotherhood-bronze/35 bg-[linear-gradient(135deg,rgba(var(--heroui-colors-warning),0.96),rgba(227,162,74,0.96))] px-4 py-2 text-sm font-semibold text-slate-950 shadow-[0_16px_34px_rgba(197,138,58,0.24)] transition-all duration-200 hover:-translate-y-0.5 sm:inline-flex dark:text-slate-950"
+                  className="nav-auth-link nav-auth-link--register hidden sm:inline-flex"
                 >
                   Register
                 </NextLink>
@@ -194,8 +179,6 @@ export function AppNavbar({ initialAuthSession }: AppNavbarProps) {
             <div className="rounded-2xl border border-primary/15 bg-background/90 p-4 shadow-sm">
                 <nav className="flex flex-col gap-2">
                   {siteConfig.navMenuItems.map((item) => {
-                    const active = isActive(item.href);
-
                     if (
                       !isAuthenticated &&
                       (item.href === "/topics" ||
@@ -207,21 +190,7 @@ export function AppNavbar({ initialAuthSession }: AppNavbarProps) {
                       return null;
                     }
 
-                    return (
-                      <NextLink
-                        key={item.href}
-                        href={item.href}
-                        onClick={() => setMenuOpen(false)}
-                        className={cn(
-                          "rounded-xl px-3 py-3 text-sm font-medium transition-colors",
-                          active
-                            ? "bg-primary text-primary-foreground"
-                            : "text-default-700 hover:bg-secondary/12 hover:text-primary"
-                        )}
-                      >
-                        {item.label}
-                      </NextLink>
-                    );
+                    return renderNavItem(item, { mobile: true });
                   })}
                   <div className="mt-2 flex flex-col gap-2 border-t border-divider/70 pt-3">
                     {isAuthenticated ? (
@@ -237,14 +206,14 @@ export function AppNavbar({ initialAuthSession }: AppNavbarProps) {
                       <>
                         <NextLink
                           href="/auth?mode=login"
-                          className="inline-flex items-center justify-center gap-2 rounded-full border border-primary/12 bg-[linear-gradient(135deg,rgba(var(--content1),0.94),rgba(var(--content2),0.9))] px-4 py-2 text-sm font-medium text-primary transition-all duration-200 hover:-translate-y-0.5 hover:border-brotherhood-bronze/35 hover:bg-[linear-gradient(135deg,rgba(var(--content1),1),rgba(var(--heroui-colors-primary-50),0.95))] dark:border-white/12 dark:bg-[linear-gradient(135deg,rgba(255,255,255,0.08),rgba(var(--content2),0.86))] dark:text-white"
+                          className="nav-auth-link"
                         >
                           <LogIn className="h-4 w-4" />
                           Sign in
                         </NextLink>
                         <NextLink
                           href="/auth?mode=register"
-                          className="inline-flex items-center justify-center rounded-full border border-brotherhood-bronze/35 bg-[linear-gradient(135deg,rgba(var(--heroui-colors-warning),0.96),rgba(227,162,74,0.96))] px-4 py-2 text-sm font-semibold text-slate-950 shadow-[0_16px_34px_rgba(197,138,58,0.2)] transition-all duration-200 hover:-translate-y-0.5 dark:text-slate-950"
+                          className="nav-auth-link nav-auth-link--register"
                         >
                           Register
                         </NextLink>

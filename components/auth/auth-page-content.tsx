@@ -10,7 +10,7 @@ import {
   Users,
 } from "lucide-react";
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { ReactNode } from "react";
 
 type AuthMode = "login" | "register";
@@ -86,6 +86,11 @@ export function AuthPageContent({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isGeneratingUsername, setIsGeneratingUsername] = useState(false);
   const [error, setError] = useState<string | null>(initialError);
+
+  useEffect(() => {
+    setMode(initialMode);
+    setError(initialError);
+  }, [initialError, initialMode]);
 
   const isRegister = mode === "register";
   const primaryLabel = useMemo(
@@ -197,8 +202,8 @@ export function AuthPageContent({
                   type="button"
                   className={`rounded-xl px-3 py-2 text-sm font-medium transition-colors ${
                     !isRegister
-                      ? "bg-primary text-primary-foreground shadow-sm"
-                      : "text-default-600 hover:bg-default-100"
+                      ? "bg-primary text-primary-foreground shadow-sm dark:text-white"
+                      : "text-default-600 hover:bg-default-100 dark:text-default-700 dark:hover:bg-white/10"
                   }`}
                   onClick={() => setMode("login")}
                 >
@@ -208,8 +213,8 @@ export function AuthPageContent({
                   type="button"
                   className={`rounded-xl px-3 py-2 text-sm font-medium transition-colors ${
                     isRegister
-                      ? "bg-primary text-primary-foreground shadow-sm"
-                      : "text-default-600 hover:bg-default-100"
+                      ? "bg-primary text-primary-foreground shadow-sm dark:text-white"
+                      : "text-default-600 hover:bg-default-100 dark:text-default-700 dark:hover:bg-white/10"
                   }`}
                   onClick={() => setMode("register")}
                 >
@@ -306,7 +311,7 @@ export function AuthPageContent({
                 <button
                   type="button"
                   disabled={isSubmitting}
-                  className="inline-flex h-10 w-full items-center justify-center rounded-xl bg-primary px-4 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-70"
+                  className="inline-flex h-10 w-full items-center justify-center rounded-xl bg-primary px-4 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-70 dark:text-white"
                   onClick={() => void handleSubmit()}
                 >
                   {isSubmitting ? "Please wait..." : primaryLabel}
