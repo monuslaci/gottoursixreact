@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { CommunityError } from "@/lib/community";
 import {
   buildAuthRedirect,
+  getPublicRequestOrigin,
   getGoogleOAuthOrigin,
   GOOGLE_OAUTH_NEXT_COOKIE,
   GOOGLE_OAUTH_STATE_COOKIE,
@@ -31,6 +32,7 @@ export async function GET(request: NextRequest) {
   const nextPath = sanitizeAuthNextPath(
     request.cookies.get(GOOGLE_OAUTH_NEXT_COOKIE)?.value
   );
+  const requestOrigin = getPublicRequestOrigin(request);
 
   try {
     const expectedState = request.cookies.get(GOOGLE_OAUTH_STATE_COOKIE)?.value;
@@ -52,11 +54,11 @@ export async function GET(request: NextRequest) {
 
     const userId = await signInWithGoogleCode({
       code,
-      origin: getGoogleOAuthOrigin(request.nextUrl.origin),
+      origin: getGoogleOAuthOrigin(requestOrigin),
     });
     const session = await createAuthSession(userId);
     const response = NextResponse.redirect(
-      buildAuthRedirect(request.nextUrl.origin, nextPath)
+      buildAuthRedirect(requestOrigin, nextPath)
     );
 
     response.cookies.set(buildSessionCookieOptions(session.token, session.expires));
@@ -70,7 +72,7 @@ export async function GET(request: NextRequest) {
         ? error.message
         : "Unable to complete Google sign-in.";
     const response = NextResponse.redirect(
-      buildAuthRedirect(request.nextUrl.origin, nextPath, message)
+      buildAuthRedirect(requestOrigin, nextPath, message)
     );
 
     response.cookies.set(expireOAuthCookie(GOOGLE_OAUTH_STATE_COOKIE));

@@ -1,5 +1,7 @@
 import { randomBytes } from "node:crypto";
 
+import type { NextRequest } from "next/server";
+
 import { getDefaultAvatarPath } from "@/lib/avatars";
 import { CommunityError } from "@/lib/community";
 import { prisma } from "@/lib/prisma";
@@ -47,6 +49,26 @@ export function getGoogleRedirectUri(origin: string) {
   return new URL("/api/auth/google/callback", origin).toString();
 }
 
+export function getPublicRequestOrigin(request: NextRequest) {
+  const forwardedHost = request.headers.get("x-forwarded-host")?.split(",")[0]?.trim();
+  const forwardedProto = request.headers.get("x-forwarded-proto")?.split(",")[0]?.trim();
+
+  if (forwardedHost && (forwardedProto === "http" || forwardedProto === "https")) {
+    return `${forwardedProto}://${forwardedHost}`;
+  }
+
+  return request.nextUrl.origin;
+}
+
+function isLoopbackOrigin(origin: string) {
+  try {
+    const hostname = new URL(origin).hostname.toLowerCase();
+    return hostname === "localhost" || hostname === "127.0.0.1" || hostname === "[::1]";
+  } catch {
+    return false;
+  }
+}
+
 export function getGoogleOAuthOrigin(requestOrigin: string) {
   const configuredOrigin =
     process.env.NEXT_PUBLIC_SITE_URL?.trim() || process.env.NEXTAUTH_URL?.trim();
@@ -56,7 +78,16 @@ export function getGoogleOAuthOrigin(requestOrigin: string) {
   }
 
   try {
-    return new URL(configuredOrigin).origin;
+    const configuredUrl = new URL(configuredOrigin);
+
+    // A local development value must not send a deployed user through a
+    // localhost OAuth callback. The request origin is the correct fallback
+    // when a deployment was started without its production URL variables.
+    if (isLoopbackOrigin(configuredUrl.origin) && !isLoopbackOrigin(requestOrigin)) {
+      return requestOrigin;
+    }
+
+    return configuredUrl.origin;
   } catch {
     return requestOrigin;
   }

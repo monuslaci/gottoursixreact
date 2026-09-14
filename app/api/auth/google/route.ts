@@ -5,6 +5,7 @@ import {
   buildAuthRedirect,
   buildGoogleAuthorizationUrl,
   createGoogleOAuthState,
+  getPublicRequestOrigin,
   getGoogleOAuthOrigin,
   GOOGLE_OAUTH_NEXT_COOKIE,
   GOOGLE_OAUTH_STATE_COOKIE,
@@ -14,10 +15,11 @@ import {
 export async function GET(request: NextRequest) {
   const state = createGoogleOAuthState();
   const nextPath = sanitizeAuthNextPath(request.nextUrl.searchParams.get("next"));
+  const requestOrigin = getPublicRequestOrigin(request);
 
   try {
     const authorizationUrl = buildGoogleAuthorizationUrl({
-      origin: getGoogleOAuthOrigin(request.nextUrl.origin),
+      origin: getGoogleOAuthOrigin(requestOrigin),
       state,
     });
 
@@ -49,7 +51,7 @@ export async function GET(request: NextRequest) {
         : "Google sign-in is not available right now.";
 
     return NextResponse.redirect(
-      buildAuthRedirect(request.nextUrl.origin, nextPath, message)
+      buildAuthRedirect(requestOrigin, nextPath, message)
     );
   }
 }
